@@ -71,8 +71,7 @@ jobs:
         git clone https://github.com/brvphoenix/wrtbwmon
         svn export https://github.com/vernesong/OpenClash/branches/master/luci-app-openclash
         svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
-        svn co https://github.com/project-openwrt/packages/trunk/lang/python/python-psutil
-        svn co https://github.com/project-openwrt/packages/trunk/lang/python/Flask-RESTful
+        
         echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean ./
         rm -rf .svn
         echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/ctcgfw ./
