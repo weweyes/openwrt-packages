@@ -1,0 +1,52 @@
+#
+# Copyright (C) 2019 Openwrt.org
+#
+# This is free software, licensed under the Apache License, Version 2.0 .
+#
+
+include $(TOPDIR)/rules.mk
+
+PKG_NAME:=qttools
+PKG_BASE:=5.14
+PKG_BUGFIX:=2
+PKG_VERSION:=$(PKG_BASE).$(PKG_BUGFIX)
+PKG_RELEASE:=1
+
+PKG_SOURCE:=$(PKG_NAME)-everywhere-src-$(PKG_VERSION).tar.xz
+PKG_SOURCE_URL:= \
+		http://download.qt.io/official_releases/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules \
+		http://master.qt.io/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules \
+		http://mirrors.tuna.tsinghua.edu.cn/qt/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules \
+		http://qt.mirror.constant.com/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules
+PKG_HASH:=5bb0cf7832b88eb6bc9d4289f98307eb14b16a453ad6cf42cca13c4fe1a053c5
+
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-everywhere-src-$(PKG_VERSION)
+
+PKG_BUILD_PARALLEL:=1
+PKG_BUILD_DEPENDS:=qtbase
+
+QMAKE:=$(STAGING_DIR_HOSTPKG)/bin/qmake
+
+include $(INCLUDE_DIR)/package.mk
+
+define Package/$(PKG_NAME)
+	SECTION:=libs
+	CATEGORY:=Libraries
+	SUBMENU:=Qt5
+	TITLE:=qttools
+	URL:=http://qt-project.org
+endef
+
+define Build/Configure
+	cd $(PKG_BUILD_DIR) && qmake -o Makefile qttools.pro
+endef
+
+define Build/Compile
+	$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR)
+endef
+
+define Build/InstallDev
+	$(MAKE) -C $(PKG_BUILD_DIR) install
+endef
+
+$(eval $(call BuildPackage,$(PKG_NAME)))
