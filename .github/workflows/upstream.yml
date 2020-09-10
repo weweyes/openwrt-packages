@@ -1,0 +1,95 @@
+#
+# This is free software, lisence use MIT.
+# 
+# Copyright (C) 2020 KFERMercer <KFER.Mercer@gmail.com>
+# 
+# <https://github.com/KFERMercer/OpenWrt-CI>
+#
+
+name: Merge-upstream
+
+on:
+  push:
+    branches: 
+      - master
+  schedule:
+    - cron: 0 */12 * * *
+  watch:
+    types: started
+
+jobs:
+
+  merge:
+    if: github.event.repository.owner.id == github.event.sender.id
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: master
+        fetch-depth: 0
+        lfs: true
+
+    - name: Set git identity
+      run : |
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+
+    - name: Apply
+      run: |
+        rm -Rf *
+        git rm --cache *
+        git clone https://github.com/garypang13/openwrt-adguardhome AdGuardHome
+        git clone https://github.com/garypang13/luci-app-eqos
+        git clone https://github.com/garypang13/luci-app-amule
+        git clone https://github.com/garypang13/openwrt-filerun
+        git clone https://github.com/garypang13/luci-app-baidupcs-web
+        git clone https://github.com/garypang13/r8125
+        git clone https://github.com/garypang13/luci-theme-edge
+        git clone https://github.com/garypang13/openwrt-qbittorrent && mv -f openwrt-qbittorrent/* ./
+        
+        svn co https://github.com/openwrt/luci/trunk/applications/luci-app-acme
+        svn co https://github.com/openwrt/luci/trunk/applications/luci-app-sqm
+        svn co https://github.com/openwrt/packages/branches/openwrt-19.07/libs/libdouble-conversion
+        svn co https://github.com/openwrt/openwrt/branches/openwrt-19.07/package/network/services/samba36
+        svn co https://github.com/openwrt/packages/branches/openwrt-19.07/net/e2guardian
+        
+        svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-frpc
+        svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-frps
+        svn co https://github.com/coolsnowwolf/lede/trunk/package/network/services/shellsync
+        svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
+        
+        git clone https://github.com/jerrykuku/luci-theme-argon
+        git clone https://github.com/pymumu/luci-app-smartdns -b lede
+        git clone https://github.com/lisaac/luci-in-docker
+        git clone https://github.com/jefferymvp/luci-app-koolproxyR
+        git clone https://github.com/peter-tank/luci-app-dnscrypt-proxy2
+        git clone https://github.com/lisaac/luci-lib-docker
+        git clone https://github.com/brvphoenix/luci-app-wrtbwmon
+        git clone https://github.com/brvphoenix/wrtbwmon
+        svn export https://github.com/vernesong/OpenClash/branches/master/luci-app-openclash
+        svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
+        svn co https://github.com/project-openwrt/packages/trunk/lang/python/python-psutil
+        svn co https://github.com/project-openwrt/packages/trunk/lang/python/Flask-RESTful
+        echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean ./
+        rm -rf .svn
+        echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/ctcgfw ./
+        rm -rf .svn
+        svn export --force https://github.com/project-openwrt/openwrt/branches/master/package/ntlf9t ./
+        rm -rf .svn
+        echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/zxlhhyccc ./
+        rm -rf .svn
+        echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/lienol ./
+        rm -rf .svn
+        
+        rm -Rf */.git qt5
+        
+        git add .
+        git commit -m "update"
+        git push
+
+    - name: SSH connection to Actions
+      uses: garypang13/debugger-action@master
+      if: 1 == 2
