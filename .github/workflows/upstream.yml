@@ -91,4 +91,4 @@ jobs:
 
     - name: SSH connection to Actions
       uses: garypang13/debugger-action@master
-      if: 1 == 2
+      if: 1 == 1
