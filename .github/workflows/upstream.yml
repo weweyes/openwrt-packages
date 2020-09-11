@@ -69,7 +69,7 @@ jobs:
         git clone https://github.com/lisaac/luci-lib-docker
         git clone https://github.com/brvphoenix/luci-app-wrtbwmon
         git clone https://github.com/brvphoenix/wrtbwmon
-        svn export https://github.com/vernesong/OpenClash/branches/master/luci-app-openclash
+        git clone https://github.com/vernesong/OpenClash && mv -f OpenClash/luci-app-openclash ./ && rm -Rf OpenClash
         svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
         
         echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean ./
