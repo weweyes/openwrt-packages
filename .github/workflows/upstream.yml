@@ -62,6 +62,7 @@ jobs:
         svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
         
         git clone https://github.com/jerrykuku/luci-theme-argon
+        git clone https://github.com/jerrykuku/luci-app-vssr
         git clone https://github.com/pymumu/luci-app-smartdns -b lede
         git clone https://github.com/lisaac/luci-in-docker
         git clone https://github.com/jefferymvp/luci-app-koolproxyR
@@ -71,6 +72,7 @@ jobs:
         git clone https://github.com/brvphoenix/wrtbwmon
         git clone https://github.com/vernesong/OpenClash && mv -f OpenClash/luci-app-openclash ./ && rm -Rf OpenClash
         svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
+        svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
         
         echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean ./
         rm -rf .svn
