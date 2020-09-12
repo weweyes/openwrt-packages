@@ -86,6 +86,7 @@ jobs:
         rm -rf .svn
         
         rm -Rf */.git */.svn qt5
+        sed -i 's/..\/..\/luci.mk/$(TOPDIR)\/feeds\/luci\/luci.mk/g' */Makefile
         
         git add .
         git commit -m "update"
