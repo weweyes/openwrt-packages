@@ -13,7 +13,7 @@ on:
     branches: 
       - master
   schedule:
-    - cron: 0 */12 * * *
+    - cron: 0 */8 * * *
   watch:
     types: started
 
@@ -59,11 +59,12 @@ jobs:
         svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-frpc
         svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-frps
         svn co https://github.com/coolsnowwolf/lede/trunk/package/network/services/shellsync
+        svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/mt && mv -f mt/* ./
         svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
         
         git clone https://github.com/jerrykuku/luci-theme-argon
         git clone https://github.com/jerrykuku/luci-app-vssr
-        git clone https://github.com/garypang13/openwrt-smartdns  && mv -f openwrt-smartdns/* ./
+        git clone https://github.com/garypang13/openwrt-smartdns && mv -f openwrt-smartdns/* ./
         git clone https://github.com/lisaac/luci-in-docker
         git clone https://github.com/jefferymvp/luci-app-koolproxyR
         git clone https://github.com/peter-tank/luci-app-dnscrypt-proxy2
@@ -88,7 +89,7 @@ jobs:
         echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/lienol ./
         rm -rf .svn
         
-        rm -Rf */.git */.svn qt5 openwrt-chinadns-ng openwrt-simple-obfs openwrt-v2ray-plugin cups
+        rm -Rf */.git */.svn qt5 openwrt-chinadns-ng openwrt-simple-obfs openwrt-v2ray-plugin cups cups-bjnp mt-drivers
         sed -i 's/..\/..\/luci.mk/$(TOPDIR)\/feeds\/luci\/luci.mk/g' */Makefile
         
         git add .
