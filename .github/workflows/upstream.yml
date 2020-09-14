@@ -45,6 +45,7 @@ jobs:
         git clone https://github.com/garypang13/luci-app-baidupcs-web
         git clone https://github.com/garypang13/r8125
         git clone https://github.com/garypang13/luci-theme-edge
+        git clone https://github.com/garypang13/autosamba
         git clone https://github.com/garypang13/openwrt-qbittorrent && mv -f openwrt-qbittorrent/* ./
         
         svn co https://github.com/openwrt/luci/trunk/applications/luci-app-acme
