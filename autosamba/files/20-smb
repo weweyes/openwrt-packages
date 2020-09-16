@@ -64,7 +64,7 @@ case "$ACTION" in
 			global=0
 			config_foreach smb_handle share $target
 			name=${target#*/mnt/}
-
+			name=$(echo $name | sed -e "s/^\///")
 			if [ $global -eq 0 ] ;then
 				echo -e "\n\nconfig share" >> $config_file
 				echo -e "\toption auto '1'" >> $config_file
