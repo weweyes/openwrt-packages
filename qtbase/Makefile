@@ -8,7 +8,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qtbase
 PKG_BASE:=5.15
-PKG_BUGFIX:=2
+PKG_BUGFIX:=1
 PKG_VERSION:=$(PKG_BASE).$(PKG_BUGFIX)
 PKG_RELEASE:=1
 
@@ -165,7 +165,7 @@ define DefineQtbaseLibrary
   endef
 endef
 
-$(eval $(call DefineQtbaseLibrary,core,,+libatomic +libpcre2-16 +zlib +libzstd))
+$(eval $(call DefineQtbaseLibrary,core,,+libatomic +libdouble-conversion +libpcre2-16 +zlib +libzstd))
 $(eval $(call DefineQtbaseLibrary,network,core,+libopenssl +zlib))
 $(eval $(call DefineQtbaseLibrary,xml,core,))
 
