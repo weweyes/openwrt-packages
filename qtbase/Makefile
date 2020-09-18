@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qtbase
-PKG_BASE:=5.14
+PKG_BASE:=5.15
 PKG_BUGFIX:=2
 PKG_VERSION:=$(PKG_BASE).$(PKG_BUGFIX)
 PKG_RELEASE:=1
@@ -18,7 +18,7 @@ PKG_SOURCE_URL:= \
 		http://master.qt.io/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules \
 		http://mirrors.tuna.tsinghua.edu.cn/qt/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules \
 		http://qt.mirror.constant.com/archive/qt/$(PKG_BASE)/$(PKG_VERSION)/submodules
-PKG_HASH:=48b9e79220941665a9dd827548c6428f7aa3052ccba8f4f7e039a94aa1d2b28a
+PKG_HASH:=skip
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-everywhere-src-$(PKG_VERSION)
 
@@ -165,7 +165,7 @@ define DefineQtbaseLibrary
   endef
 endef
 
-$(eval $(call DefineQtbaseLibrary,core,,+libatomic +libdouble-conversion +libpcre2-16 +zlib +libzstd))
+$(eval $(call DefineQtbaseLibrary,core,,+libatomic +libpcre2-16 +zlib +libzstd))
 $(eval $(call DefineQtbaseLibrary,network,core,+libopenssl +zlib))
 $(eval $(call DefineQtbaseLibrary,xml,core,))
 
