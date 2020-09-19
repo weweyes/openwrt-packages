@@ -59,6 +59,7 @@ jobs:
         svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/mt && mv -f mt/* ./
         svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/r8125
         svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
+        svn co https://github.com/coolsnowwolf/packages/trunk/net/mwan3
         
         git clone https://github.com/jerrykuku/luci-theme-argon
         git clone https://github.com/jerrykuku/luci-app-vssr
