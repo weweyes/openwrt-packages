@@ -14,22 +14,22 @@ PKG_ARCH:=all
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/autosamba
+define Package/autosamba-ksmbd
   TITLE:=Samba autoconfig hotplug script.
   MAINTAINER:=Lean
   DEPENDS:=+wsdd2
 endef
 
-define Package/autosamba/description
+define Package/autosamba-ksmbd/description
 A hotplug script to config Samba share automatically.
 endef
 
 define Build/Compile
 endef
 
-define Package/autosamba/install
+define Package/autosamba-ksmbd/install
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/block
 	$(INSTALL_BIN) ./files/20-smb-ksmbd $(1)/etc/hotplug.d/block/20-smb-ksmbd
 endef
 
-$(eval $(call BuildPackage,autosamba))
+$(eval $(call BuildPackage,autosamba-ksmbd))
