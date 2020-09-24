@@ -72,7 +72,7 @@ jobs:
         git clone https://github.com/brvphoenix/wrtbwmon
         git clone https://github.com/sirpdboy/luci-app-advanced
         git clone https://github.com/pexcn/openwrt-chinadns-ng chinadns-ng
-        git clone https://github.com/pexcn/openwrt-chinadns-ng -b luci luci-app-chinadns-ng
+        git clone https://github.com/garypang13/openwrt-chinadns-ng -b luci luci-app-chinadns-ng
         git clone https://github.com/vernesong/OpenClash && mv -f OpenClash/luci-app-openclash ./ && rm -Rf OpenClash
         svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
         svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
