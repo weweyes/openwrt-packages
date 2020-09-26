@@ -46,6 +46,7 @@ jobs:
         git clone https://github.com/garypang13/luci-theme-edge
         git clone https://github.com/garypang13/autosamba
         git clone https://github.com/garypang13/openwrt-qbittorrent && mv -f openwrt-qbittorrent/* ./
+        git clone https://github.com/garypang13/openwrt-smartdns && mv -f openwrt-smartdns/* ./
         
         svn co https://github.com/openwrt/luci/trunk/applications/luci-app-acme
         svn co https://github.com/openwrt/luci/trunk/applications/luci-app-sqm
@@ -64,7 +65,6 @@ jobs:
         
         git clone https://github.com/jerrykuku/luci-theme-argon
         git clone https://github.com/jerrykuku/luci-app-vssr
-        git clone https://github.com/garypang13/openwrt-smartdns && mv -f openwrt-smartdns/* ./
         git clone https://github.com/lisaac/luci-in-docker
         git clone https://github.com/jefferymvp/luci-app-koolproxyR
         git clone https://github.com/peter-tank/luci-app-dnscrypt-proxy2
@@ -73,7 +73,7 @@ jobs:
         git clone https://github.com/brvphoenix/wrtbwmon
         git clone https://github.com/sirpdboy/luci-app-advanced
         git clone https://github.com/pexcn/openwrt-chinadns-ng chinadns-ng
-        git clone https://github.com/garypang13/openwrt-chinadns-ng -b luci luci-app-chinadns-ng
+        git clone https://github.com/pexcn/openwrt-chinadns-ng -b luci luci-app-chinadns-ng
         git clone https://github.com/vernesong/OpenClash && mv -f OpenClash/luci-app-openclash ./ && rm -Rf OpenClash
         svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
         svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
