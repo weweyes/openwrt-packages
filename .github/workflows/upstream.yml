@@ -58,6 +58,7 @@ jobs:
         svn co https://github.com/coolsnowwolf/lede/trunk/package/network/services/shellsync
         svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/mt && mv -f mt/* ./
         svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/r8125
+        svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/automount
         svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
         svn co https://github.com/coolsnowwolf/packages/trunk/net/mwan3
         
