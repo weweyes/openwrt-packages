@@ -74,7 +74,7 @@ jobs:
         svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
         svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
         svn co https://github.com/srchack/custom-packages/trunk/open-vm-tools
-        svn co https://github.com/project-openwrt/openwrt/tree/trunk/lean/autocore
+        svn co https://github.com/project-openwrt/openwrt/trunk/package/lean/autocore
         
         echo -e "\q" | svn co https://github.com/coolsnowwolf/lede/trunk/package/lean ./
         rm -rf .svn
