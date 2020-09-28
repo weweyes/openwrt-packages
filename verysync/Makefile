@@ -28,12 +28,20 @@ ifeq ($(ARCH),powerpc64)
 	PKG_ARCH_VERYSYNC:=ppc64
 endif
 
+LATEST_VERSION:=$(shell curl http://www.verysync.com/shell/latest)
+
 PKG_NAME:=verysync
-PKG_VERSION:=v1.4.4
+
+ifneq ($(LATEST_VERSION),)
+	PKG_VERSION:=$(LATEST_VERSION)
+else
+	PKG_VERSION:=v1.5.5
+endif
+
 PKG_RELEASE:=1
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-linux-$(PKG_ARCH_VERYSYNC)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://releases-cdn.verysync.com/releases/$(PKG_VERSION)/
+PKG_SOURCE_URL:=http://dl.verysync.com/releases/$(PKG_VERSION)/
 PKG_HASH:=skip
 
 include $(INCLUDE_DIR)/package.mk
