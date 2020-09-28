@@ -53,13 +53,8 @@ jobs:
         svn co https://github.com/openwrt/packages/branches/openwrt-19.07/libs/libdouble-conversion
         svn co https://github.com/openwrt/openwrt/branches/openwrt-19.07/package/network/services/samba36
         svn co https://github.com/openwrt/packages/branches/openwrt-19.07/net/e2guardian
-        
-        svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-frpc
-        svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-frps
+
         svn co https://github.com/coolsnowwolf/lede/trunk/package/network/services/shellsync
-        svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/mt && mv -f mt/* ./
-        svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/r8125
-        svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/automount
         svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
         svn co https://github.com/coolsnowwolf/packages/trunk/net/mwan3
         
@@ -73,13 +68,15 @@ jobs:
         git clone https://github.com/brvphoenix/wrtbwmon
         git clone https://github.com/sirpdboy/luci-app-advanced
         git clone https://github.com/pexcn/openwrt-chinadns-ng chinadns-ng
+        git clone https://github.com/jerrykuku/luci-app-jd-dailybonus
         git clone https://github.com/pexcn/openwrt-chinadns-ng -b luci luci-app-chinadns-ng
         git clone https://github.com/vernesong/OpenClash && mv -f OpenClash/luci-app-openclash ./ && rm -Rf OpenClash
         svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
         svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
         svn co https://github.com/srchack/custom-packages/trunk/open-vm-tools
+        svn co https://github.com/project-openwrt/openwrt/tree/trunk/lean/autocore
         
-        echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean ./
+        echo -e "\q" | svn co https://github.com/coolsnowwolf/lede/trunk/package/lean ./
         rm -rf .svn
         echo -e "\q" | svn co https://github.com/xiaorouji/openwrt-package/trunk/package ./
         rm -rf .svn
