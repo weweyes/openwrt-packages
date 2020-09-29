@@ -57,9 +57,9 @@ jobs:
         svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
         svn co https://github.com/coolsnowwolf/packages/trunk/net/mwan3
         
-        svn co https://github.com/project-openwrt/openwrt/trunk/package/lean/autocore
-        svn co https://github.com/project-openwrt/openwrt/trunk/package/lean/amule
-        svn co https://github.com/project-openwrt/openwrt/trunk/package/lean/luci-app-xlnetacc
+        svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/autocore
+        svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/amule
+        svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-xlnetacc
         
         git clone https://github.com/jerrykuku/luci-theme-argon
         git clone https://github.com/jerrykuku/luci-app-vssr
