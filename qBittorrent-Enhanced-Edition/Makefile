@@ -39,8 +39,9 @@ well as many features.
 endef
 
 CONFIGURE_VARS += \
-  	QT_QMAKE="$(TOOLCHAIN_DIR)/bin" \
-	PKG_CONFIG_PATH="$(TOOLCHAIN_DIR)/lib/pkgconfig"
+  	QT_QMAKE=$(STAGING_DIR_HOSTPKG)/bin \
+	QMAKE_LRELEASE=$(STAGING_DIR_HOSTPKG)/bin/lrelease \
+	PKG_CONFIG_PATH=$(STAGING_DIR)/usr/lib/pkgconfig
 
 CONFIGURE_ARGS += \
 	--disable-gui \
@@ -53,6 +54,10 @@ MAKE_VARS += \
 define Build/Prepare
 	$(call Build/Prepare/Default)
 	$(SED) '/<context>/{:a;N;/<\/context>/!ba;/\/gui\//d}' `ls $(PKG_BUILD_DIR)/src/lang/qbittorrent_*.ts`
+endef
+
+define Package/qbittorrent/conffiles
+/etc/config/qbittorrent
 endef
 
 define Package/$(PKG_NAME)/install
