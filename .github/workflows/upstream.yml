@@ -50,7 +50,6 @@ jobs:
         
         svn co https://github.com/openwrt/luci/trunk/applications/luci-app-acme
         svn co https://github.com/openwrt/luci/trunk/applications/luci-app-sqm
-        svn co https://github.com/openwrt/packages/branches/openwrt-19.07/libs/libdouble-conversion
         svn co https://github.com/openwrt/openwrt/branches/openwrt-19.07/package/network/services/samba36
         svn co https://github.com/openwrt/packages/branches/openwrt-19.07/net/e2guardian
 
