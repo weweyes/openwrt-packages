@@ -22,12 +22,12 @@ PKG_USE_MIPS16:=0
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
-  SUBMENU:=qBittorrent
+  SUBMENU:=BitTorrent
   SECTION:=net
   CATEGORY:=Network
   TITLE:=bittorrent client programmed in C++ / Qt
   URL:=https://github.com/c0re100/qBittorrent-Enhanced-Edition
-  DEPENDS:=+qt5-core +qt5-network +qt5-xml +libtorrent-rasterbar +python3 +boost-system
+  DEPENDS:=+libstdcpp +libopenssl +zlib +qt5-core +qt5-network +qt5-xml +libtorrent-rasterbar +python3
 endef
 
 define Package/$(PKG_NAME)/description
@@ -39,9 +39,8 @@ well as many features.
 endef
 
 CONFIGURE_VARS += \
-  	QT_QMAKE=$(STAGING_DIR_HOSTPKG)/bin \
-	QMAKE_LRELEASE=$(STAGING_DIR_HOSTPKG)/bin/lrelease \
-	PKG_CONFIG_PATH=$(STAGING_DIR)/usr/lib/pkgconfig
+  	QT_QMAKE="$(TOOLCHAIN_DIR)/bin" \
+	PKG_CONFIG_PATH="$(TOOLCHAIN_DIR)/lib/pkgconfig"
 
 CONFIGURE_ARGS += \
 	--disable-gui \
