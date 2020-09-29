@@ -57,6 +57,10 @@ jobs:
         svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
         svn co https://github.com/coolsnowwolf/packages/trunk/net/mwan3
         
+        svn co https://github.com/project-openwrt/openwrt/trunk/package/lean/autocore
+        svn co https://github.com/project-openwrt/openwrt/trunk/package/lean/amule
+        svn co https://github.com/project-openwrt/openwrt/trunk/package/lean/luci-app-xlnetacc
+        
         git clone https://github.com/jerrykuku/luci-theme-argon
         git clone https://github.com/jerrykuku/luci-app-vssr
         git clone https://github.com/lisaac/luci-in-docker
@@ -74,8 +78,6 @@ jobs:
         svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
         svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
         svn co https://github.com/srchack/custom-packages/trunk/open-vm-tools
-        svn co https://github.com/project-openwrt/openwrt/trunk/package/lean/autocore
-        svn co https://github.com/project-openwrt/openwrt/trunk/package/lean/amule
         
         echo -e "\q" | svn co https://github.com/coolsnowwolf/lede/trunk/package/lean ./
         rm -rf .svn
