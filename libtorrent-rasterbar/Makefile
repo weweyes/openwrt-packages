@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2007-2020 OpenWrt
+#
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libtorrent-rasterbar
@@ -8,44 +12,47 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/arvidn/libtorrent/releases/download/libtorrent-$(PKG_VERSION)
 PKG_HASH:=skip
 
-PKG_LICENSE:=BSD
-PKG_LICENSE_FILES:=COPYING
+PKG_LICENSE:=BSL-1.0
+PKG_LICENSE_FILES:=LICENSE
 
 PKG_FIXUP:=autoreconf
-PKG_USE_MIPS16:=0
-PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
+PKG_BUILD_PARALLEL:=1
+PKG_USE_MIPS16:=0
+
+ifneq ($(PKG_JOBS),-j1)
+	PKG_JOBS:=-j2
+endif
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/nls.mk
 
 define Package/$(PKG_NAME)
   SECTION:=libs
   CATEGORY:=Libraries
   TITLE:=Rasterbar BitTorrent library
-  URL:=https://www.libtorrent.org/
-  DEPENDS:=+libstdcpp +libopenssl +boost +boost-system +boost-chrono +boost-random $(ICONV_DEPENDS)
-  MAINTAINER:=Arvid Norberg <arvid@libtorrent.org>
+  URL:=https://www.libtorrent.org
+  DEPENDS:=+boost +boost-system +libgcc +libopenssl +libstdcpp $(ICONV_DEPENDS)
 endef
 
-define Package/libtorrent-rasterbar/description
-Rasterbar libtorrent is a C++ library that aims to be a good alternative to
-all the other bittorrent implementations around. It is a library and not a
-full featured client, although it comes with a working example client.
+define Package/$(PKG_NAME)/description
+  Rasterbar libtorrent is an open source C++ library implementing the BitTorrent
+  protocol, along with most popular extensions, making it suitable for real world
+  deployment. It is configurable to be able to fit both servers and embedded devices.
 endef
 
-TARGET_CFLAGS += $(if $(CONFIG_SOFT_FLOAT),-DBOOST_NO_FENV_H) -fPIC
-
-EXTRA_CXXFLAGS += $(if $(CONFIG_GCC_VERSION_4_8),-std=gnu++11,-std=gnu++14)
-
-TARGET_LDFLAGS += -lstdc++
+TARGET_CFLAGS += $(if $(CONFIG_SOFT_FLOAT),-DBOOST_NO_FENV_H) $(FPIC) -std=c++14 -ffunction-sections -fdata-sections
+TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
 
 CONFIGURE_ARGS += \
+	--enable-shared=yes \
+	--enable-static=yes \
 	--disable-debug \
 	--disable-rpath \
+	--enable-logging=no \
 	--enable-encryption \
 	--enable-deprecated-functions \
 	--with-gnu-ld \
-	--with-openssl=$(STAGING_DIR)/usr \
 	--with-boost=$(STAGING_DIR)/usr \
 	--with-libiconv \
 	--with-libiconv-prefix=$(ICONV_PREFIX)
