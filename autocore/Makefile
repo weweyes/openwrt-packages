@@ -17,7 +17,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/autocore
   TITLE:=x86/x64 auto core loadbalance script.
   MAINTAINER:=Lean
-  DEPENDS:=@(TARGET_bcm27xx||TARGET_bcm53xx||TARGET_ipq40xx||TARGET_ipq806x||TARGET_rockchip||TARGET_x86) \
+  DEPENDS:= \
 	+ethtool \
 	+TARGET_x86:bc \
 	+TARGET_x86:lm-sensors \
