@@ -18,9 +18,9 @@ define Package/autocore
   TITLE:=x86/x64 auto core loadbalance script.
   MAINTAINER:=Lean
   DEPENDS:=@(TARGET_bcm27xx||TARGET_bcm53xx||TARGET_ipq40xx||TARGET_ipq806x||TARGET_rockchip||TARGET_x86) \
+	+ethtool \
 	+TARGET_x86:bc \
 	+TARGET_x86:lm-sensors \
-	+TARGET_x86:ethtool \
     +TARGET_bcm53xx:nvram \
     +TARGET_ipq40xx:lm-sensors
 
@@ -34,8 +34,6 @@ define Build/Compile
 endef
 
 define Package/autocore/install
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/autocore $(1)/etc/init.d/autocore
 	$(INSTALL_DIR) $(1)/sbin
 	$(CP) ./files/sbin/* $(1)/sbin
 endef

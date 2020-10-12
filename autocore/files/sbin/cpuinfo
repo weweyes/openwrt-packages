@@ -15,8 +15,5 @@ elif grep -q "arm" "/etc/openwrt_release"; then
 	sys_temp="$(awk "BEGIN{printf (\"%.1f\n\",$(cat /sys/class/thermal/thermal_zone0/temp)/1000) }")°C"
 fi
 
-if grep -q "x86" "/etc/openwrt_release"; then
-echo -n "${cpu_freq} ${sys_temp}"
-else
-echo -n "${cpu_arch} x ${cpu_cores} (${cpu_freq} ${sys_temp})"
+echo -n "${cpu_arch} x ${cpu_cores} cores ( ${cpu_freq} ${sys_temp} )"
 fi
