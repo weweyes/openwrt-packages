@@ -64,9 +64,7 @@ jobs:
         svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-qbittorrent
         svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/pandownload-fake-server
         svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-cpufreq
-        svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/ddns-scripts_dnspod
-        svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/ddns-scripts_aliyun
-        
+
         git clone https://github.com/jerrykuku/luci-theme-argon
         git clone https://github.com/jerrykuku/luci-app-vssr
         git clone https://github.com/lisaac/luci-in-docker
