@@ -36,8 +36,7 @@ jobs:
 
     - name: Apply
       run: |
-        rm -Rf *
-        find -maxdepth 0 ! -path 'README.md' ! -path 'create_acl_for_luci.sh' -exec rm -Rf '{}' \;
+        rm -Rf `find -maxdepth 1 -type d ! -path '.'`
         git rm --cache *
         git clone https://github.com/garypang13/openwrt-adguardhome AdGuardHome
         git clone https://github.com/garypang13/luci-app-eqos
