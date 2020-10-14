@@ -37,6 +37,7 @@ jobs:
     - name: Apply
       run: |
         rm -Rf *
+        find -maxdepth 0 ! -path 'README.md' ! -path 'create_acl_for_luci.sh' -exec rm -Rf '{}' \;
         git rm --cache *
         git clone https://github.com/garypang13/openwrt-adguardhome AdGuardHome
         git clone https://github.com/garypang13/luci-app-eqos
@@ -105,6 +106,7 @@ jobs:
         mv -f mt/* ./ && rm -Rf mt
         sed -i 's/..\/..\/luci.mk/$(TOPDIR)\/feeds\/luci\/luci.mk/g' */Makefile
         cp -rf luci-app-mentohust/luasrc/luci/* luci-app-mentohust/luasrc/ && rm -Rf luci-app-mentohust/luasrc/luci
+        bash create_acl_for_luci.sh -a
         git add .
         git commit -m "update"
         git push
