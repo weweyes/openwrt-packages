@@ -52,7 +52,7 @@ function create_acl_file(){
 }
 
 function auto_create_acl(){
-	luci_app_list="$(find package -maxdepth 2 | grep -Eo "package/.+/luci-app-[a-zA-Z0-9_-]+" | sort -s)"
+	luci_app_list="$(find ./ -maxdepth 1 | grep -Eo "luci-app-[a-zA-Z0-9_-]+" | sort -s)"
 
 	[ "$(echo -e "${luci_app_list}" | wc -l)" -gt "0" ] && for i in ${luci_app_list}
 	do
