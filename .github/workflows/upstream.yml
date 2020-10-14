@@ -105,7 +105,6 @@ jobs:
         mv -f mt/* ./ && rm -Rf mt
         sed -i 's/..\/..\/luci.mk/$(TOPDIR)\/feeds\/luci\/luci.mk/g' */Makefile
         cp -rf luci-app-mentohust/luasrc/luci/* luci-app-mentohust/luasrc/ && rm -Rf luci-app-mentohust/luasrc/luci
-        rm -f luci-app-passwall/root/usr/share/rpcd/acl.d/luci-app-passwall.json
         bash create_acl_for_luci.sh -a
         git add .
         git commit -m "update"
