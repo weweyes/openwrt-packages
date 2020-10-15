@@ -54,9 +54,6 @@ jobs:
         git clone https://github.com/garypang13/openwrt-qbittorrent && mv -f openwrt-qbittorrent/* ./
         git clone https://github.com/garypang13/openwrt-smartdns && mv -f openwrt-smartdns/* ./
 
-        svn co https://github.com/openwrt/openwrt/branches/openwrt-19.07/package/network/services/samba36
-        svn co https://github.com/openwrt/packages/branches/openwrt-19.07/net/e2guardian
-
         svn co https://github.com/coolsnowwolf/lede/trunk/package/network/services/shellsync
         svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
         svn co https://github.com/coolsnowwolf/packages/trunk/net/mwan3
