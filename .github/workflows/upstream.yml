@@ -36,12 +36,12 @@ jobs:
 
     - name: SSH connection to Actions
       uses: garypang13/debugger-action@master
-      if: 1 == 1
+      if: 1 == 2
 
     - name: Apply
       run: |
         rm -rf `find -maxdepth 1 -type d -name "[!.]*" ! -path "./diy"`
-        git rm --cache *
+        git rm -r --cache *
         git clone https://github.com/garypang13/openwrt-adguardhome AdGuardHome
         git clone https://github.com/garypang13/luci-app-eqos
         git clone https://github.com/garypang13/luci-app-amule
