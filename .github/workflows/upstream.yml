@@ -53,9 +53,7 @@ jobs:
         git clone https://github.com/garypang13/autocore
         git clone https://github.com/garypang13/openwrt-qbittorrent && mv -f openwrt-qbittorrent/* ./
         git clone https://github.com/garypang13/openwrt-smartdns && mv -f openwrt-smartdns/* ./
-        
-        svn co https://github.com/openwrt/luci/trunk/applications/luci-app-acme
-        svn co https://github.com/openwrt/luci/trunk/applications/luci-app-sqm
+
         svn co https://github.com/openwrt/openwrt/branches/openwrt-19.07/package/network/services/samba36
         svn co https://github.com/openwrt/packages/branches/openwrt-19.07/net/e2guardian
 
