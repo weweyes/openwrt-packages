@@ -36,7 +36,7 @@ jobs:
 
     - name: Apply
       run: |
-        rm -Rf `find -maxdepth 1 -type d -name "[!.]*" ! -patch "diy"`
+        rm -Rf `find -maxdepth 1 -type d -name "[!.]*" ! -path "diy"`
         git rm --cache *
         git clone https://github.com/garypang13/openwrt-adguardhome AdGuardHome
         git clone https://github.com/garypang13/luci-app-eqos
