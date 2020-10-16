@@ -6,4 +6,5 @@ uci -q get ucitrack.@eqos[0] > /dev/null || {
   uci commit
 }
 
+killall -HUP rpcd 2>/dev/null
 exit 0
