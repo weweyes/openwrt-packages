@@ -107,6 +107,7 @@ jobs:
         cp -rf luci-app-mentohust/luasrc/luci/* luci-app-mentohust/luasrc/ && rm -Rf luci-app-mentohust/luasrc/luci
         cp -rf diy/* ./
         bash create_acl_for_luci.sh -a
+        sed -i 's?exit 0?killall -HUP rpcd 2>/dev/null\nexit 0?g' luci-app*/root/etc/uci-defaults/*
         git add .
         git commit -m "update"
         git push
