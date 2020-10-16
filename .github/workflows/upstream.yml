@@ -107,8 +107,8 @@ jobs:
         cp -rf diy/* ./
         bash create_acl_for_luci.sh -a
         for ipk in $(ls); do
-        [ -d "$ipk/root/usr/share/rpcd/acl.d" ] && {
-        sed -i 's?exit 0?killall -HUP rpcd 2>/dev/null\nexit 0?g' $ipk/root/etc/uci-defaults/*
+        [ -d "$ipk/root/usr/share/rpcd/acl.d" && -d "$ipk/root/etc/uci-defaults" ] && {
+          sed -i 's?exit 0?killall -HUP rpcd 2>/dev/null\nexit 0?g' $ipk/root/etc/uci-defaults/*
         }
         done
         git add .
