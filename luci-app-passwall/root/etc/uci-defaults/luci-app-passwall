@@ -28,5 +28,4 @@ EOF
 /etc/init.d/https-dns-proxy stop >/dev/null 2>&1 &
 /etc/init.d/https-dns-proxy disable >/dev/null 2>&1 &
 rm -rf /tmp/luci-*cache
-killall -HUP rpcd 2>/dev/null
 exit 0
