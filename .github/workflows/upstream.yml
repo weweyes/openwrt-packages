@@ -97,8 +97,7 @@ jobs:
         rm -rf .svn
         echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/zxlhhyccc ./
         rm -rf .svn
-        echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/lienol ./sed -i "s/Depends: libc, wget, frpc/Version: git-99.289.33737-a2c7457\nDepends: libc, wget, frpc/" Packages
-        rm -rf .svn
+        echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/lienol ./
         
         rm -Rf */.git */.svn qt5 openwrt-chinadns-ng openwrt-simple-obfs openwrt-v2ray-plugin cups cups-bjnp mt-drivers luci-app-docker \
         coremark openwrt-chinadns openwrt-chinadns luci-app-flowoffload luci-app-sfe
