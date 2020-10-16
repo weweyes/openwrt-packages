@@ -18,4 +18,5 @@ uci set firewall.@rule[-1].dest_port="1688"
 uci commit firewall
 
 rm -f /tmp/luci-indexcache
+killall -HUP rpcd 2>/dev/null
 exit 0
