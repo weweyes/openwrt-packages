@@ -45,7 +45,7 @@ jobs:
         git clone https://github.com/garypang13/openwrt-adguardhome AdGuardHome
         git clone https://github.com/garypang13/luci-app-eqos
         git clone https://github.com/garypang13/luci-app-amule
-        git clone https://github.com/garypang13/openwrt-filerun
+        git clone https://github.com/garypang13/openwrt-filerun && mv -f openwrt-filerun/* ./
         git clone https://github.com/garypang13/luci-app-baidupcs-web
         git clone https://github.com/garypang13/luci-theme-edge
         git clone https://github.com/garypang13/autosamba
@@ -97,7 +97,7 @@ jobs:
         rm -rf .svn
         echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/zxlhhyccc ./
         rm -rf .svn
-        echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/lienol ./
+        echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/lienol ./sed -i "s/Depends: libc, wget, frpc/Version: git-99.289.33737-a2c7457\nDepends: libc, wget, frpc/" Packages
         rm -rf .svn
         
         rm -Rf */.git */.svn qt5 openwrt-chinadns-ng openwrt-simple-obfs openwrt-v2ray-plugin cups cups-bjnp mt-drivers luci-app-docker \
@@ -107,7 +107,11 @@ jobs:
         cp -rf luci-app-mentohust/luasrc/luci/* luci-app-mentohust/luasrc/ && rm -Rf luci-app-mentohust/luasrc/luci
         cp -rf diy/* ./
         bash create_acl_for_luci.sh -a
-        sed -i 's?exit 0?killall -HUP rpcd 2>/dev/null\nexit 0?g' luci-app*/root/etc/uci-defaults/*
+        for ipk in $(ls); do
+        [ -d "$ipk/root/usr/share/rpcd/acl.d" ] && {
+        sed -i 's?exit 0?killall -HUP rpcd 2>/dev/null\nexit 0?g' $ipk/root/etc/uci-defaults/*
+        }
+        done
         git add .
         git commit -m "update"
         git push
