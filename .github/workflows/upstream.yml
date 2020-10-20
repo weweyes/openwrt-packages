@@ -81,7 +81,7 @@ jobs:
         git clone https://github.com/vernesong/OpenClash && mv -f OpenClash/luci-app-openclash ./ && rm -Rf OpenClash
         git clone https://github.com/NateLol/luci-app-oled
         git clone https://github.com/ntlf9t/luci-app-dnspod
-        git clone https://github.com/destan19/OpenAppFilter && mv -n OpenAppFilter/* ./
+        git clone https://github.com/destan19/OpenAppFilter && mv -n OpenAppFilter/* ./ && rm -Rf OpenAppFilter
         svn co https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus
         svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
         svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
