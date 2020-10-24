@@ -87,6 +87,7 @@ jobs:
         svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
         svn co https://github.com/srchack/custom-packages/trunk/open-vm-tools
         svn co https://github.com/Lienol/openwrt/trunk/package/lean/luci-app-autoreboot
+        svn co https://github.com/NoTengoBattery/openwrt-mt7621/trunk/feeds/luci/applications/luci-app-compressed-memory
         
         rm -rf .svn
         echo -e "\q" | svn co https://github.com/coolsnowwolf/lede/trunk/package/lean ./
