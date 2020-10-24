@@ -63,8 +63,6 @@ jobs:
         svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-qbittorrent
         svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/pandownload-fake-server
         svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-cpufreq
-        svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/ddns-scripts_dnspod
-        svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/ddns-scripts_aliyun
 
         git clone https://github.com/jerrykuku/luci-theme-argon
         git clone https://github.com/jerrykuku/luci-app-vssr
@@ -82,6 +80,8 @@ jobs:
         git clone https://github.com/NateLol/luci-app-oled
         git clone https://github.com/ntlf9t/luci-app-dnspod
         git clone https://github.com/destan19/OpenAppFilter && mv -n OpenAppFilter/* ./ && rm -Rf OpenAppFilter
+        git clone https://github.com/small-5/ddns-scripts-dnspod
+        git clone https://github.com/small-5/ddns-scripts-aliyun
         svn co https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus
         svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
         svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
