@@ -114,6 +114,7 @@ jobs:
         cp -rf luci-app-mentohust/luasrc/luci/* luci-app-mentohust/luasrc/ && rm -Rf luci-app-mentohust/luasrc/luci
         cp -rf diy/* ./
         bash create_acl_for_luci.sh -a
+        bash convert_translation.sh -a
         rm -f create_acl_for_luci.warn create_acl_for_luci.err
         for ipk in $(ls); do
         [[ -d "$ipk/root/usr/share/rpcd/acl.d" && -d "$ipk/root/etc/uci-defaults" ]] && {
