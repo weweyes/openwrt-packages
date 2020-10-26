@@ -85,7 +85,6 @@ jobs:
         git clone https://github.com/small-5/ddns-scripts-aliyun
         git clone https://github.com/esirplayground/luci-app-poweroff
         git clone https://github.com/lvqier/luci-app-dnsmasq-ipset
-        git clone https://github.com/shanglanxin/luci-app-homebridge
         svn co https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus
         svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
         svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
