@@ -101,7 +101,7 @@ jobs:
         rm -rf .svn
         echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/ctcgfw ./
         rm -rf .svn
-        svn export --force https://github.com/project-openwrt/openwrt/branches/master/package/ntlf9t ./
+        svn export --force https://github.com/project-openwrt/openwrt/branches/master/package/ntlf9t && mv -n ntlf9t/* ./ && rm -rf ntlf9t
         rm -rf .svn
         echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/zxlhhyccc ./
         rm -rf .svn
