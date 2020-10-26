@@ -53,6 +53,7 @@ jobs:
         git clone https://github.com/garypang13/autocore
         git clone https://github.com/garypang13/openwrt-qbittorrent && mv -f openwrt-qbittorrent/* ./
         git clone https://github.com/garypang13/openwrt-smartdns && mv -f openwrt-smartdns/* ./
+        git clone https://github.com/garypang13/luci-app-homebridge
 
         svn co https://github.com/coolsnowwolf/lede/trunk/package/network/services/shellsync
         svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
