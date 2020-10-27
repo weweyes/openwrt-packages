@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=ddns-scripts_aliyun
+PKG_NAME:=ddns-scripts-aliyun
 PKG_VERSION:=1.0.3
-PKG_RELEASE:=1
+PKG_RELEASE:=5
 
 PKG_LICENSE:=GPLv2
 PKG_MAINTAINER:=Sense <sensec@gmail.com>
@@ -17,7 +17,7 @@ define Package/$(PKG_NAME)
 	SUBMENU:=IP Addresses and Names
 	TITLE:=DDNS extension for AliYun.com
 	PKGARCH:=all
-	DEPENDS:=+ddns-scripts +wget +openssl-util
+	DEPENDS:=+ddns-scripts +curl +jsonfilter +openssl-util
 endef
 
 define Package/$(PKG_NAME)/description
@@ -29,43 +29,27 @@ endef
 
 define Build/Compile
 	$(CP) ./*.sh $(PKG_BUILD_DIR)
-endef
-
-define Package/$(PKG_NAME)/preinst
-	#!/bin/sh
-	# if NOT run buildroot then stop service
-	[ -z "$${IPKG_INSTROOT}" ] && /etc/init.d/ddns stop >/dev/null 2>&1
-	exit 0 # suppress errors
+	# remove comments, white spaces and empty lines
+	for FILE in `find $(PKG_BUILD_DIR) -type f`; do \
+		$(SED) 's/^[[:space:]]*//' \
+		-e '/^#[[:space:]]\|^#$$$$/d' \
+		-e 's/[[:space:]]#[[:space:]].*$$$$//' \
+		-e 's/[[:space:]]*$$$$//' \
+		-e '/^\/\/[[:space:]]/d'	\
+		-e '/^[[:space:]]*$$$$/d'	$$$$FILE; \
+	done
 endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/lib/ddns
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/update_aliyun_com.sh $(1)/usr/lib/ddns
-endef
-
-define Package/$(PKG_NAME)/postinst
-	#!/bin/sh
-	# remove old services file entries
-	/bin/sed -i '/aliyun\.com/d' $${IPKG_INSTROOT}/etc/ddns/services >/dev/null 2>&1
-	/bin/sed -i '/aliyun\.com/d' $${IPKG_INSTROOT}/etc/ddns/services_ipv6 >/dev/null 2>&1
-	# and create new
-	printf "%s\\t\\t%s\\n" '"aliyun.com"' '"update_aliyun_com.sh"' >> $${IPKG_INSTROOT}/etc/ddns/services
-	printf "%s\\t\\t%s\\n" '"aliyun.com"' '"update_aliyun_com.sh"' >> $${IPKG_INSTROOT}/etc/ddns/services_ipv6
-	# on real system restart service if enabled
-	[ -z "$${IPKG_INSTROOT}" ] && {
-		/etc/init.d/ddns enabled && \
-			/etc/init.d/ddns start >/dev/null 2>&1
-	}
-	exit 0 # suppress errors
+	$(INSTALL_DIR) $(1)/usr/share/ddns/default
+	$(INSTALL_DATA) ./aliyun.com.json $(1)/usr/share/ddns/default
 endef
 
 define Package/$(PKG_NAME)/prerm
 	#!/bin/sh
-	# if NOT run buildroot then stop service
 	[ -z "$${IPKG_INSTROOT}" ] && /etc/init.d/ddns stop >/dev/null 2>&1
-	# remove services file entries
-	/bin/sed -i '/aliyun\.com/d' $${IPKG_INSTROOT}/etc/ddns/services >/dev/null 2>&1
-	/bin/sed -i '/aliyun\.com/d' $${IPKG_INSTROOT}/etc/ddns/services_ipv6 >/dev/null 2>&1
 	exit 0 # suppress errors
 endef
 
