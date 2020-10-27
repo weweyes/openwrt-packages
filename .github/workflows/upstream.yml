@@ -81,8 +81,8 @@ jobs:
         git clone https://github.com/NateLol/luci-app-oled
         git clone https://github.com/ntlf9t/luci-app-dnspod
         git clone https://github.com/destan19/OpenAppFilter && mv -n OpenAppFilter/* ./ && rm -Rf OpenAppFilter
-        git clone https://github.com/small-5/ddns-scripts-dnspod
-        git clone https://github.com/small-5/ddns-scripts-aliyun
+        git clone https://github.com/small-5/ddns-scripts-dnspod ddns-scripts_dnspod
+        git clone https://github.com/small-5/ddns-scripts-aliyun ddns-scripts_aliyun
         git clone https://github.com/esirplayground/luci-app-poweroff
         git clone https://github.com/lvqier/luci-app-dnsmasq-ipset
         git clone https://github.com/sirpdboy/luci-app-netdata
