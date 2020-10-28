@@ -236,10 +236,6 @@ V2RAY_SED_ARGS += \
 	s,_ "v2ray.com/core/transport/internet/headers/wireguard",// &,;
 endif
 
-V2RAY_SED_ARGS += \
-	s,_ "v2ray.com/core/proxy/trojan",// &,; \
-	s,_ "v2ray.com/core/main/jsonem",// &,;
-
 endif # custom features
 
 GEOIP_VER:=latest
