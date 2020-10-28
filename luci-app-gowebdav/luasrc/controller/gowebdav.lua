@@ -7,7 +7,7 @@ function index()
 	local page
 	page = entry({"admin", "services", "gowebdav"}, cbi("gowebdav"), _("GoWebDav"), 100)
 	page.dependent = true
-	entry({"admin","nas","gowebdav","status"},call("act_status")).leaf=true
+	entry({"admin", "services","gowebdav","status"},call("act_status")).leaf=true
 end
 
 function act_status()

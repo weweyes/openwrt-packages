@@ -9,7 +9,7 @@ function index()
 
 	entry({"admin", "services", "forked-daapd"}, cbi("forked-daapd"), _("Music Remote Center")).dependent = true
 	
-	entry({"admin","nas","forked-daapd","run"},call("act_status")).leaf=true
+	entry({"admin", "services","forked-daapd","run"},call("act_status")).leaf=true
 
 end
 
