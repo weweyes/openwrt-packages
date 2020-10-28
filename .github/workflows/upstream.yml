@@ -122,6 +122,8 @@ jobs:
         [[ -d "$ipk/root/usr/share/rpcd/acl.d" && -d "$ipk/root/etc/uci-defaults" ]] && {
           sed -i 's?exit 0?killall -HUP rpcd 2>/dev/null\nexit 0?g' $ipk/root/etc/uci-defaults/*
         }
+        sed -i '/"nas".*"NAS"/d' */luasrc/controller/*.lua
+        sed -i 's/"admin",[ ]"nas"/"admin", "services"/g' */luasrc/controller/*.lua
         done
         git add .
         git commit -m "update"
