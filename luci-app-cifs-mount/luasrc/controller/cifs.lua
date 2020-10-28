@@ -8,6 +8,6 @@ function index()
 
 	local page
 
-	page = entry({"admin", "nas", "cifs"}, cbi("cifs"), _("Mount SMB NetShare"))
+	page = entry({"admin", "services", "cifs"}, cbi("cifs"), _("Mount SMB NetShare"))
 	page.dependent = true
 end

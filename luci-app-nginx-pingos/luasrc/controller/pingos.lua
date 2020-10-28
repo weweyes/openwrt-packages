@@ -4,9 +4,8 @@ module("luci.controller.pingos", package.seeall)
 function index()
     if not nixio.fs.access("/etc/config/pingos") then return end
 
-    entry({"admin", "nas"}, firstchild(), "NAS", 44).dependent = false
-    entry({"admin", "nas", "pingos"}, cbi("pingos"), _("PingOS"), 3).dependent = true
-    entry({"admin", "nas", "pingos", "status"}, call("act_status")).leaf = true
+    entry({"admin", "services", "pingos"}, cbi("pingos"), _("PingOS"), 3).dependent = true
+    entry({"admin", "services", "pingos", "status"}, call("act_status")).leaf = true
 end
 
 function act_status()

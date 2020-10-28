@@ -5,12 +5,11 @@ if not nixio.fs.access("/etc/config/ps3netsrv")then
   return
 end
 
-entry({"admin", "nas"}, firstchild(), "NAS", 44).dependent = false
 	
 local page
 
-entry({"admin", "nas","ps3netsrv"},cbi("ps3netsrv"),_("PS3 NET Server"),40).dependent=true
-entry({"admin", "nas","ps3netsrv","status"},call("act_status")).leaf=true
+entry({"admin", "services","ps3netsrv"},cbi("ps3netsrv"),_("PS3 NET Server"),40).dependent=true
+entry({"admin", "services","ps3netsrv","status"},call("act_status")).leaf=true
 end
 
 function act_status()

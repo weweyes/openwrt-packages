@@ -4,5 +4,5 @@ function index()
 	if not nixio.fs.access("/etc/config/nfs") then
 		return
 	end
-	entry({"admin", "nas", "nfs"}, cbi("nfs"), _("NFS Manage"), 5).dependent = true
+	entry({"admin", "services", "nfs"}, cbi("nfs"), _("NFS Manage"), 5).dependent = true
 end

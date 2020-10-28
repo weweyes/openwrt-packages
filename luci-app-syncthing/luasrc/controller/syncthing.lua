@@ -6,7 +6,7 @@ function index()
 		return
 	end
 	
-	entry({"admin", "nas", "syncthing"}, cbi("syncthing"), _("Syncthing"), 10).dependent = true
+	entry({"admin", "services", "syncthing"}, cbi("syncthing"), _("Syncthing"), 10).dependent = true
 	entry({"admin","nas","syncthing","status"},call("act_status")).leaf=true
 end
 

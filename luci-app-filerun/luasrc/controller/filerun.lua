@@ -5,10 +5,9 @@ local http = require "luci.http"
 local uci=require"luci.model.uci".cursor()
 function index()
     if not nixio.fs.access("/etc/config/filerun") then return end
-    entry({"admin", "nas"}, firstchild(), _("NAS") , 45).dependent = false
-    entry({"admin", "nas", "filerun"}, cbi("filerun"), _("FileRun"), 1)
-    entry({"admin", "nas", "filerun", "status"}, call("get_pid")).leaf = true
-    entry( {"admin", "nas", "filerun", "startstop"}, post("startstop") ).leaf = true
+    entry({"admin", "services", "filerun"}, cbi("filerun"), _("FileRun"), 1)
+    entry({"admin", "services", "filerun", "status"}, call("get_pid")).leaf = true
+    entry( {"admin", "services", "filerun", "startstop"}, post("startstop") ).leaf = true
 end
 
 function get_pid(from_lua)

@@ -19,16 +19,15 @@ function index()
 		return
 	end
 
-	entry({"admin", "nas"}, firstchild(), "NAS", 45).dependent = false
         
-	local page = entry({"admin", "nas", "amule"}, cbi("amule"), _("aMule Settings"))
+	local page = entry({"admin", "services", "amule"}, cbi("amule"), _("aMule Settings"))
 	page.dependent = true
-	entry( {"admin", "nas", "amule", "logview"}, call("logread") ).leaf = true
-	entry( {"admin", "nas", "amule", "status"}, call("get_pid") ).leaf = true
-	entry( {"admin", "nas", "amule", "amulecmd"}, call("amulecmd") ).leaf = true
-	entry( {"admin", "nas", "amule", "startstop"}, post("startstop") ).leaf = true
-	entry( {"admin", "nas", "amule", "down_kad"}, post("down_kad") ).leaf = true
-	entry( {"admin", "nas", "amule", "down_ed2k"}, post("down_ed2k") ).leaf = true
+	entry( {"admin", "services", "amule", "logview"}, call("logread") ).leaf = true
+	entry( {"admin", "services", "amule", "status"}, call("get_pid") ).leaf = true
+	entry( {"admin", "services", "amule", "amulecmd"}, call("amulecmd") ).leaf = true
+	entry( {"admin", "services", "amule", "startstop"}, post("startstop") ).leaf = true
+	entry( {"admin", "services", "amule", "down_kad"}, post("down_kad") ).leaf = true
+	entry( {"admin", "services", "amule", "down_ed2k"}, post("down_ed2k") ).leaf = true
 
 end
 
