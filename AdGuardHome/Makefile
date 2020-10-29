@@ -30,6 +30,14 @@ ifeq ($(ARCH),mips)
 	PKG_ARCH:=mipsle
 endif
 
+ifeq ($(ARCH),arm64)
+	PKG_ARCH:=arm64
+endif
+
+ifeq ($(ARCH),aarch64)
+	PKG_ARCH:=arm64
+endif
+
 ifeq ($(ARCH),arm)
 ifeq ($(BOARD),bcm53xx)
 	PKG_ARCH:=armv5
