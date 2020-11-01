@@ -1,0 +1,32 @@
+#!/bin/sh
+FWI=$(uci get firewall.adbyby.path 2>/dev/null)  # firewall include file
+[ -n "$FWI" ] || exit 1
+
+def() {
+	echo '#!/bin/sh' > $FWI
+}
+
+gen() {
+	extract_rules() {
+		echo "*$1"
+		iptables-save -t $1 | grep ADBYBY |\
+			sed -e "s/^-A \(OUTPUT\|PREROUTING\|FORWARD\)/-I \1 1/"
+		echo 'COMMIT'
+	}
+	cat <<-EOF >>$FWI
+	iptables-save -c | grep -v "ADBYBY" | iptables-restore -c
+	iptables-restore -n <<-EOT
+	$(extract_rules filter)
+	$(extract_rules nat)
+	EOT
+EOF
+}
+
+if [ "$1" == "default" ];then
+	def
+elif [ "$1" == "gen" ];then
+	def
+	gen
+else
+	echo "Error Parameter"
+fi

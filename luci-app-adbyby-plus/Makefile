@@ -1,18 +1,73 @@
-# Copyright (C) 2020 Openwrt.org
-#
-# This is free software, licensed under the Apache License, Version 2.0 .
-#
-
 include $(TOPDIR)/rules.mk
 
-LUCI_TITLE:=LuCI support for Adbyby
-LUCI_DEPENDS:=+adbyby +wget +ipset +dnsmasq-full
-LUCI_PKGARCH:=all
-PKG_NAME:=luci-app-adbyby-plus
-PKG_VERSION:=2.0
-PKG_RELEASE:=73
+PKG_NAME:=luci-app-adbyby-plus-ram_edition-special
+PKG_VERSION:=1.0
+PKG_RELEASE:=11
 
-include $(TOPDIR)/feeds/luci/luci.mk
+include $(INCLUDE_DIR)/package.mk
 
-# call BuildPackage - OpenWrt buildroot signature
+define Package/$(PKG_NAME)
+  SECTION:=LuCI
+  CATEGORY:=LuCI
+  SUBMENU:=3. Applications
+  TITLE:=LuCI support for Adbyby
+  DEPENDS:=+curl +ipset +coreutils +coreutils-nohup +dnsmasq-full +luci-compat
+  PKGARCH:=all
+endef
 
+define Package/$(PKG_NAME)/description
+	Luci Support for Adbyby.
+endef
+
+define Build/Prepare
+	$(foreach po,$(wildcard ${CURDIR}/po/zh_Hans/*.po), \
+		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
+endef
+
+define Package/$(PKG_NAME)/postinst
+#!/bin/sh
+[ -n "${IPKG_INSTROOT}" ] || {
+	(. /etc/uci-defaults/luci-app-adbyby) && rm -f /etc/uci-defaults/luci-app-adbyby
+	exit 0
+}
+endef
+
+define Build/Compile
+endef
+
+define Package/$(PKG_NAME)/conffiles
+/etc/adbyby_conf/
+endef
+
+define Package/$(PKG_NAME)/install
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
+	$(INSTALL_DATA) ./luasrc/controller/*.lua $(1)/usr/lib/lua/luci/controller/
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/adbyby
+	$(INSTALL_DATA) ./luasrc/model/cbi/adbyby/*.lua $(1)/usr/lib/lua/luci/model/cbi/adbyby/
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/adbyby
+	$(INSTALL_DATA) ./luasrc/view/adbyby/*.htm $(1)/usr/lib/lua/luci/view/adbyby/
+	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/adbyby.*.lmo $(1)/usr/lib/lua/luci/i18n/
+	$(INSTALL_DIR) $(1)/etc/adbyby_conf
+	$(INSTALL_DATA) ./root/etc/adbyby_conf/* $(1)/etc/adbyby_conf/
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_DATA) ./root/etc/config/adbyby $(1)/etc/config/adbyby
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./root/etc/init.d/adbyby $(1)/etc/init.d/adbyby
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) ./root/etc/uci-defaults/luci-app-adbyby $(1)/etc/uci-defaults/luci-app-adbyby
+	$(INSTALL_DIR) $(1)/usr/share/adbyby
+	$(INSTALL_BIN) ./root/usr/share/adbyby/*.sh $(1)/usr/share/adbyby/
+	$(INSTALL_BIN) ./root/usr/share/adbyby/gen_include $(1)/usr/share/adbyby/gen_include
+	$(INSTALL_DATA) ./root/usr/share/adbyby/adbyby_local $(1)/usr/share/adbyby/adbyby_local
+	$(INSTALL_CONF) ./root/usr/share/adbyby/adhook.ini $(1)/usr/share/adbyby/
+	$(INSTALL_CONF) ./root/usr/share/adbyby/user.action $(1)/usr/share/adbyby/
+	$(INSTALL_DIR) $(1)/usr/share/adbyby/data
+	$(INSTALL_DATA) ./root/usr/share/adbyby/data/* $(1)/usr/share/adbyby/data/
+	$(INSTALL_DIR) $(1)/usr/share/adbyby/doc
+	$(INSTALL_DATA) ./root/usr/share/adbyby/doc/* $(1)/usr/share/adbyby/doc/
+	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
+	$(INSTALL_DATA) ./root/acl.d/* $(1)/usr/share/rpcd/acl.d/
+endef
+
+$(eval $(call BuildPackage,$(PKG_NAME)))

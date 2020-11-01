@@ -1,0 +1,17 @@
+{
+	"luci-app-adbyby-plus-ram_edition-special": {
+		"description": "Grant UCI access for luci-app-adbyby-plus-ram_edition-special",
+		"read": {
+			"file": {
+				"/etc/adbyby_conf/*": [ "read" ]
+			},
+			"uci": [ "adbyby" ]
+		},
+		"write": {
+			"file": {
+				"/etc/adbyby_conf/*": [ "write" ]
+			},
+			"uci": [ "adbyby" ]
+		}
+	}
+}
