@@ -30,11 +30,9 @@ SUB(){
 	B=`uci -q get adbyby.@adbyby[0].flash`
 	if [ "$B" = 1 ];then
 		[ -s /etc/adbyby_conf/rules/3rd.conf ] && ln -sf /etc/adbyby_conf/rules/3rd.conf $P/rules/3rd.conf
-		[ -s /etc/adbyby_conf/rules/3rd.host ] && ln -sf /etc/adbyby_conf/rules/3rd.host $P/rules/3rd.host
 		ln -sf /etc/adbyby_conf/rules/url $P/rules/url
 	fi
 	[ -s $P/rules/3rd.conf ] && ln -sf $P/rules/3rd.conf /tmp/dnsmasq.adbyby/05-3rd.conf
-	[ -s $P/rules/3rd.host ] && echo addn-hosts=$P/rules/3rd.host >> /tmp/dnsmasq.d/dnsmasq-adbyby.conf
 }
 
 rm -f $P/data/*.bak

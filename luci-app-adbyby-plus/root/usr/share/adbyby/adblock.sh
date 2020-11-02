@@ -9,7 +9,7 @@ fi
 touch $LOCK
 
 gen(){
-	cat /tmp/adnew.conf | grep ^\|\|[^\*]*\^$ | grep -Ev "^\|\|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}*" | sed -e 's:||:address\=\/:' -e 's:\^:/0\.0\.0\.0:' > /tmp/ad.conf
+	cat /tmp/adnew.conf | grep ^\|\|[^\*]*\^$ | grep -Ev "^\|\|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}*" | sed -e 's:||:address=/:' -e 's:\^:/:' > /tmp/ad.conf
 	rm -f /tmp/adnew.conf
 }
 
@@ -21,24 +21,24 @@ down(){
 		if curl -Lfso $TMP/ad_new.conf $i;then
 			if grep -wq "address=" $TMP/ad_new.conf;then
 				cat $TMP/ad_new.conf >> $TMP/3rd.conf
-			elif grep -wq -e"0.0.0.0" -e"127.0.0.1" $TMP/ad_new.conf;then
-				cat $TMP/ad_new.conf >> $TMP/3rd.host
+			elif grep -wq -e "0.0.0.0" -e "127.0.0.1" $TMP/ad_new.conf;then
+				cat $TMP/ad_new.conf >> $TMP/host
 			else
-				cat $TMP/ad_new.conf | grep ^\|\|[^\*]*\^$ | grep -Ev "^\|\|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}*" | sed -e 's:||:address\=\/:' -e 's:\^:/0\.0\.0\.0:' >> $TMP/3rd.conf
+				cat $TMP/ad_new.conf | grep ^\|\|[^\*]*\^$ | grep -Ev "^\|\|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}*" | sed -e 's:||:address=/:' -e 's:\^:/:' >> $TMP/3rd.conf
 			fi
 		fi
 		echo $i >> $TMP/url
 	done
-	[ -s $TMP/3rd.conf ] && echo "`sort -u $TMP/3rd.conf`" > $TMP/3rd.conf && sed -i '/^$/d' $TMP/3rd.conf
-	[ -s $TMP/3rd.host ] && echo "`sort -u $TMP/3rd.host`" > $TMP/3rd.host && sed -i -e '/localhost/d' -e '/#/d' -e '/^$/d' $TMP/3rd.host
+	[ -s $TMP/host ] && sed -e '/^$/d' -e '/ localhost$/d' -e 's:127.0.0.1 :address=/:' -e 's:0.0.0.0 :address=/:' -e 's:$:/:' $TMP/host >> $TMP/3rd.conf
+	[ -s $TMP/3rd.conf ] && echo "`sort -u $TMP/3rd.conf`" > $TMP/3rd.conf && sed -i -e 's:/127.0.0.1$:/:' -e 's:/0.0.0.0$:/:' -e '/#/d' -e '/^$/d' -e '/!/d' $TMP/3rd.conf
 	[ -s $TMP/url ] && echo "`sort -u $TMP/url`" > $TMP/url
 	if [ -s $TMP/3rd.conf -a -s $P/dnsmasq/dnsmasq.adblock ];then
 		echo "`sort -u $TMP/3rd.conf $P/dnsmasq/dnsmasq.adblock`" > $TMP/3rd.conf
 		echo "`sort $TMP/3rd.conf $P/dnsmasq/dnsmasq.adblock | uniq -u`" > $TMP/3rd.conf
 	fi
-	if [ -s $TMP/3rd.conf -o -s $TMP/3rd.host ];then
+	if [ -s $TMP/3rd.conf ];then
 		C=1
-		rm -f $TMP/ad_new.conf
+		rm -f $TMP/ad_new.conf $TMP/host
 		[ "$1" = 1 ] && rm -f $LOCK && exit
 		X=`uci -q get adbyby.@adbyby[0].flash`
 		Y=`md5sum $TMP/* | awk '{print $1}'`

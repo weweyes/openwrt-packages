@@ -11,6 +11,7 @@ ipt_n="iptables -t nat"
 STATUS=Y
 TAG="_ADBYBY_RULE_"
 enable=$(uci -q get adbyby.@adbyby[0].enable) || enable=0
+flash=$(uci -q get adbyby.@adbyby[0].flash) || flash=0
 url=$(uci -q get adbyby.@adbyby[0].url)
 
 uci_get_by_type(){
@@ -22,7 +23,6 @@ get_config(){
 	config_get_bool cron_mode $1 cron_mode 1
 	config_get_bool block_ios $1 block_ios 0
 	config_get_bool block_cnshort $1 block_cnshort 0
-	config_get_bool flash $1 flash 0
 	config_get wan_mode $1 wan_mode 1
 	config_get time_update $1 time_update 6
 }
@@ -80,50 +80,48 @@ add_dns(){
 	mkdir -p /tmp/dnsmasq.d
 	echo conf-dir=/tmp/dnsmasq.adbyby > /tmp/dnsmasq.d/dnsmasq-adbyby.conf
 	awk '!/^$/&&!/^#/{printf("ipset=/%s/'"adbyby_esc"'\n",$0)}' $CONF_PATH/adesc.conf > /tmp/dnsmasq.adbyby/01-dnsmasq.esc
-	awk '!/^$/&&!/^#/{printf("address=/%s/'"0.0.0.0"'\n",$0)}' $CONF_PATH/adblack.conf > /tmp/dnsmasq.adbyby/02-dnsmasq.black
+	awk '!/^$/&&!/^#/{printf("address=/%s/\n",$0)}' $CONF_PATH/adblack.conf > /tmp/dnsmasq.adbyby/02-dnsmasq.black
 	if [ $wan_mode = 1 ];then
 		awk '!/^$/&&!/^#/{printf("ipset=/%s/'"adbyby_wan"'\n",$0)}' $CONF_PATH/adhost.conf > /tmp/dnsmasq.adbyby/03-adbyby-ipset.conf
 		ln -sf $P/dnsmasq/dnsmasq.adblock /tmp/dnsmasq.adbyby/04-dnsmasq.adblock
 	fi
-	[ $block_ios = 1 ] && echo 'address=/mesu.apple.com/0.0.0.0' >> /tmp/dnsmasq.adbyby/02-dnsmasq.black
+	[ $block_ios = 1 ] && echo 'address=/mesu.apple.com/' >> /tmp/dnsmasq.adbyby/02-dnsmasq.black
 	if [ $block_cnshort = 1 ];then
 		cat <<-EOF >> /tmp/dnsmasq.adbyby/02-dnsmasq.black
-address=/amemv.com/0.0.0.0
-address=/tiktokv.com/0.0.0.0
-address=/snssdk.com/0.0.0.0
-address=/douyin.com/0.0.0.0
-address=/ixigua.com/0.0.0.0
-address=/pstatp.com/0.0.0.0
-address=/ixiguavideo.com/0.0.0.0
-address=/v.kandian.qq.com/0.0.0.0
-address=/yximgs.com/0.0.0.0
-address=/gifshow.com/0.0.0.0
-address=/ksapisrv.com/0.0.0.0
-address=/kuaishoupay.com/0.0.0.0
-address=/ksyun.com/0.0.0.0
-address=/live.xycdn.com/0.0.0.0
-address=/danuoyi.alicdn.com/0.0.0.0
-address=/v.weishi.qq.com/0.0.0.0
-address=/pearvideo.com/0.0.0.0
-address=/miaopai.com/0.0.0.0
-address=/kuaishou.com/0.0.0.0
-address=/qupai.me/0.0.0.0
-address=/meipai.com/0.0.0.0
-address=/huoshan.com/0.0.0.0
-address=/ergengtv.com/0.0.0.0
-address=/baijiahao.baidu.com/0.0.0.0
-address=/xiongzhang.baidu.com/0.0.0.0
+address=/amemv.com/
+address=/tiktokv.com/
+address=/snssdk.com/
+address=/douyin.com/
+address=/ixigua.com/
+address=/pstatp.com/
+address=/ixiguavideo.com/
+address=/v.kandian.qq.com/
+address=/yximgs.com/
+address=/gifshow.com/
+address=/ksapisrv.com/
+address=/kuaishoupay.com/
+address=/ksyun.com/
+address=/live.xycdn.com/
+address=/danuoyi.alicdn.com/
+address=/v.weishi.qq.com/
+address=/pearvideo.com/
+address=/miaopai.com/
+address=/kuaishou.com/
+address=/qupai.me/
+address=/meipai.com/
+address=/huoshan.com/
+address=/ergengtv.com/
+address=/baijiahao.baidu.com/
+address=/xiongzhang.baidu.com/
 EOF
 	fi
 	if [ -n "$url" ];then
 		mkdir -p $P/rules
 		if [ $flash = 1 ];then
-			[ -s /etc/adbyby_conf/rules/3rd.conf ] && ln -sf /etc/adbyby_conf/rules/3rd.conf $P/rules/3rd.conf
-			[ -s /etc/adbyby_conf/rules/3rd.host ] && ln -sf /etc/adbyby_conf/rules/3rd.host $P/rules/3rd.host
-			ln -sf /etc/adbyby_conf/rules/url $P/rules/url
+			[ -h $P/rules/3rd.conf ] || ln -sf /etc/adbyby_conf/rules/3rd.conf $P/rules/3rd.conf
+			[ -h $P/rules/url ] || ln -sf /etc/adbyby_conf/rules/url $P/rules/url
 		fi
-		[ -s $P/rules/3rd.conf ] && ln -sf $P/rules/3rd.conf /tmp/dnsmasq.adbyby/05-3rd.conf
-		[ -s $P/rules/3rd.host ] && echo addn-hosts=$P/rules/3rd.host >> /tmp/dnsmasq.d/dnsmasq-adbyby.conf
+		ln -sf $P/rules/3rd.conf /tmp/dnsmasq.adbyby/05-3rd.conf
 	fi
 }
 
@@ -181,8 +179,8 @@ start(){
 	[ ! -x $P/adbyby -o "$(head -1 $DATA_PATH/lazy.txt | awk -F' ' '{print $3,$4}')" = "2017-1-2 00:12:25" ] && A=1
 	[ $wan_mode = 1 ] && [ ! -s $P/dnsmasq/dnsmasq.adblock ] && A=1
 	if [ -n "$url" ];then
-		[ $flash = 0 ] && ! [ -s $P/rules/3rd.conf -o -s $P/rules/3rd.host ] && A=1 && B=1
-		[ $flash = 1 ] && ! [ -s /etc/adbyby_conf/rules/3rd.conf -o -s /etc/adbyby_conf/rules/3rd.host ] && A=1 && B=1
+		[ $flash = 0 -a ! -s $P/rules/3rd.conf ] && A=1 && B=1
+		[ $flash = 1 -a ! -s /etc/adbyby_conf/rules/3rd.conf ] && A=1 && B=1
 	fi
 	if [ "$A" = 1 ];then
 		echo "Download Bin and Rules..."
@@ -211,7 +209,7 @@ stop(){
 		rm -rf $P/rules
 		[ -d /etc/adbyby_conf/rules ] && rm -rf /etc/adbyby_conf/rules
 	fi
-	[ -h $P/rules/url -o -z "$url" ] && rm -rf $P/rules
+	([ -h $P/rules/url -a $flash = 0 ] || [ -z "$url" ]) && rm -rf $P/rules
 	[ $enable = 0 ] && del_cron
 	if [ $STATUS = Y ];then
 		if mount | grep adbyby >/dev/null 2>&1;then

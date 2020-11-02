@@ -36,7 +36,7 @@ o.value=ad_count .. " " .. translate("Records")
 end
 
 local tmp_rule=0
-if nixio.fs.access("/tmp/adbyby/rules/3rd.conf") or nixio.fs.access("/tmp/adbyby/rules/3rd.host") then
+if nixio.fs.access("/tmp/adbyby/rules/3rd.conf") then
 tmp_rule=1
 rule_count=tonumber(SYS.exec("find /tmp/adbyby/rules -name 3* -exec cat {} \\; 2>/dev/null | wc -l"))
 o=s:option(DummyValue,"1",translate("Subscribe 3rd Rules Data"))
@@ -65,7 +65,7 @@ end
 
 sret=luci.sys.call("[ -h /tmp/adbyby/rules/url ] || exit 9")
 if sret==9 then
-	if nixio.fs.access("/etc/adbyby_conf/rules/3rd.conf") or nixio.fs.access("/etc/adbyby_conf/rules/3rd.host") then
+	if nixio.fs.access("/etc/adbyby_conf/rules") then
 		o=s:option(Button,"delete_1",translate("Delete Subscribe Rules On The Flash"))
 		o.inputstyle="reset"
 		o.write=function()
