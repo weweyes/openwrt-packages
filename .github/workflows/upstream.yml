@@ -124,7 +124,9 @@ jobs:
         rm -f create_acl_for_luci.warn create_acl_for_luci.err
         for ipk in $(ls); do
         [[ -d "$ipk/root/usr/share/rpcd/acl.d" && -d "$ipk/root/etc/uci-defaults" ]] && {
+        [ grep -q "killall -HUP rpcd" $ipk/root/etc/uci-defaults/* ] || {
           sed -i '/exit 0/i killall -HUP rpcd 2>\/dev\/null' $ipk/root/etc/uci-defaults/*
+          }
         }
         sed -i '/"nas".*"NAS"/d' */luasrc/controller/*.lua
         sed -i 's/"admin",\( \|\)"nas"/"admin", "services"/g' */luasrc/controller/*.lua
