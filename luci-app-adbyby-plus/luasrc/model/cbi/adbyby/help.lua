@@ -1,5 +1,5 @@
 local fs = require "nixio.fs"
-local conffile = "/usr/share/adbyby/rules.txt"
+local conffile = "/usr/share/adbyby/adhost.conf"
 
 f = SimpleForm("custom")
 

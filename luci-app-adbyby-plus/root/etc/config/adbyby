@@ -1,14 +1,11 @@
 
 config adbyby
+	option daemon '2'
+	option lan_mode '0'
 	option cron_mode '1'
 	option block_ios '0'
-	option block_cnshort '0'
-	option flash '0'
+	option enable '0'
 	option wan_mode '1'
-	option time_update '6'
-	option enable '1'
-	list url 'https://anti-ad.net/anti-ad-for-dnsmasq.conf'
-	list url 'https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt'
-	list url 'https://gist.githubusercontent.com/Ewpratten/a25ae63a7200c02c850fede2f32453cf/raw/b9318009399b99e822515d388b8458557d828c37/hosts-yt-ads'
-	list url 'http://uujian.cn/browser/txt/metalist.txt'
+	option mem_mode '1'
+	option update_source '1'
 
