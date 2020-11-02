@@ -14,47 +14,49 @@ gen(){
 }
 
 down(){
-	TMP=/tmp/ad_tmp/rules
-	rm -rf ${TMP%/*}
-	mkdir -p $TMP
+	G=/tmp/ad_tmp/rules
+	F=$G/ad_new.conf
+	rm -rf ${G%/*}
+	mkdir -p $G
 	for i in $URL;do
-		if curl -Lfso $TMP/ad_new.conf $i;then
-			if grep -wq "address=" $TMP/ad_new.conf;then
-				cat $TMP/ad_new.conf >> $TMP/3rd.conf
-			elif grep -wq -e "0.0.0.0" -e "127.0.0.1" $TMP/ad_new.conf;then
-				cat $TMP/ad_new.conf >> $TMP/host
+		if curl -Lfso $F $i;then
+			sed -i -e 's:#.*::' -e 's:!.*::' -e 's/[ \t]*$//g' -e 's/^[ \t]*//g' -e '/^$/d' $F
+			if grep -q "^address=" $F;then
+				cat $F >> $G/3rd.conf
+			elif grep -q -e "^0.0.0.0 " -e "^127.0.0.1 " $F;then
+				cat $F >> $G/host
 			else
-				cat $TMP/ad_new.conf | grep ^\|\|[^\*]*\^$ | grep -Ev "^\|\|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}*" | sed -e 's:||:address=/:' -e 's:\^:/:' >> $TMP/3rd.conf
+				cat $F | grep ^\|\|[^\*]*\^$ | grep -Ev "^\|\|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}*" | sed -e 's:||:address=/:' -e 's:\^:/:' >> $G/3rd.conf
 			fi
 		fi
-		echo $i >> $TMP/url
+		echo $i >> $G/url
 	done
-	[ -s $TMP/host ] && sed -e '/^$/d' -e '/ localhost$/d' -e 's:127.0.0.1 :address=/:' -e 's:0.0.0.0 :address=/:' -e 's:$:/:' $TMP/host >> $TMP/3rd.conf
-	[ -s $TMP/3rd.conf ] && echo "`sort -u $TMP/3rd.conf`" > $TMP/3rd.conf && sed -i -e 's:/127.0.0.1$:/:' -e 's:/0.0.0.0$:/:' -e '/#/d' -e '/^$/d' -e '/!/d' $TMP/3rd.conf
-	[ -s $TMP/url ] && echo "`sort -u $TMP/url`" > $TMP/url
-	if [ -s $TMP/3rd.conf -a -s $P/dnsmasq/dnsmasq.adblock ];then
-		echo "`sort -u $TMP/3rd.conf $P/dnsmasq/dnsmasq.adblock`" > $TMP/3rd.conf
-		echo "`sort $TMP/3rd.conf $P/dnsmasq/dnsmasq.adblock | uniq -u`" > $TMP/3rd.conf
+	[ -s $G/host ] && sed -e '/ localhost$/d' -e 's:127.0.0.1 :address=/:' -e 's:0.0.0.0 :address=/:' -e 's:$:/:' $G/host >> $G/3rd.conf
+	[ -s $G/3rd.conf ] && echo "`sort -u $G/3rd.conf`" > $G/3rd.conf && sed -i -e 's:/127.0.0.1$:/:' -e 's:/0.0.0.0$:/:' $G/3rd.conf
+	[ -s $G/url ] && echo "`sort -u $G/url`" > $G/url
+	if [ -s $G/3rd.conf -a -s $P/dnsmasq/dnsmasq.adblock ];then
+		echo "`sort -u $G/3rd.conf $P/dnsmasq/dnsmasq.adblock`" > $G/3rd.conf
+		echo "`sort $G/3rd.conf $P/dnsmasq/dnsmasq.adblock | uniq -u`" > $G/3rd.conf
 	fi
-	if [ -s $TMP/3rd.conf ];then
+	if [ -s $G/3rd.conf ];then
 		C=1
-		rm -f $TMP/ad_new.conf $TMP/host
+		rm -f $F $G/host
 		[ "$1" = 1 ] && rm -f $LOCK && exit
 		X=`uci -q get adbyby.@adbyby[0].flash`
-		Y=`md5sum $TMP/* | awk '{print $1}'`
+		Y=`md5sum $G/* | awk '{print $1}'`
 		[ "$X" = 0 ] && Z=`md5sum $P/rules/* 2>/dev/null | awk '{print $1}'` || Z=`md5sum /etc/adbyby_conf/rules/* 2>/dev/null | awk '{print $1}'`
 		if [ "$Y" != "$Z" ];then
 			if [ "$X" = 0 ];then
 				rm -f $P/rules/*
-				cp -a $TMP $P
+				cp -a $G $P
 			else
 				rm -f /etc/adbyby_conf/rules/*
-				cp -a $TMP /etc/adbyby_conf
+				cp -a $G /etc/adbyby_conf
 			fi
 			E=1
 		fi
 	fi
-	rm -rf ${TMP%/*}
+	rm -rf ${G%/*}
 }
 
 A="Download Adblock Plus Rules"
@@ -77,7 +79,7 @@ elif [ "$1" = gen ];then
 	exit
 fi
 if [ "`uci -q get adbyby.@adbyby[0].wan_mode`" = 1 ];then
-	TMP=`curl -LSfso /tmp/adnew.conf https://small_5.coding.net/p/adbyby/d/adbyby/git/raw/master/easylistchina%2Beasylist.txt 2>&1 || curl -LSfso /tmp/adnew.conf https://easylist-downloads.adblockplus.org/easylistchina+easylist.txt 2>&1`
+	G=`curl -LSfso /tmp/adnew.conf https://small_5.coding.net/p/adbyby/d/adbyby/git/raw/master/easylistchina%2Beasylist.txt 2>&1 || curl -LSfso /tmp/adnew.conf https://easylist-downloads.adblockplus.org/easylistchina+easylist.txt 2>&1`
 	if [ $? = 0 ];then
 		echo "`eval $DATE` [$A Successful]"
 		gen
@@ -87,7 +89,7 @@ if [ "`uci -q get adbyby.@adbyby[0].wan_mode`" = 1 ];then
 		fi
 	else
 		echo "`eval $DATE` [$A Failed]"
-		echo -e "$TMP\n"
+		echo -e "$G\n"
 	fi
 	rm -f /tmp/ad.conf
 fi
