@@ -202,12 +202,6 @@ return L.view.extend({
 		o.rmempty = false;
 		o.default = o.disabled;
 
-		// Domain Serve expired
-		o = s.taboption("settings", form.Flag, "anti_ad", _("Block Ads"),
-			_("Block Ads with anti-AD"));
-		o.rmempty = false;
-		o.default = o.disabled;
-
 		// Redirect;
 		o = s.taboption("settings", form.ListValue, "redirect", _("Redirect"), _("SmartDNS redirect mode"));
 		o.placeholder = "none";

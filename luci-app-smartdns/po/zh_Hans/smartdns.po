@@ -304,8 +304,3 @@ msgstr "捐助smartdns项目"
 msgid "Donate"
 msgstr "捐助"
 
-msgid "Block Ads"
-msgstr "广告过滤"
-
-msgid "Block Ads with anti-AD"
-msgstr "启用anti-AD规则过滤广告"
