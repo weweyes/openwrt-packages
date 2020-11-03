@@ -213,7 +213,6 @@ return L.view.extend({
 		o.placeholder = "none";
 		o.value("none", _("none"));
 		o.value("dnsmasq-upstream", _("Run as dnsmasq upstream server"));
-		o.value("redirect", _("Redirect 53 port to SmartDNS"));
 		o.default = "none";
 		o.rempty = false;
 
