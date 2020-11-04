@@ -68,6 +68,7 @@ jobs:
         
         svn co https://github.com/openwrt/luci/trunk/applications/luci-app-acme
         svn co https://github.com/openwrt/packages/trunk/net/acme
+        svn co https://github.com/openwrt/packages/trunk/utils/coremark
 
         git clone https://github.com/jerrykuku/luci-theme-argon
         git clone https://github.com/jerrykuku/luci-app-vssr
