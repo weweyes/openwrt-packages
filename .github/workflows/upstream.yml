@@ -65,10 +65,12 @@ jobs:
         svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/pandownload-fake-server
         svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-cpufreq
         svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-vlmcsd
+        
+        svn co https://github.com/openwrt/luci/trunk/applications/luci-app-acme
+        svn co https://github.com/openwrt/luci/trunk/applications/luci-app-dockerman
 
         git clone https://github.com/jerrykuku/luci-theme-argon
         git clone https://github.com/jerrykuku/luci-app-vssr
-        git clone https://github.com/lisaac/luci-in-docker
         git clone https://github.com/jefferymvp/luci-app-koolproxyR
         git clone https://github.com/peter-tank/luci-app-dnscrypt-proxy2
         git clone https://github.com/lisaac/luci-lib-docker
@@ -87,6 +89,7 @@ jobs:
         git clone https://github.com/esirplayground/luci-app-poweroff
         git clone https://github.com/lvqier/luci-app-dnsmasq-ipset
         git clone https://github.com/sirpdboy/luci-app-netdata
+        git clone https://github.com/lisaac/luci-lib-docker
         svn co https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus
         svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
         svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
