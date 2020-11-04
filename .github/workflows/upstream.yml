@@ -65,10 +65,6 @@ jobs:
         svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/pandownload-fake-server
         svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-cpufreq
         svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-vlmcsd
-        
-        svn co https://github.com/openwrt/luci/trunk/applications/luci-app-acme
-        svn co https://github.com/openwrt/packages/trunk/net/acme
-        svn co https://github.com/openwrt/packages/trunk/utils/coremark
 
         git clone https://github.com/jerrykuku/luci-theme-argon
         git clone https://github.com/jerrykuku/luci-app-vssr
@@ -89,9 +85,7 @@ jobs:
         git clone https://github.com/esirplayground/luci-app-poweroff
         git clone https://github.com/lvqier/luci-app-dnsmasq-ipset
         git clone https://github.com/sirpdboy/luci-app-netdata
-        git clone https://github.com/lisaac/luci-lib-docker
         svn co https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus
-        svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
         svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
         svn co https://github.com/srchack/custom-packages/trunk/open-vm-tools
         svn co https://github.com/Lienol/openwrt/trunk/package/lean/luci-app-autoreboot
@@ -125,13 +119,13 @@ jobs:
         rm -f create_acl_for_luci.warn create_acl_for_luci.err
         sed -i '/"nas".*"NAS"/d' */luasrc/controller/*.lua
         sed -i 's/"admin",\( \|\)"nas"/"admin", "services"/g' */luasrc/controller/*.lua
-        // for ipk in $(ls); do
-        // [[ -d "$ipk/root/usr/share/rpcd/acl.d" && -d "$ipk/root/etc/uci-defaults" ]] && {
-        // [ grep -q "killall -HUP rpcd" $ipk/root/etc/uci-defaults/* ] || {
-          // sed -i '/exit 0/i killall -HUP rpcd 2>\/dev\/null' $ipk/root/etc/uci-defaults/*
-          // }
-        // }
-        // done
+        for ipk in $(ls); do
+        [[ -d "$ipk/root/usr/share/rpcd/acl.d" && -d "$ipk/root/etc/uci-defaults" ]] && {
+        [ grep -q "killall -HUP rpcd" $ipk/root/etc/uci-defaults/* ] || {
+          sed -i '/exit 0/i killall -HUP rpcd 2>\/dev\/null' $ipk/root/etc/uci-defaults/*
+          }
+        }
+        done
         git add .
         git commit -m "update"
         git push
