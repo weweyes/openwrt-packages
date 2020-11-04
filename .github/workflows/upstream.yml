@@ -67,7 +67,7 @@ jobs:
         svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-vlmcsd
         
         svn co https://github.com/openwrt/luci/trunk/applications/luci-app-acme
-        svn co https://github.com/openwrt/luci/trunk/applications/luci-app-dockerman
+        svn co https://github.com/openwrt/packages/trunk/net/acme
 
         git clone https://github.com/jerrykuku/luci-theme-argon
         git clone https://github.com/jerrykuku/luci-app-vssr
@@ -123,15 +123,15 @@ jobs:
         bash create_acl_for_luci.sh -a
         bash convert_translation.sh -a || true
         rm -f create_acl_for_luci.warn create_acl_for_luci.err
-        for ipk in $(ls); do
-        [[ -d "$ipk/root/usr/share/rpcd/acl.d" && -d "$ipk/root/etc/uci-defaults" ]] && {
-        [ grep -q "killall -HUP rpcd" $ipk/root/etc/uci-defaults/* ] || {
-          sed -i '/exit 0/i killall -HUP rpcd 2>\/dev\/null' $ipk/root/etc/uci-defaults/*
-          }
-        }
         sed -i '/"nas".*"NAS"/d' */luasrc/controller/*.lua
         sed -i 's/"admin",\( \|\)"nas"/"admin", "services"/g' */luasrc/controller/*.lua
-        done
+        // for ipk in $(ls); do
+        // [[ -d "$ipk/root/usr/share/rpcd/acl.d" && -d "$ipk/root/etc/uci-defaults" ]] && {
+        // [ grep -q "killall -HUP rpcd" $ipk/root/etc/uci-defaults/* ] || {
+          // sed -i '/exit 0/i killall -HUP rpcd 2>\/dev\/null' $ipk/root/etc/uci-defaults/*
+          // }
+        // }
+        // done
         git add .
         git commit -m "update"
         git push
