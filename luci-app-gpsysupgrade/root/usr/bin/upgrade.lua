@@ -1,4 +1,5 @@
-module("luci.model.cbi.gpsysupgrade.api.sysupgrade", package.seeall)
+#!/usr/bin/lua
+
 local fs = require "nixio.fs"
 local sys = require "luci.sys"
 local util = require "luci.util"
@@ -11,7 +12,47 @@ function get_system_version()
     return system_version
 end
 
-function to_check()
+function to_flash(url)
+    if not url or url == "" then
+        return {code = 1, error = i18n.translate("Download url is required.")}
+    end
+
+    sys.call("/bin/rm -f /tmp/firmware_download.*")
+
+    local tmp_file = util.trim(util.exec("mktemp -u -t firmware_download.XXXXXX"))
+
+    local result = api.exec(api.wget, {api._unpack(api.wget_args), "-O", tmp_file, url}, nil, api.command_timeout) == 0
+
+    if not result then
+        api.exec("/bin/rm", {"-f", tmp_file})
+        return {
+            code = 1,
+            error = i18n.translatef("File download failed or timed out: %s", url)
+        }
+    end
+
+	file = tmp_file
+
+    if not file or file == "" or not fs.access(file) then
+		api.exec("/bin/rm", {"-f", file})
+        return {code = 1, error = i18n.translate("Firmware file is required.")}
+    end
+
+	local result = api.exec("/sbin/sysupgrade", {"-k", file}, nil, api.command_timeout) == 0
+
+
+    if not result or not fs.access(file) then
+        api.exec("/bin/rm", {"-f", file})
+        return {
+            code = 1,
+            error = i18n.translatef("System upgrade failed")
+        }
+    end
+
+    return {code = 0}
+end
+
+
     if not model or model == "" then model = api.auto_get_model() end
     
     local download_url,remote_version,needs_update,remoteformat,sysverformat,currentTimeStamp,dateyr
@@ -89,55 +130,4 @@ function to_check()
         }
     end
 
-    return {
-        code = 0,
-        update = needs_update,
-        now_version = get_system_version(),
-        version = remote_version,
-        url = {download = download_url}
-    }
-end
-
-function to_download(url)
-    if not url or url == "" then
-        return {code = 1, error = i18n.translate("Download url is required.")}
-    end
-
-    sys.call("/bin/rm -f /tmp/firmware_download.*")
-
-    local tmp_file = util.trim(util.exec("mktemp -u -t firmware_download.XXXXXX"))
-
-    local result = api.exec(api.wget, {api._unpack(api.wget_args), "-O", tmp_file, url}, nil, api.command_timeout) == 0
-
-    if not result then
-        api.exec("/bin/rm", {"-f", tmp_file})
-        return {
-            code = 1,
-            error = i18n.translatef("File download failed or timed out: %s", url)
-        }
-    end
-
-    return {code = 0, file = tmp_file}
-end
-
-function to_flash(file,retain)
-    if not file or file == "" or not fs.access(file) then
-		api.exec("/bin/rm", {"-f", file})
-        return {code = 1, error = i18n.translate("Firmware file is required.")}
-    end
-if not retain or retain == "" then
-	local result = api.exec("/sbin/sysupgrade", {file}, nil, api.command_timeout) == 0
-else
-	local result = api.exec("/sbin/sysupgrade", {retain, file}, nil, api.command_timeout) == 0
-end
-
-    if not result or not fs.access(file) then
-        api.exec("/bin/rm", {"-f", file})
-        return {
-            code = 1,
-            error = i18n.translatef("System upgrade failed")
-        }
-    end
-
-    return {code = 0}
-end
+		to_flash(download_url)
