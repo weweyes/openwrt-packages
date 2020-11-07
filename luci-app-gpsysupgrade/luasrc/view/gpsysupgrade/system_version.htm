@@ -3,9 +3,6 @@ local system_version = require "luci.model.cbi.gpsysupgrade.api.sysupgrade".get_
 -%>
 <%+header%>
 <h2 name="content"><%:System upgrade%></h2>
-
-
-
 <%- local c = require("luci.model.uci").cursor():changes(); if c and next(c) then -%>
 	<p class="alert-message warning"><%:Warning: There are unsaved changes that will get lost on reboot!%></p>
 <%- end -%>
@@ -24,12 +21,8 @@ local system_version = require "luci.model.cbi.gpsysupgrade.api.sysupgrade".get_
 	var flashing = '<%:Flashing...%>';
 	var checking = '<%:Checking...%>';
 
-
-
-
 	window.onload = function() {
 		var sysupCheckBtn = document.getElementById('_sysup-check_btn');
-		var sysupDetailElm = document.getElementById('_sysup-check_btn-detail');
 		checkUpdate_sysup(sysupCheckBtn)
 	};
 
@@ -82,6 +75,7 @@ local system_version = require "luci.model.cbi.gpsysupgrade.api.sysupgrade".get_
 		addPageNotice_sysup();
 
 		var ckeckDetailElm = document.getElementById(btn.id + '-detail');
+		var updateLogs = document.getElementById('updatelogs');
 
 		XHR.get('<%=url([[admin]], [[services]], [[gpsysupgrade]], [[sysversion_check]])%>', {
 			token: tokenStr,
@@ -105,7 +99,12 @@ local system_version = require "luci.model.cbi.gpsysupgrade.api.sysupgrade".get_
 						if(json.version) {
 							urlNode = '<em style="color:red;">最新版本号：' + json.version + '</em>';
 						}
+						if(json.logs) {
+							logs = '<div class="alert alert-message">' + json.logs + '</div>';
+						}
 					ckeckDetailElm.innerHTML = urlNode;
+					updateLogs.innerHTML = logs;
+					
 					}
 				} else {
 					sysUpgradeInfo = json;
@@ -169,14 +168,11 @@ local system_version = require "luci.model.cbi.gpsysupgrade.api.sysupgrade".get_
 		<%:Current system version%>
 	</label>
 	
-	<div class="cbi-value-field">
 		<div class="cbi-value-description">
 			<span>【 <%=system_version%> 】</span>
 		&nbsp;&nbsp;&nbsp;<span id="_sysup-check_btn-detail"></span>
-
 		</div>
-
-	</div>
+	<div id="updatelogs"></div>
 <div id="retain" style="display:none;margin:0.5rem;">
 	<p style="margin-top:0.4rem;"><button class="btn"><input type="checkbox" checked id="kconfig"> <%:Keep settings and retain the current configuration%></button></p>
 <p style="margin-top:0.5rem;"><button class="btn"><input type="checkbox" checked id="kopkg"> <%:Retain the current packages%></button></p>
