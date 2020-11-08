@@ -78,7 +78,6 @@ jobs:
         git clone https://github.com/esirplayground/luci-app-poweroff
         git clone https://github.com/lvqier/luci-app-dnsmasq-ipset
         git clone https://github.com/sirpdboy/luci-app-netdata
-        svn co https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus
         svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
         svn co https://github.com/srchack/custom-packages/trunk/open-vm-tools
         svn co https://github.com/Lienol/openwrt/trunk/package/lean/luci-app-autoreboot
