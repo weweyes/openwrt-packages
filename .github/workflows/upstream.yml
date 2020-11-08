@@ -58,13 +58,6 @@ jobs:
         svn co https://github.com/coolsnowwolf/lede/trunk/package/network/services/shellsync
         svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
         svn co https://github.com/coolsnowwolf/packages/trunk/net/mwan3
-        
-        svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/amule
-        svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-xlnetacc
-        svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-qbittorrent
-        svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/pandownload-fake-server
-        svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-cpufreq
-        svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-vlmcsd
 
         git clone https://github.com/jerrykuku/luci-theme-argon
         git clone https://github.com/jerrykuku/luci-app-vssr
@@ -92,6 +85,8 @@ jobs:
         svn co https://github.com/NoTengoBattery/openwrt-mt7621/trunk/feeds/luci/applications/luci-app-compressed-memory
         svn co https://github.com/NoTengoBattery/openwrt-mt7621/trunk/package/system/compressed-memory
         
+        rm -rf .svn
+        echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean ./
         rm -rf .svn
         echo -e "\q" | svn co https://github.com/coolsnowwolf/lede/trunk/package/lean ./
         rm -rf .svn
