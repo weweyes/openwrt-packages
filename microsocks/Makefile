@@ -22,7 +22,6 @@ include $(INCLUDE_DIR)/package.mk
 define Package/microsocks
 	SECTION:=net
 	CATEGORY:=Network
-	SUBMENU:=Web Servers/Proxies
 	TITLE:=microsocks for OpenWRT
 	DEPENDS:=
 endef
