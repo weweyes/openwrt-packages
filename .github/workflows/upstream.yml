@@ -58,6 +58,10 @@ jobs:
         svn co https://github.com/coolsnowwolf/lede/trunk/package/network/services/shellsync
         svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
         svn co https://github.com/coolsnowwolf/packages/trunk/net/mwan3
+        
+        svn co https://github.com/Lienol/openwrt/trunk/package/lean/luci-app-autoreboot
+        svn co https://github.com/Lienol/openwrt/trunk/package/lean/luci-app-sfe
+        svn co https://github.com/Lienol/openwrt/trunk/package/lean/luci-app-flowoffload
 
         git clone https://github.com/jerrykuku/luci-theme-argon
         git clone https://github.com/jerrykuku/luci-app-vssr
@@ -80,7 +84,6 @@ jobs:
         git clone https://github.com/sirpdboy/luci-app-netdata
         svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
         svn co https://github.com/srchack/custom-packages/trunk/open-vm-tools
-        svn co https://github.com/Lienol/openwrt/trunk/package/lean/luci-app-autoreboot
         svn co https://github.com/NoTengoBattery/openwrt-mt7621/trunk/feeds/luci/applications/luci-app-compressed-memory
         svn co https://github.com/NoTengoBattery/openwrt-mt7621/trunk/package/system/compressed-memory
         
@@ -101,7 +104,7 @@ jobs:
         rm -rf .svn
         
         rm -Rf */.git */.svn qt5 openwrt-chinadns-ng openwrt-simple-obfs openwrt-v2ray-plugin cups cups-bjnp mt-drivers luci-app-docker \
-        coremark openwrt-chinadns openwrt-chinadns luci-app-flowoffload luci-app-sfe luci-app-appfilter fcgiwrap
+        coremark openwrt-chinadns openwrt-chinadns luci-app-turboacc luci-app-appfilter fcgiwrap
         mv -f mt/* ./ && rm -Rf mt
         sed -i "/minisign:minisign/d" luci-app-dnscrypt-proxy2/Makefile
         rm -f subconverter/patches/010-missing-header.patch
