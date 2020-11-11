@@ -23,8 +23,11 @@ define Package/compressed-memory
 	+kmod-lib-lz4 \
 	+kmod-lib-lz4hc \
 	+kmod-lib-lzo \
-	+!BUSYBOX_CONFIG_MKSWAP:swap-utils \
-	+!BUSYBOX_CONFIG_SWAPONOFF:block-mount
+	+@BUSYBOX_CONFIG_MKSWAP \
+	+@BUSYBOX_CONFIG_SWAPON \
+	+@BUSYBOX_CONFIG_FEATURE_SWAPON_DISCARD \
+	+@BUSYBOX_CONFIG_FEATURE_SWAPON_PRI \
+	+@BUSYBOX_CONFIG_SWAPOFF
   HIDDEN:=1
   TITLE:=Configuration files for compressed-memory
   MAINTAINER:=Oever Gonzalez <notengobattery@gmail.com>
