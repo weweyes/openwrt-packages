@@ -67,7 +67,6 @@ jobs:
         git clone https://github.com/brvphoenix/luci-app-wrtbwmon
         git clone https://github.com/brvphoenix/wrtbwmon
         git clone https://github.com/sirpdboy/luci-app-advanced
-        git clone https://github.com/pexcn/openwrt-chinadns-ng chinadns-ng
         git clone https://github.com/jerrykuku/luci-app-jd-dailybonus
         git clone https://github.com/pexcn/openwrt-chinadns-ng -b luci luci-app-chinadns-ng
         git clone https://github.com/vernesong/OpenClash && mv -f OpenClash/luci-app-openclash ./ && rm -Rf OpenClash
@@ -80,6 +79,7 @@ jobs:
         git clone https://github.com/lvqier/luci-app-dnsmasq-ipset
         git clone https://github.com/sirpdboy/luci-app-netdata
         svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
+        svn co https://github.com/xiaorouji/openwrt-package/trunk/package/chinadns-ng
         svn co https://github.com/srchack/custom-packages/trunk/open-vm-tools
         svn co https://github.com/Lienol/openwrt/trunk/package/lean/luci-app-autoreboot
         svn co https://github.com/NoTengoBattery/openwrt-mt7621/trunk/feeds/luci/applications/luci-app-compressed-memory
