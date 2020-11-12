@@ -1,5 +1,5 @@
 #!/bin/sh
-([ ! "$(pgrep nginx)" ] && {
+([[ ! "$(pgrep nginx)" && ! "$(pgrep uhttpd)" ]] && {
 	/etc/init.d/nginx restart
 }
 
@@ -21,6 +21,7 @@ if [ ! -f /etc/inited ]; then
 		service dnsmasq reload
 	}
 fi
+sh -c "cat '/usr/share/patch/https-dns-proxy.patch'  | patch -d '/' -p1 --forward" >/dev/null 2>&1 || true
 function opkgupgrade() {
 	count=0
 	while :; do
