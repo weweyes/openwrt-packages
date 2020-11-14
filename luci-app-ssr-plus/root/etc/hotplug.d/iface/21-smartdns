@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ "$ACTION" == "ifup" ];then
+	if uci -q get shadowsocksr.@global[0].global_server;then
+		killall -q -9 smartdns
+		$(which smartdns) -c /var/smartdns/1.conf -p /var/run/smartdns_1.pid
+		$(which smartdns) -c /var/smartdns/2.conf -p /var/run/smartdns_2.pid
+	fi
+fi

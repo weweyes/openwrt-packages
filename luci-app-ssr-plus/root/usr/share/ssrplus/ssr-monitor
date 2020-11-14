@@ -75,8 +75,8 @@ while :;do
 		if [ $t -lt $smartdns ];then
 			echo "$(date "+%Y-%m-%d %H:%M:%S") SmartDNS Error. Restart!" >>/tmp/ssrplus.log
 			killall -q -9 smartdns
-			$(which smartdns) -c /var/etc/smartdns_t.conf -p /var/run/smartdns_t.pid
-			$(which smartdns) -c /var/etc/smartdns_l.conf -p /var/run/smartdns_l.pid
+			$(which smartdns) -c /var/smartdns/1.conf -p /var/run/smartdns_1.pid
+			$(which smartdns) -c /var/smartdns/2.conf -p /var/run/smartdns_2.pid
 		fi
 	fi
 #chinadns-ng

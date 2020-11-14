@@ -109,6 +109,8 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/ssr-plus.*.lmo $(1)/usr/lib/lua/luci/i18n/
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_DATA) ./root/etc/config/shadowsocksr $(1)/etc/config/shadowsocksr
+	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
+	$(INSTALL_BIN) ./root/etc/hotplug.d/iface/* $(1)/etc/hotplug.d/iface/
 	$(INSTALL_DIR) $(1)/etc/ssr
 	$(INSTALL_DATA) ./root/etc/ssr/* $(1)/etc/ssr/
 	$(INSTALL_DIR) $(1)/etc/init.d
