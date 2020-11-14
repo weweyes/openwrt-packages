@@ -28,6 +28,7 @@ function opkgupgrade() {
 	while :; do
 		httping -c 1 www.baidu.com >/dev/null 2>&1
 		if [ "$?" == "0" ]; then
+			/etc/init.d/firewall restart >/dev/null 2>&1
 			opkg update
 			if [ "$?" == "0" ]; then
 			udok=true

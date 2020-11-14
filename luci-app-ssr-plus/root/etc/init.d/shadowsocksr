@@ -66,7 +66,10 @@ firstdown(){
 f_bin(){
 	case $1 in
 		ss)ret=$(which ss-redir);;
+		ss-local)ret=$(which ss-local);;
 		ssr)ret=$(which ssr-redir);;
+		ssr-local)ret=$(which ssr-local);;
+		ssr-server)ret=$(which ssr-server);;
 		v2ray|vless)ret=$(which v2ray) || ret=/usr/bin/v2ray/v2ray;;
 		trojan)ret=$(which trojan);;
 		naiveproxy)ret=$(which naive);;
@@ -184,7 +187,7 @@ rules(){
 	[ $kcp_enable = 1 ] && kcp_server=$server
 	UDP_RELAY_SERVER=$(uci_get_by_type global udp_relay_server)
 	[ "$UDP_RELAY_SERVER" = same ] && UDP_RELAY_SERVER=$GLOBAL_SERVER
-	if [ -n "$UDP_RELAY_SERVER" -a $(uci_get_by_name $UDP_RELAY_SERVER kcp_enable 0) = 1 ];then
+	if [ -n "$UDP_RELAY_SERVER" -a "$(uci_get_by_name $UDP_RELAY_SERVER kcp_enable 0)" = 1 ];then
 		[ -s $LOG ] && LOG_S=1 && eval $LOG_B
 		echo "$(date "+%Y-%m-%d %H:%M:%S") UDP Relay: Can't use KCPTUN to start as UDP Relay Server!" >> $LOG
 		UDP_RELAY_SERVER=
@@ -318,15 +321,17 @@ start_retcp(){
 			echo "$(date "+%Y-%m-%d %H:%M:%S") Main Node: $name $threads Threads Started!" >> $LOG;;
 		v2ray|vless)
 			if [ $SO_SERVER = $GLOBAL_SERVER ];then
-				port=$(uci_get_by_type socks5_proxy local_port 1080);socks5_start=1;N=-ssr-socks5
+				port=$(uci_get_by_type socks5_proxy local_port 1080);socks5_start=1;V2=v2-ssr-retcp-ssr-socks5.json
 			else
-				port=0
+				port=0;V2=v2-ssr-retcp.json
 			fi
-			$BIN_DIR/gen${type}config $GLOBAL_SERVER tcp $local_port $port $server > /var/etc/v2-ssr-retcp$N.json
-			sed -i 's/\\//g' /var/etc/v2-ssr-retcp$N.json
-			$cmd -c /var/etc/v2-ssr-retcp$N.json >/dev/null 2>&1 &
+			$BIN_DIR/gen${type}config $GLOBAL_SERVER tcp $local_port $port $server > /var/etc/$V2
+			sed -i 's/\\//g' /var/etc/$V2
+			$cmd -c /var/etc/$V2 >/dev/null 2>&1 &
 			echo "$(date "+%Y-%m-%d %H:%M:%S") Main Node: $($cmd -version | head -1) Started!" >> $LOG
-			[ "$socks5_start" = 1 ] && echo "$(date "+%Y-%m-%d %H:%M:%S") Socks5 Node: $($cmd -version | head -1) Started!" >> $LOG;;
+			if [ "$socks5_start" = 1 ];then
+				echo "$(date "+%Y-%m-%d %H:%M:%S") Socks5 Node: $($cmd -version | head -1) Started!" >> $LOG
+			fi;;
 		trojan)
 			redir_tcp=$threads
 			$BIN_DIR/gentrojanconfig $GLOBAL_SERVER nat $local_port $server > /var/etc/trojan-ssr-retcp.json
@@ -826,7 +831,7 @@ stop(){
 	[ -z "$switch_server" ] && kill -9 $(ps -w | grep ssr-switch | grep -v grep | awk '{print$1}') 2>/dev/null
 	kill -9 $(ps -w | grep ssr-monitor | grep -v grep | awk '{print$1}') 2>/dev/null
 	kill -9 $(ps -w | grep ssr-preload | grep -v grep | awk '{print$1}') 2>/dev/null
-	killall -q -9 ss-redir kcptun-client obfs-local v2ray-plugin ssr-redir v2ray trojan ipt2socks redsocks2 ssr-server microsocks smartdns chinadns-ng
+	killall -q -9 ss-redir ssr-redir v2ray trojan ipt2socks naive redsocks2 kcptun-client obfs-local v2ray-plugin ss-local ssr-local ssr-server microsocks smartdns chinadns-ng
 	rm -rf $DNS_DIR /var/etc/*ssr*.json /tmp/dnsmasq.d/dnsmasq-ssr.conf $CON_T $CON_L
 	[ $run_mode = gfw -o $gfw_mode = 1 ] || rm -f /tmp/ssrplus/gfw.list
 	[ $run_mode = router ] || rm -f /tmp/ssrplus/china_v6.txt
@@ -840,9 +845,10 @@ stop(){
 restart(){
 	STATUS=N
 	stop
-	echo "bind :5335 -group a1" >> $DNS_L
-	echo "bind :5337 -group a1" >> $DNS_L
-	$(which smartdns) -c $DNS_L -p $PID_L
+	if [ -s $DNS_L ];then
+		echo "bind :5335 -group a1" >> $DNS_L 2>/dev/null;echo "bind :5337 -group a1" >> $DNS_L 2>/dev/null
+		$(which smartdns) -c $DNS_L -p $PID_L
+	fi
 	start
 	killall -q -9 smartdns
 	start_dns
