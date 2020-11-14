@@ -87,7 +87,7 @@ define Package/$(PKG_NAME)
 endef
 
 define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/po/zh_Hans/*.po), \
+	$(foreach po,$(wildcard ${CURDIR}/po/zh-cn/*.po), \
 		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.zh-cn.lmo,$(notdir $(po)));)
 endef
 
