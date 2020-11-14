@@ -375,7 +375,7 @@ start_reudp(){
 			$cmd -c /var/etc/v2-ssr-reudp.json >/dev/null 2>&1 &
 			echo "$(date "+%Y-%m-%d %H:%M:%S") UDP Relay: $($cmd -version | head -1) Started!" >> $LOG;;
 		trojan)
-			let ip_port=udp_local_port+1
+			let ip_port=udp_local_port+1;[ $ip_port = "$nf_local_port" ] && let ip_port=ip_port+1
 			$BIN_DIR/gentrojanconfig $UDP_RELAY_SERVER client $ip_port $udp_server > /var/etc/trojan-ssr-reudp.json
 			sed -i 's/\\//g' /var/etc/trojan-ssr-reudp.json
 			$cmd -c /var/etc/trojan-ssr-reudp.json >/dev/null 2>&1 &
