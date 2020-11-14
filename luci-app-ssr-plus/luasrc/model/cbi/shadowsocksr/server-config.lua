@@ -1,18 +1,11 @@
--- Copyright (C) 2017 yushi studio <ywb94@qq.com>
--- Licensed to the public under the GNU General Public License v3.
-require "luci.http"
-require "luci.dispatcher"
-require "nixio.fs"
+local m,s,o
+local ssr="shadowsocksr"
+local sid=arg[1]
 
-local m, s, o
-local shadowsocksr = "shadowsocksr"
-local sid = arg[1]
-
-local encrypt_methods = {
-"rc4-md5",
-"rc4-md5-6",
-"rc4",
+local encrypt_methods={
 "table",
+"rc4",
+"rc4-md5",
 "aes-128-cfb",
 "aes-192-cfb",
 "aes-256-cfb",
@@ -33,81 +26,74 @@ local encrypt_methods = {
 "chacha20-ietf",
 }
 
-local protocol = {
+local protocol={
 "origin",
 }
 
-obfs = {
+local obfs={
 "plain",
 "http_simple",
 "http_post",
 }
 
-m = Map(shadowsocksr, translate("Edit ShadowSocksR Server"))
+m=Map(ssr,translate("Edit ShadowSocksR Server"))
 
-m.redirect = luci.dispatcher.build_url("admin/services/shadowsocksr/server")
-if m.uci:get(shadowsocksr, sid) ~= "server_config" then
+m.redirect=luci.dispatcher.build_url("admin/services/shadowsocksr/server")
+if m.uci:get(ssr,sid)~="server_config" then
 	luci.http.redirect(m.redirect)
 	return
 end
 
--- [[ Server Setting ]]--
-s = m:section(NamedSection, sid, "server_config")
-s.anonymous = true
-s.addremove = false
+s=m:section(NamedSection,sid,"server_config")
+s.anonymous=true
+s.addremove=false
 
-o = s:option(Flag, "enable", translate("Enable"))
-o.default = 1
-o.rmempty = false
+o=s:option(Flag,"enable",translate("Enable"))
+o.rmempty=false
 
-o = s:option(ListValue, "type", translate("Server Type"))
-o:value("socks5", translate("Socks5"))
-if nixio.fs.access("/usr/bin/ssr-server") then
-	o:value("ssr", translate("ShadowsocksR"))
+o=s:option(ListValue,"type",translate("Server Type"))
+if nixio.fs.access("/usr/bin/microsocks") then
+o:value("socks5",translate("Socks5"))
 end
-o.default = "socks5"
+if nixio.fs.access("/usr/bin/ssr-server") then
+	o:value("ssr",translate("ShadowsocksR"))
+end
 
-o = s:option(Value, "server_port", translate("Server Port"))
-o.datatype = "port"
-math.randomseed(tostring(os.time()):reverse():sub(1, 7))
-o.default = math.random(10240,20480)
-o.rmempty = false
-o.description = translate("warning! Please do not reuse the port!")
+o=s:option(Value,"server_port",translate("Server Port"))
+o.datatype="port"
+math.randomseed(tostring(os.time()):reverse():sub(1,7))
+o.default=math.random(10240,20480)
+o.rmempty=false
+o.description=translate("Warning! Please do not reuse the port!")
 
-o = s:option(Value, "timeout", translate("Connection Timeout"))
-o.datatype = "uinteger"
-o.default = 60
-o.rmempty = false
-o:depends("type", "ssr")
+o=s:option(Value,"timeout",translate("Connection Timeout"))
+o.datatype="uinteger"
+o.placeholder=60
+o:depends("type","ssr")
 
-o = s:option(Value, "username", translate("Username"))
-o.rmempty = false
-o:depends("type", "socks5")
+o=s:option(Value,"username",translate("Username"))
+o:depends("type","socks5")
 
-o = s:option(Value, "password", translate("Password"))
-o.password = true
-o.rmempty = false
+o=s:option(Value,"password",translate("Password"))
+o.password=true
+o.rmempty=false
 
-o = s:option(ListValue, "encrypt_method", translate("Encrypt Method"))
-for _, v in ipairs(encrypt_methods) do o:value(v) end
-o.rmempty = false
-o:depends("type", "ssr")
+o=s:option(ListValue,"encrypt_method",translate("Encrypt Method"))
+for _,v in ipairs(encrypt_methods) do o:value(v) end
+o:depends("type","ssr")
 
-o = s:option(ListValue, "protocol", translate("Protocol"))
-for _, v in ipairs(protocol) do o:value(v) end
-o.rmempty = false
-o:depends("type", "ssr")
+o=s:option(ListValue,"protocol",translate("Protocol"))
+for _,v in ipairs(protocol) do o:value(v) end
+o:depends("type","ssr")
 
-o = s:option(ListValue, "obfs", translate("Obfs"))
-for _, v in ipairs(obfs) do o:value(v) end
-o.rmempty = false
-o:depends("type", "ssr")
+o=s:option(ListValue,"obfs",translate("Obfs"))
+for _,v in ipairs(obfs) do o:value(v) end
+o:depends("type","ssr")
 
-o = s:option(Value, "obfs_param", translate("Obfs param(optional)"))
-o:depends("type", "ssr")
+o=s:option(Value,"obfs_param",translate("Obfs param(optional)"))
+o:depends("type","ssr")
 
-o = s:option(Flag, "fast_open", translate("TCP Fast Open"))
-o.rmempty = false
-o:depends("type", "ssr")
+o=s:option(Flag,"fast_open",translate("TCP Fast Open"))
+o:depends("type","ssr")
 
 return m
