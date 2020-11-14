@@ -1,5 +1,4 @@
 #!/bin/sh
-sleep 1
 if [ "$2" = ns ];then
 	if [ -n "$3" ];then
 		while ! nslookup $3 >/dev/null 2>&1;do
