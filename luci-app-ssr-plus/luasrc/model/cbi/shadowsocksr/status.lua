@@ -68,7 +68,7 @@ end
 
 s=m:field(DummyValue,"sock5_run",translate("Global SOCKS5 Proxy Server"))
 s.rawhtml=true
-if luci.sys.call("ps -w | grep ssr-local | grep -v grep >/dev/null")==0 then
+if luci.sys.call("ps -w | grep ssr-socks5 | grep -v grep >/dev/null")==0 then
 	s.value=font_blue..bold_on..translate("Running")..bold_off..font_off
 else
 	s.value=translate("Not Running")
