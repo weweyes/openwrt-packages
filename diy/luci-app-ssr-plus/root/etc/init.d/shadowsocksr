@@ -531,11 +531,8 @@ gen_dns(){
 	cat > $DNS_T <<EOF
 force-AAAA-SOA yes
 speed-check-mode none
-ipset-timeout no
 cache-persist no
-cache-size 1000
-prefetch-domain yes
-serve-expired yes
+cache-size 0
 log-level fatal
 log-file $LOG
 EOF
