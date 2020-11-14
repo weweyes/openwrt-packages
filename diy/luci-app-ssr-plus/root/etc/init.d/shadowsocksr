@@ -187,7 +187,7 @@ rules(){
 	[ $kcp_enable = 1 ] && kcp_server=$server
 	UDP_RELAY_SERVER=$(uci_get_by_type global udp_relay_server)
 	[ "$UDP_RELAY_SERVER" = same ] && UDP_RELAY_SERVER=$GLOBAL_SERVER
-	if [ -n "$UDP_RELAY_SERVER" -a "$(uci_get_by_name $UDP_RELAY_SERVER kcp_enable 0)" = 1 ];then
+	if [ "$(uci_get_by_name $UDP_RELAY_SERVER kcp_enable 0)" = 1 ];then
 		[ -s $LOG ] && LOG_S=1 && eval $LOG_B
 		echo "$(date "+%Y-%m-%d %H:%M:%S") UDP Relay: Can't use KCPTUN to start as UDP Relay Server!" >> $LOG
 		UDP_RELAY_SERVER=
