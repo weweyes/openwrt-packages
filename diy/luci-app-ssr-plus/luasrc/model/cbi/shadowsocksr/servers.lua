@@ -8,7 +8,6 @@ uci:foreach(ssr,"servers",function(s)
 end)
 
 m=Map(ssr,translate("Servers subscription and manage"))
-
 s=m:section(TypedSection,"server_subscribe")
 s.anonymous=true
 

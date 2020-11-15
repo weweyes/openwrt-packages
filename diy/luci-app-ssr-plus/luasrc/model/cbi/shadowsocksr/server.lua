@@ -5,7 +5,6 @@ s=m:section(TypedSection,"server_global",translate("Global Setting"))
 s.anonymous=true
 
 o=s:option(Flag,"enable_server",translate("Enable Server"))
-o.rmempty=false
 
 s=m:section(TypedSection,"server_config",translate("Server Setting"))
 s.anonymous=true
@@ -39,6 +38,18 @@ end
 o=s:option(DummyValue,"username",translate("Username"))
 function o.cfgvalue(...)
 	return Value.cfgvalue(...) or "-"
+end
+
+o=s:option(DummyValue,"encrypt_method_ss",translate("Encrypt Method (SS)"))
+function o.cfgvalue(...)
+	local v=Value.cfgvalue(...)
+	return v and v:upper() or "-"
+end
+
+o=s:option(DummyValue,"plugin",translate("Plugin (SS)"))
+function o.cfgvalue(...)
+	local v=Value.cfgvalue(...)
+	return v and v:upper() or "-"
 end
 
 o=s:option(DummyValue,"encrypt_method",translate("Encrypt Method"))
