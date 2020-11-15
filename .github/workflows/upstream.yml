@@ -101,7 +101,7 @@ jobs:
         rm -rf .svn
         
         rm -Rf */.git */.svn qt5 openwrt-chinadns-ng openwrt-simple-obfs openwrt-v2ray-plugin cups cups-bjnp mt-drivers luci-app-docker \
-        coremark openwrt-chinadns openwrt-chinadns luci-app-flowoffload luci-app-sfe luci-app-appfilter fcgiwrap
+        coremark openwrt-chinadns openwrt-chinadns luci-app-flowoffload luci-app-sfe luci-app-appfilter fcgiwrap luci-app-ssr-plus
         mv -f mt/* ./ && rm -Rf mt
         sed -i "/minisign:minisign/d" luci-app-dnscrypt-proxy2/Makefile
         rm -f subconverter/patches/010-missing-header.patch
