@@ -108,7 +108,7 @@ o.inputstyle="apply"
 o.write=function(self,section)
 	uci:set(ssr,'@global[0]','global_server',section)
 	uci:commit(ssr)
-	luci.http.redirect(luci.dispatcher.build_url("admin","services",ssr,"client"))
+	luci.http.redirect(luci.dispatcher.build_url("admin","services",ssr,"base"))
 end
 
 o=s:option(Flag,"switch_enable",translate("Auto Switch"))
