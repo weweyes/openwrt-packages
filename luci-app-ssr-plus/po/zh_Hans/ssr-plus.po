@@ -466,8 +466,20 @@ msgstr "服务端配置"
 msgid "Server Type"
 msgstr "服务端类型"
 
+msgid "Encrypt Method (SS)"
+msgstr "加密方式 (SS)"
+
+msgid "Plugin (SS)"
+msgstr "插件 (SS)"
+
 msgid "Warning! Please do not reuse the port!"
 msgstr "警告！请不要重复使用端口！"
+
+msgid "Enable Once Auth Mode"
+msgstr "启用一次性认证"
+
+msgid "Enable Once Auth,the client IP that passed the authentication will be added to the whitelist address, this IP no longer needs to be verified"
+msgstr "启用一次性认证后会将通过认证的客户端IP地址加入白名单，之后的连接不再进行认证"
 
 msgid "Connection Timeout"
 msgstr "连接超时"

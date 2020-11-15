@@ -67,6 +67,7 @@ f_bin(){
 	case $1 in
 		ss)ret=$(which ss-redir);;
 		ss-local)ret=$(which ss-local);;
+		ss-server)ret=$(which ss-server);;
 		ssr)ret=$(which ssr-redir);;
 		ssr-local)ret=$(which ssr-local);;
 		ssr-server)ret=$(which ssr-server);;
@@ -107,7 +108,7 @@ gen_config_file(){
 }
 EOF
 			plugin=$(uci_get_by_name $1 plugin 0)
-			if [ $plugin != 0 -a -x /usr/bin/$plugin ];then
+			if [ $plugin != 0 -a -x $(which $plugin) ];then
 				sed -i "s@$hostip\",@$hostip\",\n\"plugin\":\"$plugin\",\n\"plugin_opts\":\"$(uci_get_by_name $1 plugin_opts)\",@" $config_file
 			fi;;
 		ssr)
@@ -731,12 +732,28 @@ start_local(){
 
 gen_service_file(){
 	[ $(uci_get_by_name $1 fast_open 0) = 1 ] && fastopen=true || fastopen=false
-	cat <<-EOF >$2
+	if [ $2 = ss ];then
+		cat <<-EOF >$3
 {
 "server":"0.0.0.0",
-"server_port":$(uci_get_by_name $1 server_port),
-"password":"$(uci_get_by_name $1 password)",
-"timeout":$(uci_get_by_name $1 timeout 60),
+"server_port":$port,
+"password":"$pass",
+"timeout":$timeout,
+"method":"$(uci_get_by_name $1 encrypt_method_ss)",
+"fast_open":$fastopen
+}
+EOF
+		plugin=$(uci_get_by_name $1 plugin 0)
+		if [ $plugin != 0 -a -x $(which $plugin) ];then
+			sed -i "s@0.0.0.0\",@0.0.0.0\",\n\"plugin\":\"$plugin\",\n\"plugin_opts\":\"$(uci_get_by_name $1 plugin_opts)\",@" $3
+		fi
+	else
+		cat <<-EOF >$3
+{
+"server":"0.0.0.0",
+"server_port":$port,
+"password":"$pass",
+"timeout":$timeout,
 "method":"$(uci_get_by_name $1 encrypt_method)",
 "protocol":"$(uci_get_by_name $1 protocol)",
 "protocol_param":"$(uci_get_by_name $1 protocol_param)",
@@ -745,25 +762,29 @@ gen_service_file(){
 "fast_open":$fastopen
 }
 EOF
+	fi
 }
 
 run_server(){
 	[ $(uci_get_by_name $1 enable 0) = 0 ] && return 1
 	let server_count=server_count+1
 	[ $server_count = 1 ] && iptables-save -t filter | grep SSR-SERVER-RULE >/dev/null || iptables -N SSR-SERVER-RULE && iptables -t filter -I INPUT -j SSR-SERVER-RULE
-	if [ $(uci_get_by_name $1 type ssr) = ssr ];then
-		cmd=$(which ssr-server)
-		[ ! -x $cmd ] && echo "$(date "+%Y-%m-%d %H:%M:%S") SSR Server: Can't find $cmd program, start failed!" >> /tmp/ssrplus.log && return 1
-		gen_service_file $1 /var/etc/ssr-server_$server_count.json
-		$cmd -c /var/etc/ssr-server_$server_count.json -u >/dev/null 2>&1 &
-		echo "$(date "+%Y-%m-%d %H:%M:%S") Server:ShadowsocksR Server$server_count Started!" >>/tmp/ssrplus.log
-	else
-		[ -e /proc/sys/net/ipv6 ] && local listenip='-i ::'
-		microsocks $listenip -p $(uci_get_by_name $1 server_port) -1 -u $(uci_get_by_name $1 username) -P $(uci_get_by_name $1 password) ssr-server_$server_count >/dev/null 2>&1 &
-		echo "$(date "+%Y-%m-%d %H:%M:%S") Server:Socks5 Server$server_count Started!" >>/tmp/ssrplus.log
-	fi
-	iptables -t filter -A SSR-SERVER-RULE -p tcp --dport $(uci_get_by_name $1 server_port) -j ACCEPT
-	iptables -t filter -A SSR-SERVER-RULE -p udp --dport $(uci_get_by_name $1 server_port) -j ACCEPT
+	type=$(uci_get_by_name $1 type ssr)
+	[ $type = ss -o $type = ssr ] && cmd=$(f_bin $type-server) || cmd=$(which microsocks)
+	[ ! -x $cmd ] && echo "$(date "+%Y-%m-%d %H:%M:%S") SSR Server: Can't find $cmd program, start failed!" >> /tmp/ssrplus.log && return 1
+	port=$(uci_get_by_name $1 server_port)
+	pass=$(uci_get_by_name $1 password)
+	name=ssr-server_$server_count
+	case $type in
+		ss|ssr)timeout=$(uci_get_by_name $1 timeout 60);gen_service_file $1 $type /var/etc/$name.json
+			$cmd -c /var/etc/$name.json -u >/dev/null 2>&1 &
+			echo "$(date "+%Y-%m-%d %H:%M:%S") Server:ShadowsocksR Server$server_count Started!" >>/tmp/ssrplus.log;;
+		*)[ $(uci_get_by_name $1 auth_enable 0) = 1 ] && param="$([ $(uci_get_by_name $1 auth_once 0) = 1 ] && echo -1) -u $(uci_get_by_name $1 username) -P $pass"
+			$cmd -p $port $param $name >/dev/null 2>&1 &
+			echo "$(date "+%Y-%m-%d %H:%M:%S") Server:Socks5 Server$server_count Started!" >>/tmp/ssrplus.log;;
+	esac
+	iptables -t filter -A SSR-SERVER-RULE -p tcp --dport $port -j ACCEPT
+	iptables -t filter -A SSR-SERVER-RULE -p udp --dport $port -j ACCEPT
 	return 0
 }
 
@@ -785,8 +806,7 @@ EOF
 }
 
 start_server(){
-	SERVER_ENABLE=$(uci_get_by_type server_global enable_server 0)
-	[ $SERVER_ENABLE = 0 ] && return 0
+	[ $(uci_get_by_type server_global enable_server 0) = 0 ] && return 0
 	mkdir -p /var/etc
 	config_load $NAME
 	config_foreach run_server server_config
@@ -831,7 +851,7 @@ stop(){
 	[ -z "$switch_server" ] && kill -9 $(ps -w | grep ssr-switch | grep -v grep | awk '{print$1}') 2>/dev/null
 	kill -9 $(ps -w | grep ssr-monitor | grep -v grep | awk '{print$1}') 2>/dev/null
 	kill -9 $(ps -w | grep ssr-preload | grep -v grep | awk '{print$1}') 2>/dev/null
-	killall -q -9 ss-redir ssr-redir v2ray trojan ipt2socks naive redsocks2 kcptun-client obfs-local v2ray-plugin ss-local ssr-local ssr-server microsocks smartdns chinadns-ng
+	killall -q -9 ss-redir ssr-redir v2ray trojan ipt2socks naive redsocks2 kcptun-client obfs-local v2ray-plugin ss-local ss-server ssr-local ssr-server microsocks smartdns chinadns-ng
 	rm -rf $DNS_DIR /var/etc/*ssr*.json /tmp/dnsmasq.d/dnsmasq-ssr.conf $CON_T $CON_L
 	[ $run_mode = gfw -o $gfw_mode = 1 ] || rm -f /tmp/ssrplus/gfw.list
 	[ $run_mode = router ] || rm -f /tmp/ssrplus/china_v6.txt

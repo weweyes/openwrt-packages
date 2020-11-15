@@ -9,7 +9,7 @@ function index()
 	entry({"admin","services","shadowsocksr","control"},cbi("shadowsocksr/control"),_("Access Control"),3).leaf=true
 	entry({"admin","services","shadowsocksr","domain"},form("shadowsocksr/domain"),_("Domain List"),4).leaf=true
 	entry({"admin","services","shadowsocksr","advanced"},cbi("shadowsocksr/advanced"),_("Advanced Settings"),5).leaf=true
-	if nixio.fs.access("/usr/bin/ssr-server") then
+	if luci.sys.call("which ssr-server >/dev/null")==0 or luci.sys.call("which ss-server >/dev/null")==0 or luci.sys.call("which microsocks >/dev/null")==0 then
 	      entry({"admin","services","shadowsocksr","server"},arcombine(cbi("shadowsocksr/server"),cbi("shadowsocksr/server-config")),_("SSR Server"),6).leaf=true
 	end
 	entry({"admin","services","shadowsocksr","status"},form("shadowsocksr/status"),_("Status"),7).leaf=true

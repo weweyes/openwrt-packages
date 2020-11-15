@@ -2,6 +2,8 @@ local m,s,o,kcp_enable
 local ssr="shadowsocksr"
 local sid=arg[1]
 local uuid=luci.sys.exec("cat /proc/sys/kernel/random/uuid")
+local A=luci.sys.call("which obfs-local >/dev/null")
+local B=luci.sys.call("which v2ray-plugin >/dev/null")
 
 local encrypt_methods={
 "none",
@@ -91,6 +93,8 @@ m.redirect=luci.dispatcher.build_url("admin/services/shadowsocksr/servers")
 if m.uci:get(ssr,sid)~="servers" then
 	luci.http.redirect(m.redirect)
 	return
+else
+	m.uci:set(ssr,sid,'switch_enable',1)
 end
 
 s=m:section(NamedSection,sid,"servers")
@@ -103,23 +107,23 @@ o.template="shadowsocksr/ssrurl"
 o.value=sid
 
 o=s:option(ListValue,"type",translate("Server Node Type"))
-if nixio.fs.access("/usr/bin/ss-redir") then
+if luci.sys.call("which ss-redir >/dev/null")==0 then
 o:value("ss",translate("Shadowsocks New Version"))
 end
-if nixio.fs.access("/usr/bin/ssr-redir") then
+if luci.sys.call("which ssr-redir >/dev/null")==0 then
 o:value("ssr",translate("ShadowsocksR"))
 end
-if nixio.fs.access("/usr/bin/v2ray/v2ray") or nixio.fs.access("/usr/bin/v2ray") then
+if nixio.fs.access("/usr/bin/v2ray/v2ray") or luci.sys.call("which v2ray >/dev/null")==0 then
 o:value("v2ray",translate("V2Ray"))
 o:value("vless",translate("VLESS"))
 end
-if nixio.fs.access("/usr/bin/trojan") then
+if luci.sys.call("which trojan >/dev/null")==0 then
 o:value("trojan",translate("Trojan"))
 end
-if nixio.fs.access("/usr/bin/naive") then
+if luci.sys.call("which naive >/dev/null")==0 then
 o:value("naiveproxy",translate("NaiveProxy"))
 end
-if nixio.fs.access("/usr/bin/redsocks2") then
+if luci.sys.call("which redsocks2 >/dev/null")==0 then
 o:value("socks5",translate("Socks5"))
 o:value("tun",translate("Network Tunnel"))
 end
@@ -165,6 +169,7 @@ o:depends("auth_enable",1)
 
 o=s:option(Value,"password",translate("Password"))
 o.password=true
+o.rmempty=false
 o:depends("type","ssr")
 o:depends("type","ss")
 o:depends("type","trojan")
@@ -179,13 +184,13 @@ o=s:option(ListValue,"encrypt_method_ss",translate("Encrypt Method"))
 for _,v in ipairs(encrypt_methods_ss) do o:value(v) end
 o:depends("type","ss")
 
-if nixio.fs.access("/usr/bin/obfs-local") or nixio.fs.access("/usr/bin/v2ray-plugin") then
+if A==0 or B==0 then
 o=s:option(ListValue,"plugin",translate("Plugin"))
 o:value("",translate("Disable"))
-if nixio.fs.access("/usr/bin/obfs-local") then
+if A==0 then
 o:value("obfs-local",translate("simple-obfs"))
 end
-if nixio.fs.access("/usr/bin/v2ray-plugin") then
+if B==0 then
 o:value("v2ray-plugin",translate("v2ray-plugin"))
 end
 o:depends("type","ss")
@@ -404,7 +409,6 @@ o:depends("type","ss")
 o:depends("type","trojan")
 
 o=s:option(Flag,"switch_enable",translate("Enable Auto Switch"))
-o.default=1
 
 o=s:option(Value,"local_port",translate("Local Port"))
 o.datatype="port"
