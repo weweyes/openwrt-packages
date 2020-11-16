@@ -70,13 +70,12 @@ while :;do
 		fi
 	fi
 #smartdns
-	if [ $smartdns -gt 0 ];then
+	if [ $smartdns = 1 ];then
 		t=`ps -w | grep smartdns | grep -v grep | wc -l`
-		if [ $t -lt $smartdns ];then
+		if [ $t = 0 ];then
 			echo "$(date "+%Y-%m-%d %H:%M:%S") SmartDNS Error. Restart!" >>/tmp/ssrplus.log
 			killall -q -9 smartdns
-			$(which smartdns) -c /var/smartdns/1.conf -p /var/run/smartdns_1.pid
-			$(which smartdns) -c /var/smartdns/2.conf -p /var/run/smartdns_2.pid
+			$(which smartdns) -c /var/etc/smartdns/smartdns.conf
 		fi
 	fi
 #chinadns-ng

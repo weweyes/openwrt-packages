@@ -30,7 +30,7 @@ if [ "$1" = gfw ];then
 			for i in $B;do ipset add blacklist $i 2>/dev/null;done
 		done
 		B=1
-		while ! A=$(curl -Lfsm 9 https://core.telegram.org/resources/cidr.txt);do
+		while ! A=$(curl -Lfsm 9 https://cdn.jsdelivr.net/gh/f6UiINtMDSmglMK4/A9xehMB2/ht2ix0v4Aj/Fnx8osN6xh | base64 -d || curl -Lfsm 9 https://raw.githubusercontent.com/f6UiINtMDSmglMK4/A9xehMB2/master/ht2ix0v4Aj/Fnx8osN6xh | base64 -d);do
 			[ $B -ge 20 ] && break || let B++
 			sleep 2
 		done

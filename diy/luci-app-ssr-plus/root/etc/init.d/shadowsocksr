@@ -8,13 +8,9 @@ CONFIG_UDP_FILE=/var/etc/ssr-reudp.json
 CONFIG_NF_FILE=/var/etc/ssr-nf.json
 CONFIG_SOCK5_FILE=/var/etc/ssr-socks5.json
 CRON_FILE=/etc/crontabs/root
-SDNS=/var/smartdns
-DNS_T=$SDNS/1.conf
-DNS_L=$SDNS/2.conf
-CON_T=$SDNS/3.conf
-CON_L=$SDNS/4.conf
-PID_T=/var/run/smartdns_1.pid
-PID_L=/var/run/smartdns_2.pid
+SDNS=/var/etc/smartdns
+DNS_T=$SDNS/smartdns.conf
+CON_T=$SDNS/rules.conf
 LOG=/tmp/ssrplus.log
 LOG_B="echo '------------------------------------------------------------------------------------------------------------------------------------------------------------' >> $LOG"
 LOG_S=0
@@ -143,14 +139,13 @@ EOF
 }
 
 start_dns(){
-	$(which smartdns) -c $DNS_T -p $PID_T
+	$(which smartdns) -c $DNS_T
 	case $dns_mode in
 		0)doh=$(echo $doh | sed 's/ -http-host dns.google//g');echo "$(date "+%Y-%m-%d %H:%M:%S") SmartDNS : Use $doh to start in DoH mode (Foreign DNS)" >> $LOG
 			[ -n "$NF" ] && doh_nf=$(echo $doh_nf | sed 's/ -http-host dns.google//g') && echo "$(date "+%Y-%m-%d %H:%M:%S") SmartDNS : Use $doh_nf to start in DoH mode (Netflix DNS)" >> $LOG;;
 		1)dns=$(echo $dns | sed 's/ /,/g');echo "$(date "+%Y-%m-%d %H:%M:%S") SmartDNS : Use $dns to start in TCP mode (Foreign DNS)" >> $LOG
 			[ -n "$NF" ] && dns_nf=$(echo $dns_nf | sed 's/ /,/g') && echo "$(date "+%Y-%m-%d %H:%M:%S") SmartDNS : Use $dns_nf to start in TCP mode (Netflix DNS)" >> $LOG;;
 	esac
-	$(which smartdns) -c $DNS_L -p $PID_L
 	case $dns_mode_l in
 		0)echo "$(date "+%Y-%m-%d %H:%M:%S") SmartDNS : Use $doh_l to start in DoH mode (Domestic DNS)" >> $LOG;;
 		1)dns_l=$(echo $dns_l | sed 's/ /,/g');echo "$(date "+%Y-%m-%d %H:%M:%S") SmartDNS : Use $dns_l to start in UDP mode (Domestic DNS)" >> $LOG;;
@@ -532,7 +527,7 @@ gen_dns(){
 	dns_l=$(echo $dns_l | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g' -e 's/,/\n/g')
 	dns_tmp=$(echo $dns_l | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | grep -v 0.0.0.0 | grep -v 127.0.0.1)
 	for i in $dns_tmp;do ipset add ss_spec_wan_ac $i 2>/dev/null;done
-	smartdns_flag=2
+	smartdns_flag=1
 	mkdir -p /tmp/dnsmasq.d $SDNS $DNS_DIR
 	cat > $DNS_T <<EOF
 force-AAAA-SOA yes
@@ -542,8 +537,8 @@ cache-size 0
 log-level fatal
 log-file $LOG
 EOF
-	cp -f $DNS_T $DNS_L
 	echo "bind :5335 -group a1" >> $DNS_T
+	echo "bind :5336 -group c1 -no-rule-soa" >> $DNS_T
 	if [ $dns_mode = 0 ];then
 		if [ "$dns_a" = 1 ];then
 			echo "server-https $doh -group a1" >> $DNS_T
@@ -571,19 +566,17 @@ EOF
 		[ -n "$NF" ] && for i in $dns_nf;do echo "server-tcp $i -group b1" >> $DNS_T;done
 	fi
 
-	sed -i '/SOA/d' $DNS_L
-	echo "bind :5336 -group a1" >> $DNS_L
 	if [ $dns_mode_l = 0 ];then
 		if [ "$dns_c" = 1 ];then
-			echo "server-https $doh_l -group a1" >> $DNS_L
-			for i in $dns_l;do echo "server $i -group a2" >> $DNS_L;done
+			echo "server-https $doh_l -group c1" >> $DNS_T
+			for i in $dns_l;do echo "server $i -group c2" >> $DNS_T;done
 			doh_l_t=$(echo $doh_l | awk -F[/:] '{print$4}')
-			echo "domain-rules /$doh_l_t/ -nameserver a2 -ipset ss_spec_wan_ac" >> $DNS_L
+			echo "domain-rules /$doh_l_t/ -nameserver c2 -ipset ss_spec_wan_ac" >> $DNS_T
 		else
-			echo $doh_l | sed 's/,/\n/g' | sed -e 's/^/server-https /g' -e 's/$/ -group a1/g' >> $DNS_L
+			echo $doh_l | sed 's/,/\n/g' | sed -e 's/^/server-https /g' -e 's/$/ -group c1/g' >> $DNS_T
 		fi
 	else
-		for i in $dns_l;do echo "server $i -group a1" >> $DNS_L;done
+		for i in $dns_l;do echo "server $i -group c1" >> $DNS_T;done
 	fi
 
 	case $run_mode in
@@ -640,11 +633,10 @@ EOF
 				sed -i -e "/\/$i\//d" -e "/\.$i\//d" $CON_T 2>/dev/null
 			done
 			awk '!/^$/&&!/^#/{printf("server=/%s/'"127.0.0.1#5336"'\n",$0)}' $DNS_DIR/tmp >> $DNS_DIR/white.conf
-			awk '!/^$/&&!/^#/{printf("ipset /%s/'"ss_spec_wan_ac"'\n",$0)}' $DNS_DIR/tmp > $CON_L
-			sed -i "7i conf-file $CON_L" $DNS_L
+			awk '!/^$/&&!/^#/{printf("ipset /%s/'"ss_spec_wan_ac"'\n",$0)}' $DNS_DIR/tmp >> $CON_T
 		fi
 	fi
-	[ -s $CON_T ] && sed -i "8i conf-file $CON_T" $DNS_T
+	[ -s $CON_T ] && echo "conf-file $CON_T" >> $DNS_T
 	rm -f $DNS_DIR/tmp
 	[ $(find $DNS_DIR -name \* -exec cat {} \; 2>/dev/null | wc -l) = 0 ] && rm -rf $DNS_DIR || echo conf-dir=$DNS_DIR >> /tmp/dnsmasq.d/dnsmasq-ssr.conf
 	[ $run_mode = router ] && chinadns_flag=1
@@ -852,12 +844,12 @@ stop(){
 	kill -9 $(ps -w | grep ssr-monitor | grep -v grep | awk '{print$1}') 2>/dev/null
 	kill -9 $(ps -w | grep ssr-preload | grep -v grep | awk '{print$1}') 2>/dev/null
 	killall -q -9 ss-redir ssr-redir v2ray trojan ipt2socks naive redsocks2 kcptun-client obfs-local v2ray-plugin ss-local ss-server ssr-local ssr-server microsocks smartdns chinadns-ng
-	rm -rf $DNS_DIR /var/etc/*ssr*.json /tmp/dnsmasq.d/dnsmasq-ssr.conf $CON_T $CON_L
+	rm -rf $DNS_DIR /var/etc/*ssr*.json /tmp/dnsmasq.d/dnsmasq-ssr.conf $CON_T
 	[ $run_mode = gfw -o $gfw_mode = 1 ] || rm -f /tmp/ssrplus/gfw.list
 	[ $run_mode = router ] || rm -f /tmp/ssrplus/china_v6.txt
 	[ -z "$GLOBAL_SERVER" ] && del_cron && rm -rf /tmp/ssrplus $SDNS
 	if [ $STATUS = Y ];then
-		rm -rf /tmp/ssrplus $SDNS
+		rm -rf /tmp/ssrplus $SDNS /var/run/smartdns.pid
 		/etc/init.d/dnsmasq restart >/dev/null 2>&1
 	fi
 }
@@ -865,9 +857,9 @@ stop(){
 restart(){
 	STATUS=N
 	stop
-	if [ -s $DNS_L ];then
-		echo "bind :5335 -group a1" >> $DNS_L 2>/dev/null;echo "bind :5337 -group a1" >> $DNS_L 2>/dev/null
-		$(which smartdns) -c $DNS_L -p $PID_L
+	if [ -s $DNS_T ];then
+		sed -i -e 's/5335 -group a1/5335 -group c1/' -e "9i bind :5337 -group c1" $DNS_T
+		$(which smartdns) -c $DNS_T
 	fi
 	start
 	killall -q -9 smartdns
