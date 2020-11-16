@@ -1,20 +1,11 @@
-From fbfe2355104180f5601d6a83ca22392ebbfcf2ac Mon Sep 17 00:00:00 2001
-From: garypang13 <48883331+garypang13@users.noreply.github.com>
-Date: Mon, 16 Nov 2020 16:16:03 +0800
-Subject: [PATCH] Update local.c
-
----
- src/local.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/src/local.c b/src/local.c
-index d7e49ad..add984d 100644
 --- a/src/local.c
 +++ b/src/local.c
-@@ -719,5 +719,5 @@
+@@ -718,7 +718,7 @@
+ 
                      ss_free(hostname);
                  } else {
 -                    strncpy(host, ip, sizeof(ip));
 +                    strncpy(host, ip, INET6_ADDRSTRLEN);
                  }
              }
+ 
