@@ -31,7 +31,6 @@ define Package/shadowsocksr-libev
 endef
 
 Package/shadowsocksr-libev-server = $(Package/shadowsocksr-libev)
-Package/shadowsocksr-libev-alt = $(Package/shadowsocksr-libev)
 Package/shadowsocksr-libev-ssr-local = $(Package/shadowsocksr-libev)
 
 CONFIGURE_ARGS += --disable-documentation --disable-ssp --disable-assert
@@ -39,15 +38,6 @@ CONFIGURE_ARGS += --disable-documentation --disable-ssp --disable-assert
 define Package/shadowsocksr-libev/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ss-redir $(1)/usr/bin/ssr-redir
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ss-local $(1)/usr/bin/ssr-local
-	$(LN) ssr-local $(1)/usr/bin/ssr-tunnel
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/server/ss-check $(1)/usr/bin/ssr-check
-endef
-
-define Package/shadowsocksr-libev-alt/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ss-redir $(1)/usr/bin/ssr-redir
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/server/ss-check $(1)/usr/bin/ssr-check
 endef
 
 define Package/shadowsocksr-libev-server/install
@@ -58,10 +48,8 @@ endef
 define Package/shadowsocksr-libev-ssr-local/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ss-local $(1)/usr/bin/ssr-local
-	$(LN) ssr-local $(1)/usr/bin/ssr-tunnel
 endef
 
 $(eval $(call BuildPackage,shadowsocksr-libev))
-$(eval $(call BuildPackage,shadowsocksr-libev-alt))
 $(eval $(call BuildPackage,shadowsocksr-libev-server))
 $(eval $(call BuildPackage,shadowsocksr-libev-ssr-local))
