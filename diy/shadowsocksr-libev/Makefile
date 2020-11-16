@@ -22,7 +22,7 @@ PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/shadowsocksr-libev
+define Package/shadowsocksr-libev-redir
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=Lightweight Secured Socks5 Proxy
@@ -30,12 +30,12 @@ define Package/shadowsocksr-libev
 	DEPENDS:=+libopenssl +libpthread +libpcre +zlib
 endef
 
-Package/shadowsocksr-libev-server = $(Package/shadowsocksr-libev)
-Package/shadowsocksr-libev-ssr-local = $(Package/shadowsocksr-libev)
+Package/shadowsocksr-libev-server = $(Package/shadowsocksr-libev-redir)
+Package/shadowsocksr-libev-ssr-local = $(Package/shadowsocksr-libev-redir)
 
 CONFIGURE_ARGS += --disable-documentation --disable-ssp --disable-assert
 
-define Package/shadowsocksr-libev/install
+define Package/shadowsocksr-libev-redir/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ss-redir $(1)/usr/bin/ssr-redir
 endef
@@ -50,6 +50,6 @@ define Package/shadowsocksr-libev-ssr-local/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ss-local $(1)/usr/bin/ssr-local
 endef
 
-$(eval $(call BuildPackage,shadowsocksr-libev))
+$(eval $(call BuildPackage,shadowsocksr-libev-redir))
 $(eval $(call BuildPackage,shadowsocksr-libev-server))
 $(eval $(call BuildPackage,shadowsocksr-libev-ssr-local))
