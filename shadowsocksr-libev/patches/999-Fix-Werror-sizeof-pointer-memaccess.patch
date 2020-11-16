@@ -11,12 +11,10 @@ diff --git a/src/local.c b/src/local.c
 index d7e49ad..add984d 100644
 --- a/src/local.c
 +++ b/src/local.c
-@@ -718,7 +718,7 @@ server_recv_cb(EV_P_ ev_io *w, int revents) {
- 
+@@ -719,5 +719,5 @@
                      ss_free(hostname);
                  } else {
 -                    strncpy(host, ip, sizeof(ip));
 +                    strncpy(host, ip, INET6_ADDRSTRLEN);
                  }
              }
- 
