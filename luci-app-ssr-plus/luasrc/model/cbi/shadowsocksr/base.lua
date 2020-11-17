@@ -82,7 +82,7 @@ o:value("0",translate("Use SmartDNS DoH query"))
 o:value("1",translate("Use SmartDNS TCP query"))
 
 o=s:option(Value,"dns",translate("Foreign DoH"),
-translate("Custom DNS format is https://cloudflare-dns.com/dns-query or https:///104.16.249.249/dns-query -http-host cloudflare-dns.com"))
+translate("Custom DNS format is https://cloudflare-dns.com/dns-query or https://104.16.249.249/dns-query -http-host cloudflare-dns.com"))
 o:value("","Cloudflare DoH")
 o:value("google",""..translate("Google").." DoH")
 o:value("quad9","Quad9 DoH")
@@ -119,7 +119,7 @@ o:value("0",translate("Use SmartDNS DoH query"))
 o:value("1",translate("Use SmartDNS UDP query"))
 
 o=s:option(Value,"dns_l",translate("Domestic DoH"),
-translate("Custom DNS format is https://dns.alidns.com/dns-query or https:///223.5.5.5/dns-query"))
+translate("Custom DNS format is https://dns.alidns.com/dns-query or https://223.5.5.5/dns-query"))
 o:value("",""..translate("Ali").." DoH")
 o:value("1","Dnspod DoH")
 o:depends("dns_mode_l",0)

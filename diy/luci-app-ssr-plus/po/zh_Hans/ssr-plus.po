@@ -121,8 +121,8 @@ msgstr "使用SmartDNS TCP查询"
 msgid "Foreign DoH"
 msgstr "国外DoH"
 
-msgid "Custom DNS format is https://cloudflare-dns.com/dns-query or https:///104.16.249.249/dns-query -http-host cloudflare-dns.com"
-msgstr "自定义DNS格式为 https://cloudflare-dns.com/dns-query 或 https:///104.16.249.249/dns-query -http-host cloudflare-dns.com"
+msgid "Custom DNS format is https://cloudflare-dns.com/dns-query or https://104.16.249.249/dns-query -http-host cloudflare-dns.com"
+msgstr "自定义DNS格式为 https://cloudflare-dns.com/dns-query 或 https://104.16.249.249/dns-query -http-host cloudflare-dns.com"
 
 msgid "Google"
 msgstr "谷歌"
@@ -148,8 +148,8 @@ msgstr "如果DoH解析不正常则使用UDP模式并选择ISP的DNS"
 msgid "Domestic DoH"
 msgstr "国内DoH"
 
-msgid "Custom DNS format is https://dns.alidns.com/dns-query or https:///223.5.5.5/dns-query"
-msgstr "自定义DNS格式为 https://dns.alidns.com/dns-query 或 https:///223.5.5.5/dns-query"
+msgid "Custom DNS format is https://dns.alidns.com/dns-query or https://223.5.5.5/dns-query"
+msgstr "自定义DNS格式为 https://dns.alidns.com/dns-query 或 https://223.5.5.5/dns-query"
 
 msgid "Ali"
 msgstr "阿里"
