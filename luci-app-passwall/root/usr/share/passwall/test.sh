@@ -70,7 +70,7 @@ test_auto_switch() {
 	if [ "$status" == 0 ]; then
 		echolog "自动切换检测：${type}_${index}节点$(config_n_get $now_node type) $(config_n_get $now_node address) $(config_n_get $now_node port)正常。"
 		#检测主节点是否能使用
-		local main_node=$(config_t_get auto_switch tcp_main1)
+		local main_node=$(config_t_get global tcp_node1)
 		if [ "$now_node" != "$main_node" ]; then
 			local node_type=$(echo $(config_n_get $main_node type) | tr 'A-Z' 'a-z')
 			if [ "$node_type" == "socks" ]; then

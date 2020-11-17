@@ -324,9 +324,9 @@ start_retcp(){
 			$BIN_DIR/gen${type}config $GLOBAL_SERVER tcp $local_port $port $server > /var/etc/$V2
 			sed -i 's/\\//g' /var/etc/$V2
 			$cmd -c /var/etc/$V2 >/dev/null 2>&1 &
-			echo "$(date "+%Y-%m-%d %H:%M:%S") Main Node: $($cmd -version | head -1) Started!" >> $LOG
+			echo "$(date "+%Y-%m-%d %H:%M:%S") Main Node: $($cmd -version | head -1 | awk '{print$1,$2}') Started!" >> $LOG
 			if [ "$socks5_start" = 1 ];then
-				echo "$(date "+%Y-%m-%d %H:%M:%S") Socks5 Node: $($cmd -version | head -1) Started!" >> $LOG
+				echo "$(date "+%Y-%m-%d %H:%M:%S") Socks5 Node: $($cmd -version | head -1 | awk '{print$1,$2}') Started!" >> $LOG
 			fi;;
 		trojan)
 			redir_tcp=$threads
@@ -374,7 +374,7 @@ start_reudp(){
 			$BIN_DIR/gen${type}config $UDP_RELAY_SERVER udp $udp_local_port 0 $udp_server > /var/etc/v2-ssr-reudp.json
 			sed -i 's/\\//g' /var/etc/v2-ssr-reudp.json
 			$cmd -c /var/etc/v2-ssr-reudp.json >/dev/null 2>&1 &
-			echo "$(date "+%Y-%m-%d %H:%M:%S") UDP Relay: $($cmd -version | head -1) Started!" >> $LOG;;
+			echo "$(date "+%Y-%m-%d %H:%M:%S") UDP Relay: $($cmd -version | head -1 | awk '{print$1,$2}') Started!" >> $LOG;;
 		trojan)
 			let ip_port=udp_local_port+1;[ $ip_port = "$nf_local_port" ] && let ip_port=ip_port+1
 			$BIN_DIR/gentrojanconfig $UDP_RELAY_SERVER client $ip_port $udp_server > /var/etc/trojan-ssr-reudp.json
@@ -415,7 +415,7 @@ start_renf(){
 			$BIN_DIR/gen${type}config $NF_SERVER tcp $nf_local_port 0 $nf_ip > /var/etc/v2-ssr-nf.json
 			sed -i 's/\\//g' /var/etc/v2-ssr-nf.json
 			$cmd -c /var/etc/v2-ssr-nf.json >/dev/null 2>&1 &
-			echo "$(date "+%Y-%m-%d %H:%M:%S") NF Shunt   : $($cmd -version | head -1) Started!" >> $LOG;;
+			echo "$(date "+%Y-%m-%d %H:%M:%S") NF Shunt   : $($cmd -version | head -1 | awk '{print$1,$2}') Started!" >> $LOG;;
 		trojan)
 			$BIN_DIR/gentrojanconfig $NF_SERVER nat $nf_local_port $nf_ip > /var/etc/trojan-ssr-nf.json
 			sed -i 's/\\//g' /var/etc/trojan-ssr-nf.json
@@ -709,7 +709,7 @@ start_local(){
 			$BIN_DIR/gen${type}config $SO_SERVER tcp 0 $socks5_port $socks5_ip > /var/etc/v2-ssr-socks5.json
 			sed -i 's/\\//g' /var/etc/v2-ssr-socks5.json
 			$cmd -c /var/etc/v2-ssr-socks5.json >/dev/null 2>&1 &
-			echo "$(date "+%Y-%m-%d %H:%M:%S") Socks5 Node: $($cmd -version | head -1) Started!" >> $LOG;;
+			echo "$(date "+%Y-%m-%d %H:%M:%S") Socks5 Node: $($cmd -version | head -1 | awk '{print$1,$2}') Started!" >> $LOG;;
 		trojan)
 			$BIN_DIR/gentrojanconfig $SO_SERVER client $socks5_port $socks5_ip > /var/etc/trojan-ssr-socks5.json
 			sed -i 's/\\//g' /var/etc/trojan-ssr-socks5.json
@@ -763,17 +763,26 @@ run_server(){
 	[ $server_count = 1 ] && iptables-save -t filter | grep SSR-SERVER-RULE >/dev/null || iptables -N SSR-SERVER-RULE && iptables -t filter -I INPUT -j SSR-SERVER-RULE
 	type=$(uci_get_by_name $1 type ssr)
 	[ $type = ss -o $type = ssr ] && cmd=$(f_bin $type-server) || cmd=$(which microsocks)
-	[ ! -x $cmd ] && echo "$(date "+%Y-%m-%d %H:%M:%S") SSR Server: Can't find $cmd program, start failed!" >> /tmp/ssrplus.log && return 1
+	[ ! -x $cmd ] && echo "$(date "+%Y-%m-%d %H:%M:%S") SSR server: Can't find $cmd program, start failed!" >> /tmp/ssrplus.log && return 1
 	port=$(uci_get_by_name $1 server_port)
 	pass=$(uci_get_by_name $1 password)
 	name=ssr-server_$server_count
 	case $type in
 		ss|ssr)timeout=$(uci_get_by_name $1 timeout 60);gen_service_file $1 $type /var/etc/$name.json
 			$cmd -c /var/etc/$name.json -u >/dev/null 2>&1 &
-			echo "$(date "+%Y-%m-%d %H:%M:%S") Server:ShadowsocksR Server$server_count Started!" >>/tmp/ssrplus.log;;
-		*)[ $(uci_get_by_name $1 auth_enable 0) = 1 ] && param="$([ $(uci_get_by_name $1 auth_once 0) = 1 ] && echo -1) -u $(uci_get_by_name $1 username) -P $pass"
-			$cmd -p $port $param $name >/dev/null 2>&1 &
-			echo "$(date "+%Y-%m-%d %H:%M:%S") Server:Socks5 Server$server_count Started!" >>/tmp/ssrplus.log;;
+			echo "$(date "+%Y-%m-%d %H:%M:%S") SSR server: ShadowsocksR Server$server_count Started!" >>/tmp/ssrplus.log;;
+		*)
+		if [ $(uci_get_by_name $1 auth_enable 0) = 1 ];then
+			username=$(uci_get_by_name $1 username)
+			if [ -n "$username" ];then
+				param="$([ $(uci_get_by_name $1 auth_once 0) = 1 ] && echo -1) -u $username -P $pass"
+			else
+				echo "$(date "+%Y-%m-%d %H:%M:%S") SSR server: User and pass must be used together!" >>/tmp/ssrplus.log
+				return 1
+			fi
+		fi
+		$cmd -p $port $param $name >/dev/null 2>&1 &
+		echo "$(date "+%Y-%m-%d %H:%M:%S") SSR server: Socks5 Server$server_count Started!" >>/tmp/ssrplus.log;;
 	esac
 	iptables -t filter -A SSR-SERVER-RULE -p tcp --dport $port -j ACCEPT
 	iptables -t filter -A SSR-SERVER-RULE -p udp --dport $port -j ACCEPT

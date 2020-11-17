@@ -10,6 +10,10 @@ LUCI_PKGARCH:=all
 PKG_VERSION:=1.0
 PKG_RELEASE:=9
 
+define Package/luci-app-autoreboot/conffiles
+/etc/config/autoreboot
+endef
+
 include $(TOPDIR)/feeds/luci/luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature

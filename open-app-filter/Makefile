@@ -29,6 +29,9 @@ define Package/appfilter/description
   open appfilter app
 endef
 
+define Package/$(PKG_NAME)/conffiles
+  /etc/config/appfilter
+endef
 
 define Package/appfilter/install
 	echo "install"

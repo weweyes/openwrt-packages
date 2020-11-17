@@ -89,7 +89,7 @@ function refresh_data()
 			retstring="-1"
 		end
 	elseif set=="ip_data" then
-		refresh_cmd="A=`curl -Lfs https://small_5.coding.net/p/adbyby/d/adbyby/git/raw/master/delegated-apnic-latest` && echo \"$A\" | awk -F\\| '/CN\\|ipv4/{printf\"%s/%d\\n\",$4,32-log($5)/log(2)}' > /tmp/china.txt"
+		refresh_cmd="A=`curl -Lfsm 9 https://cdn.jsdelivr.net/gh/f6UiINtMDSmglMK4/A9xehMB2/ht2ix0v4Aj/zp2XmWPY9R4 || curl -Lfsm 9 https://raw.githubusercontent.com/f6UiINtMDSmglMK4/A9xehMB2/master/ht2ix0v4Aj/zp2XmWPY9R4` && echo \"$A\" | base64 -d > /tmp/china.txt"
 		sret=luci.sys.call(refresh_cmd)
 		icount=luci.sys.exec("cat /tmp/china.txt | wc -l")
 		if sret==0 and tonumber(icount)>1000 then
