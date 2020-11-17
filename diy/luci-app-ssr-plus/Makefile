@@ -2,31 +2,15 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-ssr-plus
 PKG_VERSION:=1.2
-PKG_RELEASE:=18
+PKG_RELEASE:=19
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)/config
-config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks
-	bool "Include Shadowsocks New Version"
-	default y
-
-config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Local
-	bool "Include Shadowsocks Local"
-	default y
-
 config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Server
 	bool "Include Shadowsocks Server"
-	default y
-
-config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR
-	bool "Include ShadowsocksR"
-	default y
-
-config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Local
-	bool "Include ShadowsocksR Local"
 	default y
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server
@@ -73,11 +57,7 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_Socks_Server
 endef
 
 PKG_CONFIG_DEPENDS:= \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Local \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Server \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Local \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Simple_obfs \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Simple_obfs_server \
@@ -97,11 +77,8 @@ define Package/$(PKG_NAME)
 	TITLE:=SS/SSR/V2Ray LuCI interface
 	PKGARCH:=all
 	DEPENDS:=+ipset +ip-full +iptables-mod-tproxy +dnsmasq-full +smartdns +coreutils +coreutils-base64 +curl +tcping +chinadns-ng +lua +luci-compat \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks:shadowsocks-libev-ss-redir \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Local:shadowsocks-libev-ss-local \
+	+shadowsocks-libev-ss-redir +shadowsocks-libev-ss-local +shadowsocksr-libev-redir +shadowsocksr-libev-ssr-local
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Server:shadowsocks-libev-ss-server \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR:shadowsocksr-libev-redir \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Local:shadowsocksr-libev-ssr-local \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server:shadowsocksr-libev-server \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Simple_obfs:simple-obfs \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Simple_obfs_server:simple-obfs-server \
@@ -116,7 +93,7 @@ define Package/$(PKG_NAME)
 endef
 
 define Build/Prepare
-	$(foreach po,$(wildcard ${CURDIR}/po/zh_Hans/*.po), \
+	$(foreach po,$(wildcard ${CURDIR}/po/zh-cn/*.po), \
 		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.zh-cn.lmo,$(notdir $(po)));)
 endef
 
