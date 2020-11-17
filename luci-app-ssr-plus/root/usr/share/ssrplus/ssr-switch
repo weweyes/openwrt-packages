@@ -68,6 +68,7 @@ while :;do
 	sleep $time_a
 	if [ $SERVER_A != $SERVER_B ];then
 		echo "$(date "+%Y-%m-%d %H:%M:%S") Current server($($UCI$SERVER_B.alias || uci_get_by_name $SERVER_B server)) is not main server($($UCI$SERVER_A.alias || uci_get_by_name $SERVER_A server)).Try to switch back." >> /tmp/ssrplus.log
+sleep 3600
 		if test_proxy $SERVER_A;then
 			echo "$(date "+%Y-%m-%d %H:%M:%S") Main server is available.Switch to main server." >> /tmp/ssrplus.log
 			SERVER_B=$SERVER_A

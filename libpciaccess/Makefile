@@ -11,7 +11,7 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=https://www.x.org/releases/individual/lib/
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_HASH:=3df543e12afd41fea8eac817e48cbfde5aed8817b81670a4e9e493bb2f5bf2a4
+PKG_HASH:=skip
 
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
