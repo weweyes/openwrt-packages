@@ -3,7 +3,7 @@
 <script type="text/javascript">//<![CDATA[
 	function onclick_logview(section, bottom)  {
 		// get elements
-		var txt = document.getElementById("widget.cbid.amule.main._logview.txt");	// TextArea
+		var txt = document.getElementById("cbid.amule.main._logview.txt");	// TextArea
 		if ( !txt ) { return; }	// security check
 		var lvXHR = new XHR();
 		lvXHR.get('<%=url('admin/nas/amule/logview')%>', null,
