@@ -225,3 +225,12 @@
  include $(TOPDIR)/feeds/luci/luci.mk
  
  # call BuildPackage - OpenWrt buildroot signature
+
+--- a/luci-app-ssr-plus/Makefile
++++ b/luci-app-ssr-plus/Makefile
+@@ -125,4 +125,5 @@
+ 
+ define Package/$(PKG_NAME)/conffiles
++/etc/config/shadowsocksr
+ /etc/ssr/
+ endef
