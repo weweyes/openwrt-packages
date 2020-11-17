@@ -11,6 +11,10 @@ LUCI_PKGARCH:=all
 PKG_VERSION:=1.0
 PKG_RELEASE:=4
 
+define Package/luci-app-softethervpn/conffiles
+/etc/config/softethervpn
+endef
+
 include $(TOPDIR)/feeds/luci/luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature

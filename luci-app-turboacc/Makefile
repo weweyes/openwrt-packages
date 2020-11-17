@@ -12,11 +12,9 @@ PKG_RELEASE:=2
 PKG_LICENSE:=GPLv3.0+
 
 LUCI_TITLE:=LuCI support for Flow Offload / Shortcut-FE
-LUCI_DEPENDS:=+pdnsd-alt \
-              +PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe:kmod-fast-classifier \
+LUCI_DEPENDS:=+PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe:kmod-fast-classifier \
               +PACKAGE_$(PKG_NAME)_INCLUDE_flow-offload:kmod-ipt-offload \
-              +PACKAGE_$(PKG_NAME)_INCLUDE_bbr-cca:kmod-tcp-bbr \
-              +PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder:dnsforwarder
+              +PACKAGE_$(PKG_NAME)_INCLUDE_bbr-cca:kmod-tcp-bbr
 LUCI_PKGARCH:=all
 
 define Package/$(PKG_NAME)/config
@@ -32,17 +30,16 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe
 config PACKAGE_$(PKG_NAME)_INCLUDE_bbr-cca
 	bool "Include BBR CCA"
 	default y
-
-config PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder
-	bool "Include DNSForwarder"
-	default n
 endef
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_shortcut-fe \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_flow-offload \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_bbr-cca \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_bbr-cca
+
+define Package/luci-app-turboacc/conffiles
+/etc/config/turboacc
+endef
 
 include $(TOPDIR)/feeds/luci/luci.mk
 

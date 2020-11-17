@@ -13,6 +13,10 @@ PKG_NAME:=luci-app-accesscontrol
 PKG_VERSION:=1
 PKG_RELEASE:=11
 
+define Package/luci-app-accesscontrol/conffiles
+/etc/config/mia
+endef
+
 include $(TOPDIR)/feeds/luci/luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature

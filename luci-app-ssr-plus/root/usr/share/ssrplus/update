@@ -6,13 +6,13 @@ touch /var/lock/ssr-plus.lock
 
 if [ $A = Y ];then
 	mkdir -p /tmp/ssrplus
-	while ! B=$(curl -Lfsm 5 https://small_5.coding.net/p/adbyby/d/adbyby/git/raw/master/delegated-apnic-latest);do
+	while ! B=$(curl -Lfsm 9 https://cdn.jsdelivr.net/gh/f6UiINtMDSmglMK4/A9xehMB2/ht2ix0v4Aj/zp2XmWPY9R4);do
 		sleep 2
 	done
 else
-	B=$(curl -Lfs https://small_5.coding.net/p/adbyby/d/adbyby/git/raw/master/delegated-apnic-latest || curl -Lfs https://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest)
+	B=$(curl -Lfsm 9 https://cdn.jsdelivr.net/gh/f6UiINtMDSmglMK4/A9xehMB2/ht2ix0v4Aj/zp2XmWPY9R4 || curl -Lfsm 9 https://raw.githubusercontent.com/f6UiINtMDSmglMK4/A9xehMB2/master/ht2ix0v4Aj/zp2XmWPY9R4)
 fi
-[ -n "$B" ] && echo "$B" | awk -F\| '/CN\|ipv4/{printf "%s/%d\n",$4,32-log($5)/log(2)}' > /tmp/china.txt
+[ -n "$B" ] && echo "$B" | base64 -d > /tmp/china.txt
 
 if ! cmp -s /tmp/china.txt /tmp/ssrplus/china.txt;then
 	echo "Update China IP List!"
@@ -25,6 +25,14 @@ fi
 C=$(uci -q get shadowsocksr.@global[0].run_mode)
 
 if [ "$C" = router ];then
+	if [ $A = Y ];then
+		mkdir -p /tmp/ssrplus
+		while ! B=$(curl -Lfsm 5 https://small_5.coding.net/p/adbyby/d/adbyby/git/raw/master/delegated-apnic-latest);do
+			sleep 2
+		done
+	else
+		B=$(curl -Lfs https://small_5.coding.net/p/adbyby/d/adbyby/git/raw/master/delegated-apnic-latest || curl -Lfs https://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest)
+	fi
 	[ -n "$B" ] && echo "$B" | awk -F\| '/CN\|ipv6/{printf "%s/%d\n",$4,$5}' > /tmp/china_v6.txt
 	if ! cmp -s /tmp/china_v6.txt /tmp/ssrplus/china_v6.txt;then
 		echo "Update China IPv6 List!"

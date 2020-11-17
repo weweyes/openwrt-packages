@@ -36,6 +36,10 @@ define Package/$(PKG_NAME)/description
 	A simple WebDav server written in Golang.
 endef
 
+define Package/$(PKG_NAME)/conffiles
+/etc/config/gowebdav
+endef
+
 define Build/Prepare
 	tar -zxf $(DL_DIR)/$(PKG_SOURCE) -C $(PKG_BUILD_DIR) --strip-components 1
 endef
