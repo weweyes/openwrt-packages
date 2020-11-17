@@ -8,7 +8,6 @@ sed -i '/resolvfile=/d' luci-app-adguardhome/root/etc/init.d/AdGuardHome
 sed -i '/if test_proxy/i sleep 3600' luci-app-ssr-plus/root/usr/share/ssrplus/ssr-switch
 sed -i 's/ +kmod-fs-exfat//g' automount/Makefile
 sed -i 's/ @!BUSYBOX_DEFAULT_IP:/ +/g' wrtbwmon/Makefile
-find */luasrc/view/ -maxdepth 2 -name "*.htm" | xargs -i sed -i 's/getElementById("cbid/getElementById("widget.cbid/g' {}
 find */luasrc/view/ -maxdepth 2 -name "*.htm" | xargs -i sed -i 's?"http://" + window.location.hostname?window.location.protocol + "//" + window.location.hostname?g' {}
 getversion(){
 ver=$(basename $(curl -Ls -o /dev/null -w %{url_effective} https://github.com/$1/releases/latest) | grep -o -E "[0-9].+")
