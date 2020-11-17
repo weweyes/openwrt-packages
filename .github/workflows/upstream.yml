@@ -42,7 +42,6 @@ jobs:
       run: |
         rm -rf `find -maxdepth 1 -type d -name "[!.]*" ! -path "./diy"`
         git rm -r --cache *
-        git clone https://github.com/garypang13/default-settings
         git clone https://github.com/garypang13/openwrt-adguardhome AdGuardHome
         git clone https://github.com/garypang13/luci-app-eqos
         git clone https://github.com/garypang13/luci-app-amule
