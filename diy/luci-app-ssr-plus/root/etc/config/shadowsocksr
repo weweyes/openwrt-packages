@@ -16,7 +16,6 @@ config access_control
 	option lan_ac_mode 'b'
 
 config server_global
-	option enable_server '0'
 
 config server_subscribe
 	option proxy '0'
