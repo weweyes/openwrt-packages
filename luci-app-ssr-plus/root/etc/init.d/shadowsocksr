@@ -50,6 +50,7 @@ GLOBAL_SERVER=$(uci_get_by_type global global_server)
 gfw_mode=$(uci_get_by_type global gfw_mode 0)
 run_mode=$(uci_get_by_type global run_mode router)
 SO_SERVER=$(uci_get_by_type socks5_proxy server 0)
+dns_mode_l=$(uci_get_by_type global dns_mode_l 0)
 
 firstdown(){
 	[ $1 = 1 ] && A=$BIN_DIR/checknetwork && B=check
@@ -508,7 +509,6 @@ gen_dns(){
 		fi
 	fi
 
-	dns_mode_l=$(uci_get_by_type global dns_mode_l 0)
 	if [ $dns_mode_l = 0 ];then
 		dns_l=$(uci_get_by_type global dns_l 0)
 		case $dns_l in
@@ -576,9 +576,9 @@ EOF
 	if [ $dns_mode_l = 0 ];then
 		if [ "$dns_c" = 1 ];then
 			echo "server-https $doh_l" >> $DNS_L
-			for i in $dns_l;do echo "server $i -group d -exclude-default-group" >> $DNS_L;done
+			for i in $dns_l;do echo "server $i -group a -exclude-default-group" >> $DNS_L;done
 			doh_l_t=$(echo $doh_l | awk -F[/:] '{print$4}')
-			echo "domain-rules /$doh_l_t/ -nameserver d -ipset ss_spec_wan_ac" >> $DNS_L
+			echo "domain-rules /$doh_l_t/ -nameserver a -ipset ss_spec_wan_ac" >> $DNS_L
 		else
 			echo $doh_l | sed 's/,/\n/g' | sed -e 's/^/server-https /g' >> $DNS_L
 		fi
@@ -875,7 +875,32 @@ restart(){
 	STATUS=N
 	stop
 	if [ -s $DNS_L ];then
-		echo "bind :5335" >> $DNS_L 2>/dev/null;echo "bind :5337" >> $DNS_L 2>/dev/null
+	cat > $DNS_L <<EOF
+speed-check-mode none
+cache-persist no
+cache-size 0
+log-level fatal
+log-file $LOG
+bind :5335
+bind :5336
+bind :5337
+EOF
+		if [ $dns_mode_l = 0 -a $(uci_get_by_type global isp_dns 0) = 0 ];then
+			dns_l="223.5.5.5 223.6.6.6"
+		else
+			dns_l=$(uci_get_by_type global udp_dns isp)
+		fi
+		if [ "$dns_l" = isp -o $dns_mode_l = 1 ];then
+			[ "$dns_l" = isp ] && dns_l=$(cat /tmp/resolv.conf.d/resolv.conf.auto 2>/dev/null | grep nameserver | awk '{print$2}' || cat /tmp/resolv.conf.auto 2>/dev/null | grep nameserver | awk '{print$2}')
+			if [ -z "$dns_l" ];then
+				echo "$(date "+%Y-%m-%d %H:%M:%S") SmartDNS : Get Domestic DNS failed!" >> $LOG
+				exit 1
+			fi
+			dns_l=$(echo $dns_l | sed -e 's/，/,/g' -e 's/。/./g' -e 's/：/:/g' -e 's/,/\n/g')
+			for i in $dns_l;do echo "server $i" >> $DNS_L;done
+		else
+			for i in $dns_l;do echo "server-https https://$i/dns-query" >> $DNS_L;done
+		fi
 		$(which smartdns) -c $DNS_L -p $PID_L
 	fi
 	start
