@@ -9,33 +9,46 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=autocore
 PKG_VERSION:=1
-PKG_RELEASE:=35
-
+PKG_RELEASE:=28
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/autocore
-  TITLE:=x86/x64 auto core loadbalance script.
-  MAINTAINER:=Lean
-  DEPENDS:= \
-	+ethtool \
-	+TARGET_x86:bc \
-	+TARGET_x86:lm-sensors \
+define Package/autocore-arm
+  TITLE:=ARM auto core script.
+  MAINTAINER:=CN_SZTL
+  DEPENDS:=@(TARGET_bcm27xx||TARGET_bcm53xx||TARGET_mvebu||TARGET_ipq40xx||TARGET_ipq806x||TARGET_rockchip) \
     +TARGET_bcm53xx:nvram \
     +TARGET_ipq40xx:lm-sensors
-
+  VARIANT:=arm
 endef
 
-define Package/autocore/description
-A usb autoconfig hotplug script.
+define Package/autocore-x86
+  TITLE:=x86/x64 auto core loadbalance script.
+  MAINTAINER:=Lean / CN_SZTL
+  DEPENDS:=@TARGET_x86 +bc +lm-sensors +ethtool
+  VARIANT:=x86
+endef
+
+define Package/autocore-arm/description
+  Display more details info about the devices in LuCI.
+endef
+
+define Package/autocore-x86/description
+  A USB autoconfig hotplug script.
 endef
 
 define Build/Compile
 endef
 
-define Package/autocore/install
+define Package/autocore-arm/install
 	$(INSTALL_DIR) $(1)/sbin
-	$(CP) ./files/sbin/* $(1)/sbin
+	$(INSTALL_BIN) ./files/arm/cpuinfo $(1)/sbin/cpuinfo
 endef
 
-$(eval $(call BuildPackage,autocore))
+define Package/autocore-x86/install
+	$(INSTALL_DIR) $(1)/sbin
+	$(INSTALL_BIN) ./files/x86/cpuinfo $(1)/sbin/cpuinfo
+endef
+
+$(eval $(call BuildPackage,autocore-arm))
+$(eval $(call BuildPackage,autocore-x86))
