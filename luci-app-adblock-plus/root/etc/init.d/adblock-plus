@@ -1,0 +1,209 @@
+#!/bin/sh /etc/rc.common
+START=99
+STOP=10
+A=0
+B=0
+CRON_FILE=/etc/crontabs/root
+D=/tmp/dnsmasq.adblock-plus
+L=/etc/adblock-plus
+P=/usr/share/adblock-plus
+T=/tmp/adblock-plus
+STATUS=Y
+TAG="_ADBLOCK_RULE_"
+FWI=$(uci -q get firewall.adblock-plus.path)
+enable=$(uci -q get adblock-plus.@adblock-plus[0].enable)
+flash=$(uci -q get adblock-plus.@adblock-plus[0].flash)
+url=$(uci -q get adblock-plus.@adblock-plus[0].url)
+
+get_config(){
+	config_get_bool cron_mode $1 cron_mode 1
+	config_get_bool block_ios $1 block_ios 0
+	config_get_bool block_cnshort $1 block_cnshort 0
+	config_get time_update $1 time_update 6
+}
+
+addown(){
+	r=1
+	while ps -w | grep $P/addown | grep -v grep >/dev/null 2>&1;do
+		[ $r -ge 10 ] && return 1 || let r++
+		sleep 1
+	done
+	rm -f /var/lock/adblock-plus.lock
+	$P/addown --down $A $B >/dev/null 2>&1 &
+}
+
+add_dns(){
+	mkdir -p /tmp/dnsmasq.d $D
+	echo conf-dir=$D > /tmp/dnsmasq.d/adblock-plus.conf
+	[ -f $T/adblock-plus.conf ] &&
+		ln -sf $T/adblock-plus.conf $D/adblock-plus.conf
+	if [ -n "$url" ];then
+		mkdir -p $T/3rd
+		if [ $flash = 1 ];then
+			ln -sf $L/3rd/3rd.conf $T/3rd/3rd.conf
+			ln -sf $L/3rd/url $T/3rd/url
+		fi
+		ln -sf $T/3rd/3rd.conf $D/3rd.conf
+	fi
+	cp -f $L/black.list $D/black.conf
+	[ $block_ios = 1 ] && echo 'mesu.apple.com' >> $D/black.conf
+	if [ $block_cnshort = 1 ];then
+		cat <<-EOF >> $D/black.conf
+amemv.com
+tiktokv.com
+snssdk.com
+douyin.com
+ixigua.com
+pstatp.com
+ixiguavideo.com
+v.kandian.qq.com
+yximgs.com
+gifshow.com
+ksapisrv.com
+kuaishoupay.com
+ksyun.com
+live.xycdn.com
+danuoyi.alicdn.com
+v.weishi.qq.com
+pearvideo.com
+miaopai.com
+kuaishou.com
+qupai.me
+meipai.com
+huoshan.com
+ergengtv.com
+baijiahao.baidu.com
+xiongzhang.baidu.com
+EOF
+	fi
+	if [ -s $D/black.conf ];then
+		sed -i -e 's:^:address=/:' -e 's:$:/:' $D/black.conf
+		echo "`sort -u $D/black.conf`" > $D/black.conf
+		for i in $(cat $D/black.conf);do
+			if grep -wq $i $D/3rd.conf 2>/dev/null;then
+				sed -i -e "s#$i##" -e '/^$/d' $D/black.conf
+			fi
+		done
+		for i in $(cat $L/white.list);do sed -i -e "/\/$i\//d" -e "/\.$i\//d" $D/black.conf;done
+	fi
+	[ -s $D/black.conf ] || rm -f $D/black.conf
+}
+
+gen() {
+	extract_rules() {
+		echo "*$1"
+		iptables-save -t $1 | grep ADBLOCK |\
+			sed -e "s/^-A \(OUTPUT\|FORWARD\)/-I \1 1/"
+		echo 'COMMIT'
+	}
+	cat <<-EOF >> $FWI
+	iptables-save -c | grep -v ADBLOCK | iptables-restore -c
+	iptables-restore -n <<-EOT
+	$(extract_rules filter)
+	$(extract_rules nat)
+	EOT
+EOF
+}
+
+add_rule(){
+	ipset -N blockip hash:net 2>/dev/null
+	for i in $(cat $L/ip.list);do ipset -! add blockip $i;done
+	iptables -I FORWARD -m set --match-set blockip dst -m comment --comment "$TAG" -j DROP
+	iptables -I OUTPUT -m set --match-set blockip dst -m comment --comment "$TAG" -j DROP
+	gen
+}
+
+add_cron(){
+	if [ $cron_mode = 1 ];then
+		if ! grep -wq "$time_update \* \* \* .*adblock-plus" $CRON_FILE;then
+			grep -q adblock $CRON_FILE && sed -i '/adblock-plus/d' $CRON_FILE
+			echo "0 $time_update * * * $P/adblock-plus > /tmp/adupdate.log 2>&1" >> $CRON_FILE
+			/etc/init.d/cron restart
+		fi
+	else
+		del_cron
+	fi
+}
+
+del_cron(){
+	if grep -q adblock $CRON_FILE;then
+		sed -i '/adblock-plus/d' $CRON_FILE
+		/etc/init.d/cron restart
+	fi
+}
+
+del_rule(){
+	iptables -D FORWARD -m set --match-set blockip dst -m comment --comment "$TAG" -j DROP 2>/dev/null
+	iptables -D OUTPUT -m set --match-set blockip dst -m comment --comment "$TAG" -j DROP 2>/dev/null
+	ipset -X blockip 2>/dev/null
+	echo '#!/bin/sh' > $FWI
+}
+
+start(){
+	config_load adblock-plus
+	config_foreach get_config adblock-plus
+	if [ $enable = 0 ];then
+		echo "Adblock Plus+ is disabled!"
+		exit 1
+	fi
+	if [ -s $D/3rd.conf ];then
+		echo "Adblock Plus+ is running!"
+		exit 1
+	fi
+	if [ -n "$url" ];then
+		[ $flash = 0 -a ! -s $T/3rd/3rd.conf ] && B=1
+		[ $flash = 1 -a ! -s $L/3rd/3rd.conf ] && B=1
+	fi
+	if [ $B = 1 ];then
+		echo "Download Adblock Plus Rules..."
+		addown
+		exit 9
+	fi
+	echo "Load Adblock Plus Rules"
+	add_dns
+	add_rule
+	add_cron
+	if [ $STATUS = Y ];then
+		echo "Dnsmasq Change"
+		/etc/init.d/dnsmasq restart >/dev/null 2>&1
+	fi
+}
+
+stop(){
+	del_rule
+	if [ ! -s $D/3rd.conf ];then
+		echo "Adblock Plus+ is not running!"
+		return 1
+	fi
+	rm -rf /tmp/dnsmasq.d/adblock-plus.conf $D
+	echo "Stop Adblock Plus+"
+	if [ "$(echo $url | sed 's/ /\n/g' | sort -u)" != "$(cat $T/3rd/url 2>/dev/null)" ];then
+		rm -rf $T/3rd
+		[ -d $L/3rd ] && rm -rf $L/3rd
+	fi
+	([ -h $T/3rd/url -a $flash = 0 ] || [ -z "$url" ]) && rm -rf $T/3rd
+	[ $enable = 0 ] && del_cron
+	if [ $STATUS = Y ];then
+		rm -rf $T
+		echo "Revert Dnsmasq"
+		/etc/init.d/dnsmasq restart >/dev/null 2>&1
+		rm -f /tmp/adupdate.log
+	fi
+}
+
+restart(){
+	if [ $enable = 1 ];then
+		STATUS=N
+		stop
+		start
+		echo "Restart Dnsmasq"
+		/etc/init.d/dnsmasq restart >/dev/null 2>&1
+	else
+		stop
+	fi
+}
+
+boot(){
+	echo '#!/bin/sh' > $FWI
+	start
+}

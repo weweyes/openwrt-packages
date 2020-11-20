@@ -1,0 +1,33 @@
+#!/bin/sh
+[ "$1" = --down ] || exit 1
+# 防止重复启动
+LOCK=/var/lock/adblock-plus.lock
+[ -f $LOCK ] && exit 1
+touch $LOCK
+
+B=/tmp/adblock-plus
+C=/tmp/adupdate.log
+D="date +'%Y-%m-%d %H:%M:%S'"
+E="curl -Lfso"
+F="Download Adblock Plus Rules"
+G="Download Subscribe Rules"
+
+if [ "$2" = 1 ];then
+	mkdir -p $B
+	echo "`eval $D` [$F]" > $C
+fi
+
+if [ "$3" = 1 ];then
+	echo "`eval $D` [$G]" >> $C
+	/usr/share/adblock-plus/adblock-plus addown
+	H=$(uci -q get adblock-plus.@adblock-plus[0].flash)
+	if [ $H = 0 -a -s $B/3rd/3rd.conf ] || [ $H = 1 -a -s /etc/adblock-plus/3rd/3rd.conf ];then
+		echo "`eval $D` [$G Successful!]" >> $C
+	else
+		echo "`eval $D` [$G Failed!]" >> $C
+	fi
+fi
+
+echo "`eval $D` [Start Adblock Plus+]" >> $C;echo `eval $D` > $B/adblock-plus.updated
+rm -f $LOCK
+/etc/init.d/adblock-plus start &

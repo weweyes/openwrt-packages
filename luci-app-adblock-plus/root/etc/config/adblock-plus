@@ -1,0 +1,8 @@
+
+config adblock-plus
+	option cron_mode '1'
+	option time_update '6'
+	option flash '0'
+	option enable '1'
+	list url 'https://anti-ad.net/anti-ad-for-dnsmasq.conf'
+
