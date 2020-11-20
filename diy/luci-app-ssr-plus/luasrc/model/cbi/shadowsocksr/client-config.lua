@@ -169,7 +169,6 @@ o:depends("auth_enable",1)
 
 o=s:option(Value,"password",translate("Password"))
 o.password=true
-o.rmempty=false
 o:depends("type","ssr")
 o:depends("type","ss")
 o:depends("type","trojan")

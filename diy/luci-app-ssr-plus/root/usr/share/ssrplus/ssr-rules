@@ -8,17 +8,17 @@ C=0
 MODE=0
 
 flush_r(){
-	flush_iptables() {
-		local ipt="$1 -t $2"
-		local DAT=$($1-save -t $2)
+	flush_iptables(){
+		local ipt="iptables -t $1"
+		local DAT=$(iptables-save -t $1)
 		eval $(echo "$DAT" | grep "$TAG" | sed -e 's/^-A/$ipt -D/' -e 's/$/;/')
-		for chain in $(echo "$DAT" | awk '/^:SS_SPEC/{print $1}');do
+		for chain in $(echo "$DAT" | awk '/^:SS_SPEC/{print$1}');do
 			$ipt -F ${chain:1} 2>/dev/null && $ipt -X ${chain:1}
 		done
 	}
-	flush_iptables iptables nat
-	flush_iptables iptables mangle
-	ip rule del fwmark 0x01/0x01 table 100 2>/dev/null
+	flush_iptables nat
+	flush_iptables mangle
+	ip rule del fwmark 1 lookup 100 2>/dev/null
 	ip route del local 0.0.0.0/0 dev lo table 100 2>/dev/null
 	ipset -X ss_spec_wan_ac 2>/dev/null
 	ipset -X ss_spec_lan_ac 2>/dev/null
@@ -113,7 +113,7 @@ EOF
 
 tp_rule(){
 	[ -n "$SERVER" ] || return 0
-	ip rule add fwmark 0x01/0x01 table 100
+	ip rule add fwmark 1 lookup 100
 	ip route add local 0.0.0.0/0 dev lo table 100
 	ipt="iptables -t mangle"
 	$ipt -N SS_SPEC_TPROXY
@@ -121,14 +121,14 @@ tp_rule(){
 	$ipt -A SS_SPEC_TPROXY -p udp --dport 53 -j RETURN
 	$ipt -A SS_SPEC_TPROXY -p udp -d $SERVER -j RETURN
 	$ipt -A SS_SPEC_TPROXY -p udp -m set --match-set ss_spec_wan_ac dst -j RETURN
-	ipset list fplan >/dev/null 2>&1 && $ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set --match-set fplan src -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x01/0x01
-	ipset list blacklist >/dev/null 2>&1 && $ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set --match-set blacklist dst -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x01/0x01
-	ipset list gmlan >/dev/null 2>&1 && $ipt -A SS_SPEC_TPROXY -p udp -m set --match-set gmlan src -m set ! --match-set china_v4 dst -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x01/0x01
+	ipset list fplan >/dev/null 2>&1 && $ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set --match-set fplan src -j TPROXY --on-port $LOCAL_PORT --tproxy-mark 0x1/0x1
+	ipset list blacklist >/dev/null 2>&1 && $ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set --match-set blacklist dst -j TPROXY --on-port $LOCAL_PORT --tproxy-mark 0x1/0x1
+	ipset list gmlan >/dev/null 2>&1 && $ipt -A SS_SPEC_TPROXY -p udp -m set --match-set gmlan src -m set ! --match-set china_v4 dst -j TPROXY --on-port $LOCAL_PORT --tproxy-mark 0x1/0x1
 
 	case $MODE in
-		router)$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set ! --match-set china_v4 dst -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x01/0x01;;
-		oversea)$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set --match-set china_v4 dst -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x01/0x01;;
-		all)$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -j TPROXY --on-port "$LOCAL_PORT" --tproxy-mark 0x01/0x01;;
+		router)$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set ! --match-set china_v4 dst -j TPROXY --on-port $LOCAL_PORT --tproxy-mark 0x1/0x1;;
+		oversea)$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -m set --match-set china_v4 dst -j TPROXY --on-port $LOCAL_PORT --tproxy-mark 0x1/0x1;;
+		all)$ipt -A SS_SPEC_TPROXY -p udp $PROXY_PORTS -j TPROXY --on-port $LOCAL_PORT --tproxy-mark 0x1/0x1;;
 	esac
 	
 	ipset -N ssr_plus_all hash:net 2>/dev/null

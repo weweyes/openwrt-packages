@@ -9,8 +9,7 @@ if [ "$ACTION" = ifup ];then
 		fi
 		if pidof smartdns >/dev/null;then
 			killall -q -9 smartdns
-			$(which smartdns) -c /var/etc/smartdns/1.conf -p /var/run/smartdns_1.pid
-			$(which smartdns) -c /var/etc/smartdns/2.conf -p /var/run/smartdns_2.pid
+			$(which smartdns) -c /var/etc/smartdns/smartdns.conf
 		fi
 	fi
 fi

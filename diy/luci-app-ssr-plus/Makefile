@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-ssr-plus
 PKG_VERSION:=1.2
-PKG_RELEASE:=20
+PKG_RELEASE:=21
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
@@ -101,6 +101,7 @@ define Build/Compile
 endef
 
 define Package/$(PKG_NAME)/conffiles
+/etc/config/shadowsocksr
 /etc/ssr/
 endef
 
