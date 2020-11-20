@@ -35,8 +35,6 @@ addown(){
 add_dns(){
 	mkdir -p /tmp/dnsmasq.d $D
 	echo conf-dir=$D > /tmp/dnsmasq.d/adblock-plus.conf
-	[ -f $T/adblock-plus.conf ] &&
-		ln -sf $T/adblock-plus.conf $D/adblock-plus.conf
 	if [ -n "$url" ];then
 		mkdir -p $T/3rd
 		if [ $flash = 1 ];then
