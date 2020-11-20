@@ -37,10 +37,6 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_flow-offload \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_bbr-cca
 
-define Package/luci-app-turboacc/conffiles
-/etc/config/turboacc
-endef
-
 include $(TOPDIR)/feeds/luci/luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature

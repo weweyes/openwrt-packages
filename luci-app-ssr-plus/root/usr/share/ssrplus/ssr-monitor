@@ -37,7 +37,7 @@ while :;do
 	if [ $redir_tcp -gt 0 ];then
 		t=`ps -w | grep ssr-retcp | grep -v grep | wc -l`
 		if [ $t -lt $redir_tcp ];then
-			echo "$(date "+%Y-%m-%d %H:%M:%S") Redir TCP Error. Restart!" >>/tmp/ssrplus.log
+			echo "$(date "+%Y-%m-%d %H:%M:%S") Redir TCP Error. Restart!" >> /tmp/ssrplus.log
 			/etc/init.d/shadowsocksr restart
 			exit 0
 		fi
@@ -46,7 +46,7 @@ while :;do
 	if [ $kcp = 1 ];then
 		t=`ps -w | grep kcptun-client | grep -v grep | wc -l`
 		if [ $t = 0 ];then
-			echo "$(date "+%Y-%m-%d %H:%M:%S") SSR KCPTUN Error. Restart!" >>/tmp/ssrplus.log
+			echo "$(date "+%Y-%m-%d %H:%M:%S") SSR KCPTUN Error. Restart!" >> /tmp/ssrplus.log
 			killall -q -9 kcptun-client
 			$(which kcptun-client) -r $server:$kcp_port -l :$server_port $password $kcp_param &
 		fi
@@ -55,7 +55,7 @@ while :;do
 	if [ $redir_udp = 1 ];then
 		t=`ps -w | grep ssr-reudp | grep -v grep | wc -l`
 		if [ $t = 0 ];then
-			echo "$(date "+%Y-%m-%d %H:%M:%S") Redir UDP Error. Restart!" >>/tmp/ssrplus.log
+			echo "$(date "+%Y-%m-%d %H:%M:%S") Redir UDP Error. Restart!" >> /tmp/ssrplus.log
 			/etc/init.d/shadowsocksr restart
 			exit 0
 		fi
@@ -64,26 +64,25 @@ while :;do
 	if [ $redir_nf = 1 ];then
 		t=`ps -w | grep ssr-nf | grep -v grep | wc -l`
 		if [ $t = 0 ];then
-			echo "$(date "+%Y-%m-%d %H:%M:%S") Redir Netflix Error. Restart!" >>/tmp/ssrplus.log
+			echo "$(date "+%Y-%m-%d %H:%M:%S") Redir Netflix Error. Restart!" >> /tmp/ssrplus.log
 			/etc/init.d/shadowsocksr restart
 			exit 0
 		fi
 	fi
 #smartdns
-	if [ $smartdns -gt 0 ];then
+	if [ $smartdns = 1 ];then
 		t=`ps -w | grep smartdns | grep -v grep | wc -l`
-		if [ $t -lt $smartdns ];then
-			echo "$(date "+%Y-%m-%d %H:%M:%S") SmartDNS Error. Restart!" >>/tmp/ssrplus.log
+		if [ $t = 0 ];then
+			echo "$(date "+%Y-%m-%d %H:%M:%S") SmartDNS Error. Restart!" >> /tmp/ssrplus.log
 			killall -q -9 smartdns
-			$(which smartdns) -c /var/etc/smartdns/1.conf -p /var/run/smartdns_1.pid
-			$(which smartdns) -c /var/etc/smartdns/2.conf -p /var/run/smartdns_2.pid
+			$(which smartdns) -c /var/etc/smartdns/smartdns.conf
 		fi
 	fi
 #chinadns-ng
 	if [ $chinadns = 1 ];then
 		t=`ps -w | grep chinadns-ng | grep -v grep | wc -l`
 		if [ $t = 0 ];then
-			echo "$(date "+%Y-%m-%d %H:%M:%S") ChinaDNS-NG Error. Restart!" >>/tmp/ssrplus.log
+			echo "$(date "+%Y-%m-%d %H:%M:%S") ChinaDNS-NG Error. Restart!" >> /tmp/ssrplus.log
 			$(which chinadns-ng) -l 5337 -c '127.0.0.1#5336' -t '127.0.0.1#5335' -4 china_v4 -6 china_v6 -f -n $([ $gfw_mode = 1 ] && echo -g /tmp/ssrplus/gfw.list) >/dev/null 2>&1 &
 		fi
 	fi
@@ -91,7 +90,7 @@ while :;do
 	if [ $socks5 = 1 ];then
 		t=`ps -w | grep ssr-socks | grep -v grep | wc -l`
 		if [ $t = 0 ];then
-			echo "$(date "+%Y-%m-%d %H:%M:%S") Global Socks Server Error. Restart!" >>/tmp/ssrplus.log
+			echo "$(date "+%Y-%m-%d %H:%M:%S") Global Socks Server Error. Restart!" >> /tmp/ssrplus.log
 			/etc/init.d/shadowsocksr restart
 			exit 0
 		fi
@@ -100,7 +99,7 @@ while :;do
 	if [ $server_count -gt 0 ];then
 		t=`ps -w | grep ssr-server | grep -v grep | wc -l`
 		if [ $t -lt $server_count ];then
-			echo "$(date "+%Y-%m-%d %H:%M:%S") SSR Server Error. Restart!" >>/tmp/ssrplus.log
+			echo "$(date "+%Y-%m-%d %H:%M:%S") SSR Server Error. Restart!" >> /tmp/ssrplus.log
 			/etc/init.d/shadowsocksr restart
 			exit 0
 		fi
@@ -109,7 +108,7 @@ while :;do
 	if [ $trojan_udp = 1 ];then
 		t=`ps -w | grep ipt2socks |grep -v grep | wc -l`
 		if [ $t = 0 ];then
-			echo "$(date "+%Y-%m-%d %H:%M:%S") ipt2socks2 Error. Restart!" >>/tmp/ssrplus.log
+			echo "$(date "+%Y-%m-%d %H:%M:%S") ipt2socks2 Error. Restart!" >> /tmp/ssrplus.log
 			killall -q -9 ipt2socks
 			ipt2socks -U -b 0.0.0.0 -4 -s 127.0.0.1 -p $ip_port -l $trojan_udp_port >/dev/null 2>&1 &
 		fi
