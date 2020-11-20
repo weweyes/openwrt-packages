@@ -51,6 +51,7 @@ jobs:
         git clone https://github.com/garypang13/luci-theme-edge
         git clone https://github.com/garypang13/autosamba
         git clone https://github.com/garypang13/autocore
+        git clone https://github.com/garypang13/luci-app-adbyby-plus
         git clone https://github.com/garypang13/openwrt-qbittorrent && mv -f openwrt-qbittorrent/* ./
         git clone https://github.com/garypang13/luci-app-homebridge
         git clone https://github.com/garypang13/openwrt-openvpn && mv -f openwrt-openvpn/* ./
