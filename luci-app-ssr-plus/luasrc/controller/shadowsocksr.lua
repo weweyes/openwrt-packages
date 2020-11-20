@@ -3,7 +3,7 @@ function index()
 	if not nixio.fs.access("/etc/config/shadowsocksr") then
 		return
 	end
-	entry({"admin","services","shadowsocksr"},alias("admin","services","shadowsocksr","base"),_("ShadowSocksR Plus+"),10).dependent=true
+	entry({"admin","services","shadowsocksr"},alias("admin","services","shadowsocksr","base"),_("ShadowSocksR Plus+"),1).dependent=true
 	entry({"admin","services","shadowsocksr","base"},cbi("shadowsocksr/base"),_("Base Setting"),1).leaf=true
 	entry({"admin","services","shadowsocksr","servers"},arcombine(cbi("shadowsocksr/servers",{autoapply=true}),cbi("shadowsocksr/client-config")),_("Severs Nodes"),2).leaf=true
 	entry({"admin","services","shadowsocksr","control"},cbi("shadowsocksr/control"),_("Access Control"),3).leaf=true
