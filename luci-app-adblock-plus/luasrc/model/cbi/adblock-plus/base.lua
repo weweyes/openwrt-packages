@@ -38,7 +38,7 @@ o=s:option(DummyValue,"1",translate("Subscribe 3rd Rules Data"))
 o.rawhtml=true
 o.template="adblock-plus/refresh"
 o.value=rule_count.." "..translate("Records")
-o.description=string.format(translate("AdGuardHome / Host / DNSMASQ / Domain rules auto-convert)").."<br/><strong>"..translate("Last Update Checked")..":</strong> %s<br/>",UD)
+o.description=string.format(translate("AdGuardHome / Host / DNSMASQ / Domain rules auto-convert").."<br/><strong>"..translate("Last Update Checked")..":</strong> %s<br/>",UD)
 end
 
 o=s:option(Flag,"flash")
