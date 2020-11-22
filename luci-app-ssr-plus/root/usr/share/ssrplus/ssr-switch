@@ -197,7 +197,7 @@ select_proxy(){
 		if [ $y = 0 ];then
 			SERVER_C=$d
 			c=$i
-			return
+			return 0
 		fi
 	done
 }

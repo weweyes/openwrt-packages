@@ -1,13 +1,14 @@
 #!/bin/sh
 [ "$1" = check ] || exit 1
+LOCK=/var/lock/ssr-plus.lock
 # 防止重复启动
-[ -f /var/lock/ssr-plus.lock ] && exit 1
-touch /var/lock/ssr-plus.lock
+[ -f $LOCK ] && exit 1
+touch $LOCK
 sleep 2
 while ! curl -so /dev/null -m 3 www.baidu.com;do
 	sleep 2
 done
-rm -f /var/lock/ssr-plus.lock
+rm -f $LOCK
 if [ ! -s /tmp/ssrplus/china.txt ] || ([ "$(uci -q get shadowsocksr.@global[0].run_mode)" = gfw -o "$(uci -q get shadowsocksr.@global[0].gfw_mode)" = 1 ] && [ ! -s /tmp/ssrplus/gfw.list ]);then
 	/usr/share/ssrplus/update --First &
 else
