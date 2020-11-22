@@ -40,7 +40,7 @@ end
 o=s:option(Flag,"switch",translate("Subscribe Default Auto-Switch"))
 o.rmempty=false
 o.description=translate("Subscribe new add server default Auto-Switch on")
-o.default=1
+o.default=0
 
 o=s:option(Flag,"proxy",translate("Through proxy update"))
 o.rmempty=false

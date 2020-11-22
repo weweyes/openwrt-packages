@@ -80,7 +80,6 @@ function opkgupgrade() {
 		fi
 		[ $count -gt 120 ] && break || let count++
 		sleep 5
-		fi
 	done
 }
 opkgupgrade
