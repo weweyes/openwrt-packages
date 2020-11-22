@@ -32,9 +32,11 @@ down(){
 	for i in $U;do
 		X=1
 		while ! curl --connect-timeout 5 -m 20 -Lfso $F $i;do
-			[ $X -ge 20 ] && break || let X++
+			[ $X -ge 20 ] && echo "`eval $E` [Download $i Failed!]" && continue 2 || let X++
 			sleep 2
 		done
+		X=`md5sum $G/3rd.conf 2>/dev/null | awk '{print$1}'`
+		Y=`md5sum $G/host 2>/dev/null | awk '{print$1}'`
 		sed -i -e 's:#.*::' -e 's:!.*::' -e 's/\$.*//g' -e 's/[ \t]*$//g' -e 's/^[ \t]*//g' -e '/\*/d' -e '/^$/d' $F
 		if grep -q "^address=" $F;then
 			cat $F >> $G/3rd.conf
@@ -45,21 +47,22 @@ down(){
 		else
 			cat $F | grep ^\|\|[^\*]*\^$ | grep -Ev "^\|\|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}*" | sed -e 's:||:address=/:' -e 's:\^:/:' >> $G/3rd.conf
 		fi
+		[ "$X" = "`md5sum $G/3rd.conf 2>/dev/null | awk '{print$1}'`" -a "$Y" = "`md5sum $G/host 2>/dev/null | awk '{print$1}'`" ] && echo "`eval $E` [Conversion $i Failed!]"
 		echo $i >> $G/url
 	done
 	[ -s $G/host ] && sed -e '/:/d' -e '/ 0.0.0.0/d' -e '/255.255.255.255/d' -e '/ local/d' -e 's:127.0.0.1 :address=/:' -e 's:0.0.0.0 :address=/:' -e 's:$:/:' $G/host >> $G/3rd.conf
 	[ -s $G/3rd.conf ] && sed -i -e 's:/127.0.0.1$:/:' -e 's:/0.0.0.0$:/:' $G/3rd.conf && echo "`sort -u $G/3rd.conf`" > $G/3rd.conf
 	[ -s $G/url ] && echo "`sort -u $G/url`" > $G/url
 	if [ -s $G/3rd.conf ];then
-		echo "`eval $E` [$B Successful]"
-		rm -f $F $G/host
+		echo "`eval $E` [$B Successful!]"
+		rm -f $F $G/host $P/failed
 		for i in $W;do sed -i -e "/\/$i\//d" -e "/\.$i\//d" $G/3rd.conf;done
-		[ "$1" = 1 ] && rm -f $LOCK && exit
+		[ "$1" = 2 ] && rm -f $LOCK && exit
 		X=`uci -q get adblock-plus.@adblock-plus[0].flash`
-		Y=`md5sum $G/* | awk '{print $1}'`
-		[ $X = 0 ] && Z=`md5sum $P/3rd/* 2>/dev/null | awk '{print $1}'` || Z=`md5sum /etc/adblock-plus/3rd/* 2>/dev/null | awk '{print $1}'`
+		Y=`md5sum $G/* | awk '{print$1}'`
+		[ $X = 0 ] && Z=`md5sum $P/3rd/* 2>/dev/null | awk '{print$1}'` || Z=`md5sum /etc/adblock-plus/3rd/* 2>/dev/null | awk '{print$1}'`
 		if [ "$Y" != "$Z" ];then
-			echo "`eval $E` [Subscribe Rules Need Update]"
+			[ "$1" = 1 ] || echo "`eval $E` [Subscribe Rules Need Update]"
 			if [ "$X" = 0 ];then
 				rm -f $P/3rd/*
 				cp -a $G $P
@@ -72,14 +75,16 @@ down(){
 			echo "`eval $E` [Subscribe Rules No Change]"
 		fi
 	else
-		echo "`eval $E` [$B Failed]"
+		echo "`eval $E` [$B Failed!]"
+		echo failed > $P/failed
+		[ "$1" = 2 ] && rm -f $LOCK && exit
 	fi
 	rm -rf ${G%/*} $P/3rd.conf $P/url
 }
 
 case $1 in
-	addown)down;exit;;
-	down)down 1;;
+	addown)down 1;exit;;
+	down)down 2;;
 	gen)gen;[ "$X" = 1 ] || rm -f $LOCK;exit;;
 esac
 
@@ -87,6 +92,7 @@ if [ `uci -q get adblock-plus.@adblock-plus[0].enable` = 1 ];then
 	[ -n "$U" ] && down
 	echo `eval $E` > $P/adblock-plus.updated
 fi
+
 if [ $D = 1 ];then
 	echo "`eval $E` [Reload Adblock Plus Rules]"
 	/etc/init.d/adblock-plus restart
