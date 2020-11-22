@@ -106,7 +106,7 @@ gen_config_file(){
 }
 EOF
 			plugin=$(uci_get_by_name $1 plugin 0)
-			if [ $plugin != 0 -a -x $(which $plugin) ];then
+			if [ $plugin != 0 -a -x "$(which $plugin)" ];then
 				sed -i "s@$hostip\",@$hostip\",\n\"plugin\":\"$plugin\",\n\"plugin_opts\":\"$(uci_get_by_name $1 plugin_opts)\",@" $config_file
 			fi;;
 		ssr)
@@ -279,8 +279,9 @@ start_rules(){
 	fi
 
 	[ -s $LOG -a $LOG_S = 0 ] && eval $LOG_B
-	if $BIN_DIR/ssr-rules -s "$server" -l "$local_port" -a "$ac_ips" -b "$(uci_get_by_type access_control wan_bp_ips)" -w "$(uci_get_by_type access_control wan_fw_ips)" \
-		-p "$(uci_get_by_type access_control lan_fp_ips)" -G "$(uci_get_by_type access_control lan_gm_ips)" -D "$proxyport" $mode $UDP $NF;then
+	$BIN_DIR/ssr-rules -s "$server" -l "$local_port" -a "$ac_ips" -b "$(uci_get_by_type access_control wan_bp_ips)" -w "$(uci_get_by_type access_control wan_fw_ips)" \
+		-p "$(uci_get_by_type access_control lan_fp_ips)" -G "$(uci_get_by_type access_control lan_gm_ips)" -D "$proxyport" $mode $UDP $NF
+	if [ $? = 0 ];then
 		echo "`eval $DATE` SSR-rules : Start iptables rules successful!" >> $LOG
 	else
 		echo "`eval $DATE` SSR-rules : Start iptables rules failed!" >> $LOG
@@ -302,7 +303,7 @@ start_retcp(){
 		[ -n "$password" ] && password="--key "${password}
 		service_start $cmd -r $kcp_server:$kcp_port -l :$server_port $password $kcp_param
 	fi
-	threads=$(uci_get_by_type global threads 1)
+	threads=$(uci_get_by_type global threads 0)
 	[ $threads = 0 ] && threads=$(cat /proc/cpuinfo | grep 'processor' | wc -l)
 	gen_config_file $GLOBAL_SERVER 0 $threads
 	type=$(uci_get_by_name $GLOBAL_SERVER type)
@@ -744,7 +745,7 @@ gen_service_file(){
 }
 EOF
 		plugin=$(uci_get_by_name $1 plugin 0)
-		if [ $plugin != 0 -a -x $(which $plugin) ];then
+		if [ $plugin != 0 -a -x "$(which $plugin)" ];then
 			sed -i "s@0.0.0.0\",@0.0.0.0\",\n\"plugin\":\"$plugin\",\n\"plugin_opts\":\"$(uci_get_by_name $1 plugin_opts)\",@" $3
 		fi
 	else
@@ -861,7 +862,7 @@ stop(){
 	[ -z "$switch_server" ] && kill -9 $(ps -w | grep ssr-switch | grep -v grep | awk '{print$1}') 2>/dev/null
 	kill -9 $(ps -w | grep ssr-monitor | grep -v grep | awk '{print$1}') 2>/dev/null
 	kill -9 $(ps -w | grep ssr-preload | grep -v grep | awk '{print$1}') 2>/dev/null
-	killall -q -9 ss-redir ssr-redir v2ray trojan ipt2socks naive redsocks2 kcptun-client obfs-local v2ray-plugin ss-local ss-server ssr-local ssr-server microsocks smartdns chinadns-ng
+	killall -q -9 ss-redir ssr-redir v2ray trojan ipt2socks naive redsocks2 kcptun-client obfs-local obfs-server v2ray-plugin ss-local ss-server ssr-local ssr-server microsocks smartdns chinadns-ng
 	rm -rf $DNS_DIR /var/etc/*ssr*.json /tmp/dnsmasq.d/dnsmasq-ssr.conf $CON_T
 	[ $run_mode = gfw -o $gfw_mode = 1 ] || rm -f /tmp/ssrplus/gfw.list
 	[ $run_mode = router ] || rm -f /tmp/ssrplus/china_v6.txt
