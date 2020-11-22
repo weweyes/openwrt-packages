@@ -1,5 +1,5 @@
---- a/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/server.lua
-+++ b/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/server.lua
+--- a/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/servers.lua
++++ b/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/servers.lua
 @@ -41,5 +41,5 @@
  o.rmempty=false
  o.description=translate("Subscribe new add server default Auto-Switch on")
@@ -23,8 +23,8 @@
  	/etc/uci-defaults/luci-ssr-plus && rm -f /etc/uci-defaults/luci-ssr-plus
  fi
 
---- a/luci-app-ssr-plus/root/etc/init.d
-+++ b/luci-app-ssr-plus/root/etc/init.d
+--- a/luci-app-ssr-plus/root/etc/init.d/shadowsocksr
++++ b/luci-app-ssr-plus/root/etc/init.d/shadowsocksr
 @@ -657,5 +657,5 @@
  
  start_switch(){
