@@ -33,3 +33,12 @@
  		service_start $BIN_DIR/ssr-switch start
  		switch_enable=1
 
+--- a/luci-app-ssr-plus/luasrc/controller/shadowsocksr.lua
++++ b/luci-app-ssr-plus/luasrc/controller/shadowsocksr.lua
+@@ -4,5 +4,5 @@
+ 		return
+ 	end
+-	entry({"admin","services","shadowsocksr"},alias("admin","services","shadowsocksr","base"),_("ShadowSocksR Plus+"),10).dependent=true
++	entry({"admin","services","shadowsocksr"},alias("admin","services","shadowsocksr","base"),_("ShadowSocksR Plus+"),1).dependent=true
+ 	entry({"admin","services","shadowsocksr","base"},cbi("shadowsocksr/base"),_("Base Setting"),1).leaf=true
+ 	entry({"admin","services","shadowsocksr","servers"},arcombine(cbi("shadowsocksr/servers",{autoapply=true}),cbi("shadowsocksr/client-config")),_("Severs Nodes"),2).leaf=true
