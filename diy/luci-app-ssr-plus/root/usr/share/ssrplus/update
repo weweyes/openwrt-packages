@@ -1,8 +1,9 @@
 #!/bin/sh
 [ "$1" = --First ] && A=Y || A=N
+LOCK=/var/lock/ssr-plus.lock
 # 防止重复启动
-[ -f /var/lock/ssr-plus.lock ] && exit 1
-touch /var/lock/ssr-plus.lock
+[ -f $LOCK ] && exit 1
+touch $LOCK
 
 if [ $A = Y ];then
 	mkdir -p /tmp/ssrplus
@@ -60,5 +61,5 @@ if [ "$C" = gfw -o "$(uci -q get shadowsocksr.@global[0].gfw_mode)" = 1 ];then
 		echo "GFW List is up to date!"
 	fi
 fi
-rm -f /var/lock/ssr-plus.lock /tmp/china*.txt /tmp/gfwnew.txt
+rm -f $LOCK /tmp/china*.txt /tmp/gfwnew.txt
 [ $A = Y ] && /etc/init.d/shadowsocksr start &
