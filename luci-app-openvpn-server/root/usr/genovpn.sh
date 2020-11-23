@@ -3,6 +3,7 @@
 ddns=`uci get openvpn.myvpn.ddns`
 port=`uci get openvpn.myvpn.port`
 proto=`uci get openvpn.myvpn.proto`
+ciphers=`uci get openvpn.myvpn.data_ciphers`
 uci -q get openvpn.myvpn.remote_cert_tls >/dev/null && status1="remote-cert-tls server"
 uci -q get openvpn.myvpn.tls_auth >/dev/null && status2="key-direction 1"
 uci -q get openvpn.myvpn.auth_user_pass_verify >/dev/null && status3="auth-user-pass"
@@ -23,6 +24,7 @@ persist-tun
 verb 3
 auth-nocache
 connect-retry $RETRY
+data-ciphers $ciphers
 $([ -n "$status1" ] && echo "$status1")
 $([ -n "$status2" ] && echo "$status2")
 $([ -n "$status3" ] && echo "$status3")

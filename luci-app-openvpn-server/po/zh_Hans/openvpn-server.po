@@ -76,6 +76,12 @@ msgstr "最大连接数"
 msgid "Set maximum number of connections"
 msgstr "设置最大连接数"
 
+msgid "Data Ciphers"
+msgstr "加密方式"
+
+msgid "AES-256-GCM is the default encryption method"
+msgstr "默认使用AES-256-GCM加密"
+
 msgid "Remote-cert-tls"
 msgstr "检查远程证书"
 
