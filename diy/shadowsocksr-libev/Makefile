@@ -5,10 +5,10 @@ PKG_VERSION:=2.5.6
 PKG_RELEASE:=5
 
 PKG_SOURCE_PROTO:=git
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.xz
 PKG_SOURCE_URL:=https://github.com/shadowsocksrr/shadowsocksr-libev
 PKG_SOURCE_VERSION:=d63ff863800a5645aca4309d5dd5962bd1e95543
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION)
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.xz
 
 PKG_LICENSE:=GPLv3
 PKG_LICENSE_FILES:=LICENSE
@@ -31,7 +31,7 @@ define Package/shadowsocksr-libev-redir
 endef
 
 Package/shadowsocksr-libev-server = $(Package/shadowsocksr-libev-redir)
-Package/shadowsocksr-libev-ssr-local = $(Package/shadowsocksr-libev-redir)
+Package/shadowsocksr-libev-local = $(Package/shadowsocksr-libev-redir)
 
 CONFIGURE_ARGS += --disable-documentation --disable-ssp --disable-assert
 
@@ -45,11 +45,11 @@ define Package/shadowsocksr-libev-server/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/server/ss-server $(1)/usr/bin/ssr-server
 endef
 
-define Package/shadowsocksr-libev-ssr-local/install
+define Package/shadowsocksr-libev-local/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ss-local $(1)/usr/bin/ssr-local
 endef
 
 $(eval $(call BuildPackage,shadowsocksr-libev-redir))
 $(eval $(call BuildPackage,shadowsocksr-libev-server))
-$(eval $(call BuildPackage,shadowsocksr-libev-ssr-local))
+$(eval $(call BuildPackage,shadowsocksr-libev-local))
