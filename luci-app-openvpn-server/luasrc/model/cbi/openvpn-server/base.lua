@@ -61,6 +61,12 @@ o=s:option(Value,"max_clients",translate("Max-clients"))
 o.datatype="range(1,255)"
 o.description=translate("Set maximum number of connections")
 
+o=s:option(ListValue,"data_ciphers",translate("Data Ciphers"))
+o.description=translate("AES-256-GCM is the default encryption method")
+o:value("aes-128-gcm","AES-128-GCM")
+o:value("aes-192-gcm","AES-192-GCM")
+o:value("aes-256-gcm","AES-256-GCM")
+
 o=s:option(ListValue,"remote_cert_tls",translate("Remote-cert-tls"))
 o.description=translate("Check remote certificate to prevent man-in-the-middle attacks<br/>Recommended to enable")
 o:value("",translate("Disable"))
