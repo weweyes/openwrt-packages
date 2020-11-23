@@ -44,11 +44,11 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
-	$(INSTALL_DATA) ./luasrc/controller/*.lua $(1)/usr/lib/lua/luci/controller/
+	$(INSTALL_DATA) ./luasrc/controller/* $(1)/usr/lib/lua/luci/controller/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/adblock-plus
-	$(INSTALL_DATA) ./luasrc/model/cbi/adblock-plus/*.lua $(1)/usr/lib/lua/luci/model/cbi/adblock-plus/
+	$(INSTALL_DATA) ./luasrc/model/cbi/adblock-plus/* $(1)/usr/lib/lua/luci/model/cbi/adblock-plus/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/view/adblock-plus
-	$(INSTALL_DATA) ./luasrc/view/adblock-plus/*.htm $(1)/usr/lib/lua/luci/view/adblock-plus/
+	$(INSTALL_DATA) ./luasrc/view/adblock-plus/* $(1)/usr/lib/lua/luci/view/adblock-plus/
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/i18n
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/adblock-plus.*.lmo $(1)/usr/lib/lua/luci/i18n/
 	$(INSTALL_DIR) $(1)/etc/adblock-plus

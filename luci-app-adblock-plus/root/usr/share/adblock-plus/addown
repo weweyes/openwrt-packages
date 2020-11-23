@@ -19,13 +19,7 @@ fi
 
 if [ "$3" = 1 ];then
 	echo "`eval $D` [$G]" >> $C
-	/usr/share/adblock-plus/adblock-plus addown
-	H=$(uci -q get adblock-plus.@adblock-plus[0].flash)
-	if [ $H = 0 -a -s $B/3rd/3rd.conf ] || [ $H = 1 -a -s /etc/adblock-plus/3rd/3rd.conf ];then
-		echo "`eval $D` [$G Successful!]" >> $C
-	else
-		echo "`eval $D` [$G Failed!]" >> $C
-	fi
+	/usr/share/adblock-plus/adblock-plus addown >> $C
 fi
 
 echo "`eval $D` [Start Adblock Plus+]" >> $C;echo `eval $D` > $B/adblock-plus.updated

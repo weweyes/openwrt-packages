@@ -22,20 +22,10 @@ get_config(){
 	config_get time_update $1 time_update 6
 }
 
-addown(){
-	r=1
-	while ps -w | grep $P/addown | grep -v grep >/dev/null 2>&1;do
-		[ $r -ge 10 ] && return 1 || let r++
-		sleep 1
-	done
-	rm -f /var/lock/adblock-plus.lock
-	$P/addown --down $A $B >/dev/null 2>&1 &
-}
-
 add_dns(){
 	mkdir -p /tmp/dnsmasq.d $D
 	echo conf-dir=$D > /tmp/dnsmasq.d/adblock-plus.conf
-	if [ -n "$url" ];then
+	if [ -n "$url" -a ! -s /tmp/adblock-plus/failed ];then
 		mkdir -p $T/3rd
 		if [ $flash = 1 ];then
 			ln -sf $L/3rd/3rd.conf $T/3rd/3rd.conf
@@ -154,7 +144,7 @@ start(){
 	fi
 	if [ $B = 1 ];then
 		echo "Download Adblock Plus Rules..."
-		addown
+		$P/addown --down $A $B >/dev/null 2>&1 &
 		exit 9
 	fi
 	echo "Load Adblock Plus Rules"
@@ -173,7 +163,10 @@ stop(){
 		echo "Adblock Plus+ is not running!"
 		return 1
 	fi
-	rm -rf /tmp/dnsmasq.d/adblock-plus.conf $D
+	kill -9 $(ps -w | grep grep $P/adblock-plus | grep -v grep | awk '{print$1}') 2>/dev/null
+	kill -9 $(ps -w | grep grep $P/addown | grep -v grep | awk '{print$1}') 2>/dev/null
+	kill -9 $(ps -w | grep ad_new.conf | grep -v grep | awk '{print$1}') 2>/dev/null
+	rm -rf /tmp/dnsmasq.d/adblock.conf $D /var/lock/adblock.lock
 	echo "Stop Adblock Plus+"
 	if [ "$(echo $url | sed 's/ /\n/g' | sort -u)" != "$(cat $T/3rd/url 2>/dev/null)" ];then
 		rm -rf $T/3rd
