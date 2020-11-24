@@ -1,18 +1,16 @@
 #!/bin/sh
-
 uci -q batch <<-EOF >/dev/null
-	delete ucitrack.@adblock-plus[-1]
-	add ucitrack adblock-plus
-	set ucitrack.@adblock-plus[-1].init=adblock-plus
+	delete ucitrack.@adblock[-1]
+	add ucitrack adblock
+	set ucitrack.@adblock[-1].init=adblock
 	commit ucitrack
-	delete firewall.adblock-plus
-	set firewall.adblock-plus=include
-	set firewall.adblock-plus.type=script
-	set firewall.adblock-plus.path=/var/etc/adblock-plus.include
-	set firewall.adblock-plus.reload=1
+	delete firewall.adblock
+	set firewall.adblock=include
+	set firewall.adblock.type=script
+	set firewall.adblock.path=/var/etc/adblock.include
+	set firewall.adblock.reload=1
 	commit firewall
 EOF
-
-rm -f /tmp/luci-indexcache
+rm -rf /tmp/luci-modulecache /tmp/luci-indexcache*
 killall -HUP rpcd 2>/dev/null
 exit 0
