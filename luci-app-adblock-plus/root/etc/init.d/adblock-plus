@@ -166,7 +166,7 @@ stop(){
 	kill -9 $(ps -w | grep grep $P/adblock-plus | grep -v grep | awk '{print$1}') 2>/dev/null
 	kill -9 $(ps -w | grep grep $P/addown | grep -v grep | awk '{print$1}') 2>/dev/null
 	kill -9 $(ps -w | grep ad_new.conf | grep -v grep | awk '{print$1}') 2>/dev/null
-	rm -rf /tmp/dnsmasq.d/adblock.conf $D /var/lock/adblock.lock
+	rm -rf /tmp/dnsmasq.d/adblock-plus.conf $D /var/lock/adblock-plus.lock
 	echo "Stop Adblock Plus+"
 	if [ "$(echo $url | sed 's/ /\n/g' | sort -u)" != "$(cat $T/3rd/url 2>/dev/null)" ];then
 		rm -rf $T/3rd
