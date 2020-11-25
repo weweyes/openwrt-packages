@@ -156,7 +156,8 @@ function mtkwifi.__profile_bak_path(profile)
     return bak
 end
 
-function mtkwifi.save_profile(cfgs, path)
+function mtkwifi.save_profile(cfgs, path, dev)
+    luci.sys.exec("sed -i 's/"..dev..".change = false/"..dev..".change = true/' /tmp/mtkwifi_configchanges")
 
     if not cfgs then
         mtkwifi.debug("configuration was empty, nothing saved")
@@ -223,6 +224,14 @@ function mtkwifi.diff_profile(path1, path2)
     return diff
 end
 
+function mtkwifi.diffs_profile(dev)
+	local config=mtkwifi.trim(luci.sys.exec("cat /tmp/mtkwifi_configchanges|grep "..dev.."|awk '{print $3}'"))
+	return config
+end
+
+function mtkwifi.trim(s)
+	return (string.gsub(s, "^%s*(.-)%s*$", "%1"))
+end
 
 -- Mode 12 and 13 are only available for STAs.
 local WirelessModeList = {
@@ -411,15 +420,15 @@ local WEP_Enc_List = {
 }
 
 local dbdc_prefix = {
-    {"ra",  "rax"},
-    {"rai", "ray"},
-    {"rae", "raz"},
+    {"rax", "ra"},
+    {"ray", "rai"},
+    {"raz", "rae"},
 }
 
 local dbdc_apcli_prefix = {
-    {"apcli",  "apclix"},
-    {"apclii", "apcliy"},
-    {"apclie", "apcliz"},
+    {"apclix", "apcli"},
+    {"apcliy", "apclii"},
+    {"apcliz", "apclie"},
 }
 
 function mtkwifi.band(mode)

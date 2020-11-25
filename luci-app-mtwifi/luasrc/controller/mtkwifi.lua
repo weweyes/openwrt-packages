@@ -32,8 +32,9 @@ end
 
 
 function index()
-
-    entry({"admin", "network", "wifi"}, template("admin_mtk/mtk_wifi_overview"), _("Wireless"), 25)
+	local e=entry({"admin", "network", "wifi"}, template("admin_mtk/mtk_wifi_overview"), _("Wireless"), 25)
+	e.dependent=false
+	e.acl_depends={ "luci-mod-network-config" }
     entry({"admin", "network", "wifi", "dev_cfg_view"}, template("admin_mtk/mtk_wifi_dev_cfg")).leaf = true
     entry({"admin", "network", "wifi", "dev_cfg"}, call("dev_cfg")).leaf = true
     entry({"admin", "network", "wifi", "dev_cfg_reset"}, call("dev_cfg_reset")).leaf = true
@@ -52,6 +53,7 @@ function index()
     entry({"admin", "network", "wifi", "get_5G_2nd_80Mhz_channel_list"}, call("get_5G_2nd_80Mhz_channel_list"))
     entry({"admin", "network", "wifi", "reset"}, call("reset_wifi")).leaf = true
     entry({"admin", "network", "wifi", "reload"}, call("reload_wifi")).leaf = true
+    entry({"admin", "network", "wifi", "remove_info"}, call("remove_info")).leaf = true
     entry({"admin", "network", "wifi", "get_raw_profile"}, call("get_raw_profile"))
     entry({"admin", "network", "wifi", "apcli_cfg_view"}, template("admin_mtk/mtk_wifi_apcli")).leaf = true
     entry({"admin", "network", "wifi", "apcli_cfg"}, call("apcli_cfg")).leaf = true
@@ -131,16 +133,16 @@ function dev_cfg(devname)
         cfgs.ITxBfEn=1
     elseif mimo == "3" then
         cfgs.ETxBfEnCond=1
-        cfgs.MUTxRxEnable=0
+		cfgs.MUTxRxEnable=0
         cfgs.ITxBfEn=1
     elseif mimo == "4" then
         cfgs.ETxBfEnCond=1
-        cfgs.MUTxRxEnable=0
+		cfgs.MUTxRxEnable=0
         cfgs.ITxBfEn=1
     else
-       cfgs.ETxBfEnCond=1
-       cfgs.MUTxRxEnable=0
-       cfgs.ITxBfEn=1
+        cfgs.ETxBfEnCond=1
+        cfgs.MUTxRxEnable=0
+        cfgs.ITxBfEn=1
     end
 
 --    if cfgs.ApCliEnable == "1" then
@@ -178,13 +180,13 @@ function dev_cfg(devname)
     end
 
     -- http.write_json(http.formvalue())
-    mtkwifi.save_profile(cfgs, profiles[devname])
+    mtkwifi.save_profile(cfgs, profiles[devname], devname)
 
     if http.formvalue("__apply") then
         __mtkwifi_reload(devname)
     end
 
-    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_view",devname))
+    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 
 function dev_cfg_raw(devname)
@@ -192,12 +194,12 @@ function dev_cfg_raw(devname)
     local profiles = mtkwifi.search_dev_and_profile()
     assert(profiles[devname])
 
-        local raw = http.formvalue("raw")
-        raw = string.gsub(raw, "\r\n", "\n")
+    local raw = http.formvalue("raw")
+    raw = string.gsub(raw, "\r\n", "\n")
     local cfgs = mtkwifi.load_profile(nil, raw)
-    mtkwifi.save_profile(cfgs, profiles[devname])
+    mtkwifi.save_profile(cfgs, profiles[devname], devname)
 
-    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_view", devname))
+    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 
 function dev_cfg_reset(devname)
@@ -255,7 +257,7 @@ function vif_del(dev, vif)
                 end
             end
 
-            mtkwifi.save_profile(cfgs, profile)
+            mtkwifi.save_profile(cfgs, profile, dev)
         else
             mtkwifi.debug(profile.." cannot be found!")
         end
@@ -525,7 +527,7 @@ function vif_cfg(dev, vif)
     if http.formvalue("__action") == "vif_cfg_view" then
         vif_idx = devs[devname]["vifs"][vifname].vifidx
         mtkwifi.debug("vif_idx=", vif_idx, devname, vifname)
-        to_url = luci.dispatcher.build_url("admin", "network", "wifi", "vif_cfg_view", devname, vifname)
+        to_url = luci.dispatcher.build_url("admin", "network", "wifi")
     elseif http.formvalue("__action") == "vif_add_view" then
         cfgs.BssidNum = tonumber(cfgs.BssidNum) + 1
         vif_idx = tonumber(cfgs.BssidNum)
@@ -552,11 +554,11 @@ function vif_cfg(dev, vif)
         __security_cfg(cfgs, vif_idx)
 
     mtkwifi.debug(devname, profile)
-    mtkwifi.save_profile(cfgs, profile)
+    mtkwifi.save_profile(cfgs, profile, dev)
     if http.formvalue("__apply") then
         __mtkwifi_reload(devname)
     end
-    return luci.http.redirect(to_url)
+    luci.http.redirect(to_url)
 end
 
 function apcli_scan(ifname)
@@ -565,7 +567,8 @@ function apcli_scan(ifname)
 end
 
 function get_station_list()
-    http.write("get_station_list")
+    --local userTitle=trim(luci.sys.exec("wc /tmp/dhcp.leases|awk '{print $1}'"))
+    return http.write_json("get_station_list")
 end
 
 function reset_wifi(devname)
@@ -576,12 +579,18 @@ function reset_wifi(devname)
     end
     os.execute("rm -rf /tmp/mtk/wifi")
     __mtkwifi_reload(devname)
-    return luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
+    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
 end
 
 function reload_wifi(devname)
+    --luci.sys.exec("sed -i 's/"..devname..".change = false/"..devname..".change = true/' /tmp/mtkwifi_configchanges")
+    luci.sys.exec("rm /tmp/mtkwifi_configchanges")
     __mtkwifi_reload(devname)
-    return luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
+    luci.http.redirect(luci.dispatcher.build_url("admin", "network", "wifi"))
+end
+
+function remove_info(devname)
+    luci.sys.exec("sed -i 's/"..devname..".change = true/"..devname..".change = false/' /tmp/mtkwifi_configchanges")
 end
 
 function get_raw_profile()
@@ -743,7 +752,7 @@ function apcli_cfg(dev, vif)
         cfgs.ApCliEncrypType = http.formvalue("wpa_ApCliEncrypType")
     end
 
-    mtkwifi.save_profile(cfgs, profiles[devname])
+    mtkwifi.save_profile(cfgs, profiles[devname], dev)
 
     if http.formvalue("__apply") then
         __mtkwifi_reload(devname)
@@ -766,7 +775,7 @@ function apcli_connect(dev, vif)
 
     local cfgs = mtkwifi.load_profile(profiles[devname])
     cfgs.ApCliEnable = "1"
-    mtkwifi.save_profile(cfgs, profiles[devname])
+    mtkwifi.save_profile(cfgs, profiles[devname], dev)
 
     os.execute("ifconfig "..vifname.." up")
 --    local brvifs = mtkwifi.__trim(mtkwifi.read_pipe("uci get network.lan.ifname"))
@@ -814,7 +823,7 @@ function apcli_disconnect(dev, vif)
 
     local cfgs = mtkwifi.load_profile(profiles[devname])
     cfgs.ApCliEnable = "1"
-    mtkwifi.save_profile(cfgs, profiles[devname])
+    mtkwifi.save_profile(cfgs, profiles[devname], dev)
 
     os.execute("iwpriv "..vifname.." set ApCliEnable=0")
 
