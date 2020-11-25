@@ -102,8 +102,8 @@ jobs:
         echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/lienol ./
         rm -rf .svn
         
-        rm -Rf */.git */.svn qt5 openwrt-chinadns-ng openwrt-simple-obfs openwrt-v2ray-plugin openwrt-fullconenat cups cups-bjnp mt-drivers luci-app-docker \
-        coremark openwrt-chinadns openwrt-chinadns luci-app-flowoffload luci-app-sfe luci-app-appfilter fcgiwrap luci-app-ssr-plus \
+        rm -Rf */.git */.svn qt5 openwrt-chinadns-ng openwrt-simple-obfs openwrt-v2ray-plugin openwrt-fullconenat cups cups-bjnp mt-drivers luci-app-mtwifi \
+        luci-app-docker coremark openwrt-chinadns openwrt-chinadns luci-app-flowoffload luci-app-sfe luci-app-appfilter fcgiwrap luci-app-ssr-plus \
         ddns-scripts_aliyun ddns-scripts_dnspod
         mv -f mt/* ./ && rm -Rf mt
         sed -i "/minisign:minisign/d" luci-app-dnscrypt-proxy2/Makefile
