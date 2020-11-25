@@ -173,4 +173,4 @@ while getopts ":s:l:S:L:N:P:a:b:w:p:G:D:rczf" arg;do
 done
 
 [ -z "$server" -o -z "$local_port" ] && exit 1
-ipset_r && tp_rule && gen_include || exit 1
+flush_r;ipset_r && tp_rule && gen_include || exit 1
