@@ -59,7 +59,7 @@ function opkgupgrade() {
 					[ -f "/etc/backup/installed_packages.txt" ] && {
 						opkg list-upgradable >/tmp/list-upgradable
 						for ipk in $(cat /etc/backup/installed_packages.txt | grep -oE '(.*overlay|luci-app.*|luci-theme.*)' | awk '{print $1}'); do
-							[[ "$(grep $ipk /tmp/list-upgradable)" && $ipk != "luci-app-opkg" && $ipk != "luci-app-adblock" ]] && {
+							[[ "$(grep $ipk /tmp/list-upgradable)" && $ipk != "luci-app-opkg" ]] && {
 								opkg upgrade --force-overwrite --force-checksum $ipk >/tmp/upgrade
 								[[ "$(cat /tmp/upgrade)" == "" || "$(grep 'Configuring' /tmp/upgrade)" ]] || {
 									udok=false
