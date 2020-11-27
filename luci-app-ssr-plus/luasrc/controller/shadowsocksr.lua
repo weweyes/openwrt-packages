@@ -3,7 +3,9 @@ function index()
 	if not nixio.fs.access("/etc/config/shadowsocksr") then
 		return
 	end
-	entry({"admin","services","shadowsocksr"},alias("admin","services","shadowsocksr","base"),_("ShadowSocksR Plus+"),1).dependent=true
+	local e=entry({"admin","services","shadowsocksr"},firstchild(),_("ShadowSocksR Plus+"),2)
+	e.dependent=false
+	e.acl_depends={ "luci-app-ssr-plus" }
 	entry({"admin","services","shadowsocksr","base"},cbi("shadowsocksr/base"),_("Base Setting"),1).leaf=true
 	entry({"admin","services","shadowsocksr","servers"},arcombine(cbi("shadowsocksr/servers",{autoapply=true}),cbi("shadowsocksr/client-config")),_("Severs Nodes"),2).leaf=true
 	entry({"admin","services","shadowsocksr","control"},cbi("shadowsocksr/control"),_("Access Control"),3).leaf=true
@@ -89,8 +91,7 @@ function refresh_data()
 			retstring="-1"
 		end
 	elseif set=="ip_data" then
-		refresh_cmd="A=`curl -Lfsm 9 https://cdn.jsdelivr.net/gh/f6UiINtMDSmglMK4/A9xehMB2/ht2ix0v4Aj/zp2XmWPY9R4 || curl -Lfsm 9 https://raw.githubusercontent.com/f6UiINtMDSmglMK4/A9xehMB2/master/ht2ix0v4Aj/zp2XmWPY9R4` && echo \"$A\" | base64 -d > /tmp/china.txt"
-		sret=luci.sys.call(refresh_cmd)
+		sret=luci.sys.call("A=`curl -Lfsm 9 https://cdn.jsdelivr.net/gh/f6UiINtMDSmglMK4/A9xehMB2/ht2ix0v4Aj/zp2XmWPY9R4 || curl -Lfsm 9 https://raw.githubusercontent.com/f6UiINtMDSmglMK4/A9xehMB2/master/ht2ix0v4Aj/zp2XmWPY9R4` && echo \"$A\" | base64 -d > /tmp/china.txt")
 		icount=luci.sys.exec("cat /tmp/china.txt | wc -l")
 		if sret==0 and tonumber(icount)>1000 then
 			oldcount=luci.sys.exec("cat /tmp/ssrplus/china.txt | wc -l")
@@ -105,8 +106,7 @@ function refresh_data()
 		end
 		luci.sys.exec("rm -f /tmp/china.txt ")
 	elseif set=="ip6_data" then
-		refresh_cmd="A=`curl -Lfs https://small_5.coding.net/p/adbyby/d/adbyby/git/raw/master/delegated-apnic-latest` && echo \"$A\" | awk -F\\| '/CN\\|ipv6/{printf\"%s/%d\\n\",$4,$5}' > /tmp/china_v6.txt"
-		sret=luci.sys.call(refresh_cmd)
+		sret=luci.sys.call("curl -Lfso /tmp/china_v6.txt https://cdn.jsdelivr.net/gh/icy37785/Auto_IP_Range/China_ipv6.txt || curl -Lfso /tmp/china_v6.txt https://raw.githubusercontent.com/icy37785/Auto_IP_Range/master/China_ipv6.txt")
 		icount=luci.sys.exec("cat /tmp/china_v6.txt | wc -l")
 		if sret==0 and tonumber(icount)>1000 then
 			oldcount=luci.sys.exec("cat /tmp/ssrplus/china_v6.txt | wc -l")

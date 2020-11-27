@@ -17,6 +17,7 @@ opkg() {
 		#/etc/init.d/adblock reload
 		#}
 		rm -Rf /tmp/luci-*
+		/etc/init.d/ucitrack reload
 	else
 		command opkg $@
 	fi
