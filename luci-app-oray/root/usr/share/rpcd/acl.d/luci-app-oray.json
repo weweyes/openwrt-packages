@@ -1,0 +1,11 @@
+{
+	"luci-app-oray": {
+		"description": "Grant UCI access for luci-app-oray",
+		"read": {
+			"uci": [ "oray" ]
+		},
+		"write": {
+			"uci": [ "oray" ]
+		}
+	}
+}
