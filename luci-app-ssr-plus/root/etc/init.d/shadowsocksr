@@ -15,8 +15,6 @@ DNS_T=$SDNS/smartdns.conf
 CON_T=$SDNS/rules.conf
 PID=/var/run/smartdns.pid
 LOG=/tmp/ssrplus.log
-LOG_B="echo '------------------------------------------------------------------------------------------------------------------------------------------------------------' >> $LOG"
-LOG_S=0
 BIN_DIR=/usr/share/ssrplus
 DNS_DIR=/tmp/dnsmasq.ssr
 CRON="grep -q $BIN_DIR $CRON_FILE && sed -i '/\/share\/ssrplus/d' $CRON_FILE"
@@ -177,19 +175,26 @@ rules(){
 	if ps -w | grep ssr-retcp | grep -v grep >/dev/null;then
 		echo "ShadowsocksR Plus+ has Started.";return 1
 	fi
+	if ! cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Check network status...' && ! cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Download IP/GFW files...';then
+		[ -s $LOG ] && echo '------------------------------------------------------------------------------------------------------------------------------------------------------------' >> $LOG
+		echo "`eval $DATE` SSR-rules : Check network status..." >> $LOG
+	fi
 	if ! curl -so /dev/null -m 3 www.baidu.com;then
+		echo "`eval $DATE` SSR-rules : Wait for network to connect..." >> $LOG
 		firstdown 1;exit 1
 	fi
+	cat $LOG 2>/dev/null | sed -n '$p' | grep -q 'Download IP/GFW files...' || (echo "`eval $DATE` SSR-rules : Check network status successful!" >> $LOG;echo "`eval $DATE` SSR-rules : Check IP/GFW files..." >> $LOG)
 	mkdir -p /var/run /var/etc
 	if [ ! -s /tmp/ssrplus/china.txt ] || [ $run_mode = router -a ! -s /tmp/ssrplus/china_v6.txt ] || ([ $run_mode = gfw -o $gfw_mode = 1 ] && [ ! -s /tmp/ssrplus/gfw.list ]);then
+		echo "`eval $DATE` SSR-rules : Download IP/GFW files..." >> $LOG
 		firstdown 2;exit 1
 	fi
+	echo "`eval $DATE` SSR-rules : Check IP/GFW files successful!" >> $LOG
 	kcp_enable=$(uci_get_by_name $GLOBAL_SERVER kcp_enable 0)
 	[ $kcp_enable = 1 ] && kcp_server=$server
 	UDP_RELAY_SERVER=$(uci_get_by_type global udp_relay_server)
 	[ "$UDP_RELAY_SERVER" = same ] && UDP_RELAY_SERVER=$GLOBAL_SERVER
 	if [ "$(uci_get_by_name $UDP_RELAY_SERVER kcp_enable 0)" = 1 ];then
-		[ -s $LOG ] && LOG_S=1 && eval $LOG_B
 		echo "`eval $DATE` UDP Relay: Can't use KCPTUN to start as UDP Relay Server!" >> $LOG
 		UDP_RELAY_SERVER=
 	fi
@@ -209,7 +214,6 @@ start_rules(){
 			done
 		fi
 		if ! A=$(nslookup $server 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");then
-			[ -s $LOG -a $LOG_S = 0 ] && eval $LOG_B
 			echo "`eval $DATE` Main Node: Unable to get server address.Check domain name!" >> $LOG;return 1
 		fi
 		server=$(echo "$A" | sed -n 1p)
@@ -233,7 +237,6 @@ start_rules(){
 				done
 			fi
 			if ! A=$(nslookup $udp_server 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");then
-				[ -s $LOG -a $LOG_S = 0 ] && eval $LOG_B
 				echo "`eval $DATE` UDP Relay: Unable to get server address.Check domain name!" >> $LOG;return 1
 			fi
 			udp_server=$(echo "$A" | sed -n 1p)
@@ -260,7 +263,6 @@ start_rules(){
 				done
 			fi
 			if ! A=$(nslookup $nf_ip 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");then
-				[ -s $LOG -a $LOG_S = 0 ] && eval $LOG_B
 				echo "`eval $DATE` NF Shunt   : Unable to get server address.Check domain name!" >> $LOG;return 1
 			fi
 			nf_ip=$(echo "$A" | sed -n 1p)
@@ -281,7 +283,6 @@ start_rules(){
 		proxyport="-m multiport --dports 22,53,587,465,995,993,143,80,443"
 	fi
 
-	[ -s $LOG -a $LOG_S = 0 ] && eval $LOG_B
 	r=1
 	while ! $BIN_DIR/ssr-rules -s "$server" -l "$local_port" -a "$ac_ips" -b "$(uci_get_by_type access_control wan_bp_ips)" -w "$(uci_get_by_type access_control wan_fw_ips)" \
 		-p "$(uci_get_by_type access_control lan_fp_ips)" -G "$(uci_get_by_type access_control lan_gm_ips)" -D "$proxyport" $mode $UDP $NF;do
