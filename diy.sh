@@ -5,7 +5,6 @@ sed -i 's/+rclone\( \|$\)/+rclone +fuse-utils\1/g' luci-app-rclone/Makefile
 sed -i 's/shadowsocksr-libev-alt/shadowsocksr-libev-redir/g' */Makefile
 sed -i 's/shadowsocksr-libev-ssr-local/shadowsocksr-libev-local/g' */Makefile
 sed -i 's/ca-certificates/ca-bundle/g' */Makefile
-sed -i '/resolvfile=/d' luci-app-adguardhome/root/etc/init.d/AdGuardHome
 sed -i 's/ +kmod-fs-exfat//g' automount/Makefile
 sed -i 's/ @!BUSYBOX_DEFAULT_IP:/ +/g' wrtbwmon/Makefile
 find */luasrc/view/ -maxdepth 2 -name "*.htm" | xargs -i sed -i 's?"http://" + window.location.hostname?window.location.protocol + "//" + window.location.hostname?g' {}

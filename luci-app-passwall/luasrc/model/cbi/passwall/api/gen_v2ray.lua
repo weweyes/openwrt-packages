@@ -58,6 +58,10 @@ function gen_outbound(node, tag, relay_port)
             node.stream_security = "none"
         end
 
+        if node.tls and node.tls == "1" then
+            node.stream_security = "tls"
+        end
+
         if node.transport == "mkcp" or node.transport == "quic" then
             node.stream_security = "none"
         end
@@ -73,10 +77,6 @@ function gen_outbound(node, tag, relay_port)
             streamSettings = (node.protocol == "vmess" or node.protocol == "vless" or node.protocol == "socks" or node.protocol == "shadowsocks" or node.protocol == "trojan") and {
                 network = node.transport,
                 security = node.stream_security,
-                xtlsSettings = (node.stream_security == "xtls") and {
-                    serverName = node.tls_serverName,
-                    allowInsecure = (node.tls_allowInsecure == "1") and true or false
-                } or nil,
                 tlsSettings = (node.stream_security == "tls") and {
                     serverName = node.tls_serverName,
                     allowInsecure = (node.tls_allowInsecure == "1") and true or false
