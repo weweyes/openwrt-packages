@@ -75,9 +75,7 @@ jobs:
         git clone https://github.com/esirplayground/luci-app-poweroff
         git clone https://github.com/lvqier/luci-app-dnsmasq-ipset
         git clone https://github.com/sirpdboy/luci-app-netdata
-        git clone https://github.com/xiaorouji/openwrt-passwall && mv -f openwrt-passwall/* ./ && rm -Rf openwrt-passwall
         svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
-        svn co https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall
         svn co https://github.com/xiaorouji/openwrt-package/trunk/package/chinadns-ng
         svn co https://github.com/xiaorouji/openwrt-package/trunk/package/shadowsocksr-libev
         svn co https://github.com/Lienol/openwrt/trunk/package/network/fullconenat && rm -f fullconenat/patches/000-printk.patch
@@ -95,6 +93,7 @@ jobs:
         rm -rf .svn
         echo -e "\q" | svn co https://github.com/coolsnowwolf/lede/trunk/package/lean ./
         rm -rf .svn
+        git clone https://github.com/xiaorouji/openwrt-passwall && mv -f openwrt-passwall/* ./ && rm -Rf openwrt-passwall
         echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/ctcgfw ./
         rm -rf .svn
         svn export --force https://github.com/project-openwrt/openwrt/branches/master/package/ntlf9t && mv -n ntlf9t/* ./ && rm -rf ntlf9t
