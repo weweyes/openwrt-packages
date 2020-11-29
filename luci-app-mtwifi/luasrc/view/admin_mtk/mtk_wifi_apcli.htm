@@ -36,6 +36,12 @@ local debug = 0
 %>
 
 <script type="text/javascript" src="<%=resource%>/cbi.js?v=git-17.250.41546-90ac861"></script>
+
+<div id="loading" style="margin-top: 1em; display: none;">
+<img src="<%=resource%>/icons/loading.gif" alt="<%:Loading%>" style="vertical-align:e;" />
+    &nbsp;&nbsp;&nbsp; Please waiting while the page is loading......
+</div>
+
 <form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg", devname, vifname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this)" onsubmit="return cbi_validate_form(this, 'Some fields are invalid, cannot save values!')" autocomplete="off">
 
     <fieldset class="cbi-section" id="vif-cfg-apcli">
@@ -163,13 +169,28 @@ local debug = 0
     </fieldset>
 
     <div class="cbi-page-actions" id="apcli_form_buttons">
-        <a class="cbi-button cbi-button-edit" style="float:left;text-align:center;" href="<%=luci.dispatcher.build_url("admin", "network", "wifi")%>">返回</a>
+        <input class="cbi-button cbi-button-apply" value="重启无线" type="button" onclick='wifi_reload("<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", devname)%>");' />
         <input class="cbi-button cbi-button-apply" value="保存设置" type="submit" />
+        <input class="cbi-button cbi-button-apply" value="连接中继" type="button" onclick='wifi_reload("<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_connect", dev.devname, dev.apcli.vifname)%>")' />
         <input class="cbi-button cbi-button-reset" value="重置设置" type="reset" />
     </div>
 </form>
 
 <script type="text/javascript">
+    function wifi_reload(url) {
+        window.scrollTo(0, 0);
+        document.getElementById('loading').style.display="";
+        XHR.get(url, null,
+            function(x)
+            {
+                console.log(x);
+                document.getElementById("loading").style.display="none";
+                window.location.reload();
+            }
+        );
+    }
+
+
     function decode_ssid(ssid)
     {
         ssid = ssid.replace(/&amp;/g, "&");
@@ -208,7 +229,7 @@ local debug = 0
              || aplist[i].authmode == "WPAPSK"
              || aplist[i].authmode == "WPA2PSK"
              || aplist[i].authmode == "WPAPSKWPA2PSK") {
-                td5.innerHTML = '<a href="javascript:choose_rootap(\''+i+'\')" >选择此无线</a>';
+                td5.innerHTML = '<a href="javascript:choose_rootap(\''+i+'\')" >Choose This</a>';
 
             } else {
                 td5.innerHTML = 'Security Not Supported';
@@ -241,9 +262,9 @@ local debug = 0
         XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_scan")%>/' + vifname, null,
             function(x)
             {
-                //console.log(x)
+                console.log(x)
                 ap_list = eval(x.response);
-                //console.log(ap_list);
+                console.log(ap_list);
                 create_ap_table(ap_list);
                 document.getElementById("loading").style.display="none";
             }

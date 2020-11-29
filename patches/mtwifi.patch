@@ -1,0 +1,24 @@
+--- a/luci-app-mtwifi/root/usr/lib/lua/mtkwifi.lua
++++ b/luci-app-mtwifi/root/usr/lib/lua/mtkwifi.lua
+@@ -411,15 +411,15 @@ local WEP_Enc_List = {
+ }
+ 
+ local dbdc_prefix = {
+-    {"ra",  "rax"},
+-    {"rai", "ray"},
+-    {"rae", "raz"},
++    {"rax", "ra"},
++    {"ray", "rai"},
++    {"raz", "rae"},
+ }
+ 
+ local dbdc_apcli_prefix = {
+-    {"apcli",  "apclix"},
+-    {"apclii", "apcliy"},
+-    {"apclie", "apcliz"},
++    {"apclix", "apcli"},
++    {"apcliy", "apclii"},
++    {"apcliz", "apclie"},
+ }
+ 
+ function mtkwifi.band(mode)
