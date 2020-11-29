@@ -1,27 +1,10 @@
 
 <%+header%>
-<style type="text/css">
-.legend{
-	width: 100%;
-	padding-bottom: 5px;
-	border-bottom: solid black 1.5px;
-}
-.tdFont{
-	cursor: default;
-    text-align: right;
-    padding-right: 3%;
-    font-size: 14px;
-}
-tr{
-	border: solid 5px hsla(0, 0%, 100%, 0) !important;
-}
-</style>
 <!--
     This module is a demo to configure MTK' proprietary WiFi driver.
     Basic idea is to bypass uci and edit wireless profile (mt76xx.dat) directly.
     LuCI's WiFi configuration is more logical and elegent, but it's quite tricky to 
     translate uci into MTK's WiFi profile (like we did in "uci2dat").
-
     Hua Shao <nossiac@163.com>
 -->
 
@@ -42,22 +25,33 @@ end
 local cfgs = mtkwifi.load_profile(dev.profile)
 
 %>
+
+
 <script type="text/javascript" src="<%=resource%>/cbi.js?v=git-17.250.41546-90ac861"></script>
 
-<ul class="cbi-tabmenu" style="margin-bottom:0px;">
-	<li id="advancedSettings" class="cbi-tab" data-tab="advancedSettings"><a href="#">高级设置</a></li>
-	<li id="originalFile" class="cbi-tab-disabled" data-tab="originalFile"><a href="#">原始文件</a></li>
-</ul>
-<div class="cbi-map-tabbed" data-initialized="true">
-<form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg", devname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this)" onsubmit="return cbi_validate_form(this, 'Some fields are invalid, cannot save values!')" autocomplete="false" data-tab-active="true" data-tab="advancedSettings" data-tab-title="高级设置">
+<div id="loading" style="margin-top: 1em; display: none;">
+<img src="<%=resource%>/icons/loading.gif" alt="<%:Loading%>" style="vertical-align:e;" />
+    &nbsp;&nbsp;&nbsp; Please waiting while the page is loading......
+</div>
+
+<form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg", devname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this)" onsubmit="return cbi_validate_form(this, 'Some fields are invalid, cannot save values!')" autocomplete="false">
     <fieldset class="cbi-section">
-      <legend class="legend"> 无线高级设置 - <%=devname%></legend>
-        <table id="dev-cfg-basic" class="cbi-section-table" style="width:80%;">
+        <legend> 无线高级设置 - <%=devname%> 
+<%
+local diff = mtkwifi.diff_profile(dev.profile)
+if next(diff) ~= nil then
+%>
+    <span style="color:red;">(<a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>'">reload</a> to apply changes)</span>
+<% 
+    end
+%>
+        </legend>
+        <table id="dev-cfg-basic" class="cbi-section-table">
             <tr><th></th><td></td><td></td></tr>
             <tr>
-                <td class="tdFont" >模式</td>
+                <td>模式</td>
                 <td>
-                    <select style="min-width:180px" name="WirelessMode" id="WirelessMode" onchange="WirelessMode_onchange(this.options[this.options.selectedIndex].value)">
+                    <select style="width:auto" name="WirelessMode" id="WirelessMode" onchange="WirelessMode_onchange(this.options[this.options.selectedIndex].value)">
                         <% for k,v in pairs(dev.WirelessModeList) do %>
                             <option value="<%=k%>" <% if tonumber(dev.WirelessMode) == tonumber(k) then%> selected="selected"<% end %>><%=k%> - <%=v%></option>
                         <% end %>
@@ -66,43 +60,43 @@ local cfgs = mtkwifi.load_profile(dev.profile)
                 <td></td>
             </tr>
             <tr>
-                <td class="tdFont" >信道</td>
+                <td>信道</td>
                 <td>
-                    <select style=" min-width:180px;" name="Channel" id="Channel" onchange="Channel_onchange(this.value)" <% if cfgs.ApCliEnable == "1" then %> disabled="disabled" <% end %>>
+                    <select style="width:auto; min-width:180px;" name="Channel" id="Channel" onchange="Channel_onchange(this.value)" <% if cfgs.ApCliEnable == "1" then %> disabled="disabled" <% end %>>
                     </select>
                 </td>
                 <td><% if cfgs.ApCliEnable == "1" then %> APClient/Repeater Mode. <% end %></td>
             </tr>
             <tr>
-                <td class="tdFont" >国家代码</td>
+                <td>区域代码</td>
                 <td>
-                    <select name="CountryCode" style="min-width:180px">
-                        <option value="US" id="advCountryCodeUS" <% if cfgs.CountryCode == "US" then %> selected="selected"<% end %>>US (美国)</option>
-                        <option value="JP" id="advCountryCodeJP" <% if cfgs.CountryCode == "JP" then %> selected="selected"<% end %>>JP (日本)</option>
-                        <option value="FR" id="advCountryCodeFR" <% if cfgs.CountryCode == "FR" then %> selected="selected"<% end %>>FR (法国)</option>
-                        <option value="TW" id="advCountryCodeTW" <% if cfgs.CountryCode == "TW" then %> selected="selected"<% end %>>TW (台湾)</option>
-                        <option value="HK" id="advCountryCodeHK" <% if cfgs.CountryCode == "HK" then %> selected="selected"<% end %>>HK (香港)</option>
-                        <option value="IE" id="advCountryCodeIE" <% if cfgs.CountryCode == "IE" then %> selected="selected"<% end %>>IE (爱尔兰)</option>
+                    <select name="CountryCode" style="width:auto">
+                        <option value="US" id="advCountryCodeUS" <% if cfgs.CountryCode == "US" then %> selected="selected"<% end %>>US (United States)</option>
+                        <option value="JP" id="advCountryCodeJP" <% if cfgs.CountryCode == "JP" then %> selected="selected"<% end %>>JP (Japan)</option>
+                        <option value="FR" id="advCountryCodeFR" <% if cfgs.CountryCode == "FR" then %> selected="selected"<% end %>>FR (France)</option>
+                        <option value="TW" id="advCountryCodeTW" <% if cfgs.CountryCode == "TW" then %> selected="selected"<% end %>>TW (Taiwan)</option>
+                        <option value="IE" id="advCountryCodeIE" <% if cfgs.CountryCode == "IE" then %> selected="selected"<% end %>>IE (Ireland)</option>
+                        <option value="HK" id="advCountryCodeHK" <% if cfgs.CountryCode == "HK" then %> selected="selected"<% end %>>HK (Hong Kong)</option>
                         <option value="NONE" id="advCountryCodeNONE"<% if cfgs.CountryCode == "NONE" then %> checked="checked"<% end %>>NONE</option>
                     </select>
                 </td>
                 <td></td>
             </tr>
             <tr>
-                <td class="tdFont" title="Country Region">信道范围</td>
+                <td>Country Region</td>
                 <td>
-                    <select style=" min-width:180px;" name="__cr" id="__cr" onchange="CountryRegion_onchange(this.value)">
+                    <select style="width:auto; min-width:180px;" name="__cr" id="__cr" onchange="CountryRegion_onchange(this.value)">
                     </select>
                 </td>
                 <td></td>
             </tr>
             <% if cfgs.HT_OpMode then %>
             <tr>
-                <td class="tdFont" title="Operating Mode">操作模式</td>
+                <td>无线模式</td>
                 <td>
-                    <select style="min-width:180px" name="HT_OpMode">
-                        <option value="0" <% if cfgs.HT_OpMode == "0" then %> selected="selected"<% end%>>Mixed Mode</option>
-                        <option value="1" <% if cfgs.HT_OpMode == "1" then %> selected="selected"<% end%>>Green Field</option>
+                    <select style="width:auto" name="HT_OpMode">
+                        <option value="0" <% if cfgs.HT_OpMode == "0" then %> selected="selected"<% end%>>正常模式</option>
+                        <option value="1" <% if cfgs.HT_OpMode == "1" then %> selected="selected"<% end%>>绿色模式</option>
                     </select>
                 </td>
                 <td></td>
@@ -110,21 +104,21 @@ local cfgs = mtkwifi.load_profile(dev.profile)
             <% end %>
             <% if cfgs.HT_GI then %>
             <tr>
-                <td class="tdFont" title="HT Guard Interval">HT保护间隔</td>
+                <td>HT Guard Interval</td>
                 <td>
-                    <select style="min-width:180px" name="HT_GI">
-                        <option value="0" <% if cfgs.HT_GI == "0" then %> selected="selected"<% end%>>长</option>
-                        <option value="1" <% if cfgs.HT_GI == "1" then %> selected="selected"<% end%>>短</option>
-                        <option value="2" <% if cfgs.HT_GI == "2" then %> selected="selected"<% end%>>自动</option>
+                    <select style="width:auto" name="HT_GI">
+                        <option value="0" <% if cfgs.HT_GI == "0" then %> selected="selected"<% end%>>Long</option>
+                        <option value="1" <% if cfgs.HT_GI == "1" then %> selected="selected"<% end%>>Short</option>
+                        <option value="2" <% if cfgs.HT_GI == "2" then %> selected="selected"<% end%>>Auto</option>
                     </select>
                 </td>
                 <td></td>
             </tr>
             <% end %>
             <tr>
-                <td class="tdFont" title="Channel BandWidth">信道带宽</td>
+                <td>信道带宽</td>
                 <td>
-                    <select style="min-width:180px" name="__bw" id="__bw" onchange="Bw_onchange(this.options[this.options.selectedIndex].value)">
+                    <select style="width:auto" name="__bw" id="__bw" onchange="Bw_onchange(this.options[this.options.selectedIndex].value)">
                         <option value="20" <% if dev.__bw == "20" then %> selected="selected"<% end%>>20 MHz</option>
                         <option value="40" <% if dev.__bw == "40" then %> selected="selected"<% end%>>40 MHz</option>
                         <option value="60" <% if dev.__bw == "60" then %> selected="selected"<% end%>>20/40 MHz</option>
@@ -137,259 +131,261 @@ local cfgs = mtkwifi.load_profile(dev.profile)
             </tr>
             <% if cfgs.VHT_BW then %>
             <tr>
-                <td class="tdFont" >2G 40Mhz 扩展信道</td>
+                <td>2G 40MHZ模式辅助信道</td>
                 <td>
-                    <select style=" min-width:180px;" name="HT_EXTCHA" id="HT_EXTCHA" <% if cfgs.ApCliEnable == "1" or dev.__bw ~= "40" or dev.__bw ~= "60" then %> disabled="disabled" <% end %>>
+                    <select style="width:auto; min-width:180px;" name="HT_EXTCHA" id="HT_EXTCHA" <% if cfgs.ApCliEnable == "1" or dev.__bw ~= "40" or dev.__bw ~= "60" then %> disabled="disabled" <% end %>>
                     </select>
                 </td>
                 <td><% if cfgs.ApCliEnable == "1" then %> APClient/Repeater Mode. <% end %></td>
             </tr>
             <tr>
-                <td class="tdFont" >5G 2nd 80Mhz 信道</td>
+                <td>5G 2nd 80Mhz Channel</td>
                 <td>
-                    <select style=" min-width:180px;" name="VHT_Sec80_Channel" id="VHT_Sec80_Channel" <% if cfgs.ApCliEnable == "1" or dev.__bw ~= "180" then %> disabled="disabled" <% end %>>
+                    <select style="width:auto; min-width:180px;" name="VHT_Sec80_Channel" id="VHT_Sec80_Channel" <% if cfgs.ApCliEnable == "1" or dev.__bw ~= "180" then %> disabled="disabled" <% end %>>
                     </select>
                 </td>
                 <td><% if cfgs.ApCliEnable == "1" then %> APClient/Repeater Mode. <% end %></td>
-            </tr>
-            <% end %>
-            <% if cfgs.VHT_SGI then %>
-            <tr>
-                <td class="tdFont" title="VHT Short GI">短保护间隔</td>
-                <td>
-                    <select style="min-width:180px" name="VHT_SGI">
-                        <option value="0" <% if cfgs.VHT_SGI == "0" then %> selected="selected"<% end%>>长</option>
-                        <option value="1" <% if cfgs.VHT_SGI == "1" then %> selected="selected"<% end%>>短</option>
-                    </select>
-                </td>
-                <td></td>
-            </tr>
-            <% end %>
-            <% if cfgs.BGProtection then %>
-            <tr>
-                <td class="tdFont" title="BG Protection Mode">BG保护模式</td>
-                <td>
-                    <select name="BGProtection" style="min-width:180px">
-                        <option value="0" <% if cfgs.BGProtection == "0" then %>selected="selected"<% end %>>自动</option>
-                        <option value="1" <% if cfgs.BGProtection == "1" then %>selected="selected"<% end %>>总是开启</option>
-                        <option value="2" <% if cfgs.BGProtection == "2" then %>selected="selected"<% end %>>总是关闭</option>
-                    </select>
-                </td>
-                <td></td>
-            </tr>
-            <% end %>
-            <% if cfgs.BeaconPeriod then %>
-            <tr>
-                <td class="tdFont" title="Beacon Interval">信标间隔</td>
-                <td>
-                    <input  name="BeaconPeriod" value="<%=cfgs.BeaconPeriod%>" />毫秒 (范围 20-999, 默认 100)
-                </td>
-                <td></td>
-            </tr>
-            <% end %>
-            <% if cfgs.DtimPeriod then %>
-            <tr>
-                <td class="tdFont" title="Data Beacon Rate (DTIM)">数据标率</td>
-                <td>
-                    <input  name="DtimPeriod" value="<%=cfgs.DtimPeriod%>" />毫秒 (范围 1-255, 默认 1)
-                </td>
-                <td></td>
-            </tr>
-            <% end %>
-            <% if cfgs.FragThreshold then %>
-            <tr>
-                <td class="tdFont" title="Fragment Threshold">分片阈值</td>
-                <td>
-                    <input  name="FragThreshold" value="<%=cfgs.FragThreshold%>" />(范围 256-2346, 默认 2346)
-                </td>
-                <td></td>
-            </tr>
-            <% end %>
-            <% if cfgs.RTSThreshold then %>
-            <tr>
-                <td class="tdFont" title="RTS Threshold">RTS阈值</td>
-                <td>
-                    <input  name="RTSThreshold" value="<%=cfgs.RTSThreshold%>" />(范围 256-2347, 默认 2347)
-                </td>
-                <td></td>
-            </tr>
-            <% end %>
-            <% if cfgs.TxPower then %>
-            <tr>
-                <td class="tdFont" >TX Power</td>
-                <td>
-                    <input  name="TxPower" value="<%=cfgs.TxPower%>" />dBm (范围 1-100, 默认 100)
-                </td>
-                <td></td>
             </tr>
             <% end %>
             <% if cfgs.HT_STBC then %>
             <tr>
-                <td class="tdFont" >STBC</td>
+                <td>STBC</td>
                 <td>
-                    <label><input type="radio" name="HT_STBC" value="1" <% if cfgs.HT_STBC == "1" then %> checked="checked"<% end %>/> 启用</label>
-                    <label><input type="radio" name="HT_STBC" value="0" <% if cfgs.HT_STBC == "0" then %> checked="checked"<% end %>/> 禁用</label>
+                    <input type="radio" name="HT_STBC" value="1" <% if cfgs.HT_STBC == "1" then %> checked="checked"<% end %>/> 启用
+                    <input type="radio" name="HT_STBC" value="0" <% if cfgs.HT_STBC == "0" then %> checked="checked"<% end %>/> 禁用
                 </td>
                 <td></td>
             </tr>
             <% end %>
             <% if cfgs.HT_AMSDU then %>
             <tr>
-                <td class="tdFont" >A-MSDU</td>
+                <td>A-MSDU</td>
                 <td>
-                    <label><input type="radio" name="HT_AMSDU" value="1" <% if cfgs.HT_AMSDU == "1" then %> checked="checked"<% end %>/> 启用</label>
-                    <label><input type="radio" name="HT_AMSDU" value="0" <% if cfgs.HT_AMSDU == "0" then %> checked="checked"<% end %>/> 禁用</label>
+                    <input type="radio" name="HT_AMSDU" value="1" <% if cfgs.HT_AMSDU == "1" then %> checked="checked"<% end %>/> 启用
+                    <input type="radio" name="HT_AMSDU" value="0" <% if cfgs.HT_AMSDU == "0" then %> checked="checked"<% end %>/> 禁用
                </td>
                 <td></td>
             </tr>
             <% end %>
             <% if cfgs.HT_AutoBA then %>
             <tr>
-                <td class="tdFont" >Auto Block ACK</td>
+                <td>Auto Block ACK</td>
                 <td>
-                    <label><input type="radio" name="HT_AutoBA" value="1" <% if cfgs.HT_AutoBA == "1" then %> checked="checked"<% end %>/> 启用</label>
-                    <label><input type="radio" name="HT_AutoBA" value="0" <% if cfgs.HT_AutoBA == "0" then %> checked="checked"<% end %>/> 禁用</label>
+                    <input type="radio" name="HT_AutoBA" value="1" <% if cfgs.HT_AutoBA == "1" then %> checked="checked"<% end %>/> 启用
+                    <input type="radio" name="HT_AutoBA" value="0" <% if cfgs.HT_AutoBA == "0" then %> checked="checked"<% end %>/> 禁用
                 </td>
                 <td></td>
             </tr>
             <% end %>
             <% if cfgs.HT_BADecline then %>
             <tr>
-                <td class="tdFont" >Decline BA Request</td>
+                <td>Decline BA Request</td>
                 <td>
-                    <label><input type="radio" name="HT_BADecline" value="1" <% if cfgs.HT_BADecline == "1" then %> checked="checked"<% end %>/> 启用</label>
-                    <label><input type="radio" name="HT_BADecline" value="0" <% if cfgs.HT_BADecline == "0" then %> checked="checked"<% end %>/> 禁用</label>
+                    <input type="radio" name="HT_BADecline" value="1" <% if cfgs.HT_BADecline == "1" then %> checked="checked"<% end %>/> 启用
+                    <input type="radio" name="HT_BADecline" value="0" <% if cfgs.HT_BADecline == "0" then %> checked="checked"<% end %>/> 禁用
                 </td>
                 <td></td>
             </tr>
             <% end %>
             <% if cfgs.HT_DisallowTKIP then %>
             <tr>
-                <td class="tdFont" >HT Disallow TKIP</td>
+                <td>HT Disallow TKIP</td>
                 <td>
-                    <label><input type="radio" name="HT_DisallowTKIP" value="1" <% if cfgs.HT_DisallowTKIP == "1" then %> checked="checked"<% end %>/> 启用</label>
-                    <label><input type="radio" name="HT_DisallowTKIP" value="0" <% if cfgs.HT_DisallowTKIP == "0" then %> checked="checked"<% end %>/> 禁用</label>
+                    <input type="radio" name="HT_DisallowTKIP" value="1" <% if cfgs.HT_DisallowTKIP == "1" then %> checked="checked"<% end %>/> 启用
+                    <input type="radio" name="HT_DisallowTKIP" value="0" <% if cfgs.HT_DisallowTKIP == "0" then %> checked="checked"<% end %>/> 禁用
                 </td>
                 <td></td>
             </tr>
             <% end %>
             <% if cfgs.HT_LDPC then %>
             <tr>
-                <td class="tdFont" >HT LDPC</td>
+                <td>HT LDPC</td>
                 <td>
-                    <label><input type="radio" name="HT_LDPC" value="1" <% if cfgs.HT_LDPC == "1" then %> checked="checked"<% end %>/> 启用</label>
-                    <label><input type="radio" name="HT_LDPC" value="0" <% if cfgs.HT_LDPC == "0" then %> checked="checked"<% end %>/> 禁用</label>
+                    <input type="radio" name="HT_LDPC" value="1" <% if cfgs.HT_LDPC == "1" then %> checked="checked"<% end %>/> 启用
+                    <input type="radio" name="HT_LDPC" value="0" <% if cfgs.HT_LDPC == "0" then %> checked="checked"<% end %>/> 禁用
+                </td>
+                <td></td>
+            </tr>
+            <% end %>
+            <% if cfgs.VHT_SGI then %>
+            <tr>
+                <td>VHT Short GI</td>
+                <td>
+                    <select style="width:auto" name="VHT_SGI">
+                        <option value="0" <% if cfgs.VHT_SGI == "0" then %> selected="selected"<% end%>>Long</option>
+                        <option value="1" <% if cfgs.VHT_SGI == "1" then %> selected="selected"<% end%>>Short</option>
+                    </select>
                 </td>
                 <td></td>
             </tr>
             <% end %>
             <% if cfgs.VHT_STBC then %>
             <tr>
-                <td class="tdFont" >VHT STBC</td>
+                <td>VHT STBC</td>
                 <td>
-                    <label><input type="radio" name="VHT_STBC" value="1" <% if cfgs.VHT_STBC == "1" then %> checked="checked"<% end %>/> 启用</label>
-                    <label><input type="radio" name="VHT_STBC" value="0" <% if cfgs.VHT_STBC == "0" then %> checked="checked"<% end %>/> 禁用</label>
+                    <input type="radio" name="VHT_STBC" value="1" <% if cfgs.VHT_STBC == "1" then %> checked="checked"<% end %>/> 启用
+                    <input type="radio" name="VHT_STBC" value="0" <% if cfgs.VHT_STBC == "0" then %> checked="checked"<% end %>/> 禁用
                 </td>
                 <td></td>
             </tr>
             <% end %>
             <% if cfgs.VHT_BW_SIGNAL then %>
             <tr>
-                <td class="tdFont" >VHT BW Signaling</td>
+                <td>VHT BW Signaling</td>
                 <td>
-                    <label><input type="radio" name="VHT_BW_SIGNAL" value="1" <% if cfgs.VHT_BW_SIGNAL == "1" then %> checked="checked"<% end %>/> 启用</label>
-                    <label><input type="radio" name="VHT_BW_SIGNAL" value="0" <% if cfgs.VHT_BW_SIGNAL == "0" then %> checked="checked"<% end %>/> 禁用</label>
-                    <label><input type="radio" name="VHT_BW_SIGNAL" value="0" <% if cfgs.VHT_BW_SIGNAL == "2" then %> checked="checked"<% end %>/> 动态</label>
+                    <input type="radio" name="VHT_BW_SIGNAL" value="1" <% if cfgs.VHT_BW_SIGNAL == "1" then %> checked="checked"<% end %>/> 启用
+                    <input type="radio" name="VHT_BW_SIGNAL" value="0" <% if cfgs.VHT_BW_SIGNAL == "0" then %> checked="checked"<% end %>/> 禁用
+                    <input type="radio" name="VHT_BW_SIGNAL" value="0" <% if cfgs.VHT_BW_SIGNAL == "2" then %> checked="checked"<% end %>/> Dynamic
                 </td>
                 <td></td>
             </tr>
             <% end %>
             <% if cfgs.VHT_LDPC then %>
             <tr>
-                <td class="tdFont" >VHT LDPC</td>
+                <td>VHT LDPC</td>
                 <td>
-                    <label><input type="radio" name="VHT_LDPC" value="1" <% if cfgs.VHT_LDPC == "1" then %> checked="checked"<% end %>/> 启用</label>
-                    <label><input type="radio" name="VHT_LDPC" value="0" <% if cfgs.VHT_LDPC == "0" then %> checked="checked"<% end %>/> 禁用</label>
+                    <input type="radio" name="VHT_LDPC" value="1" <% if cfgs.VHT_LDPC == "1" then %> checked="checked"<% end %>/> 启用
+                    <input type="radio" name="VHT_LDPC" value="0" <% if cfgs.VHT_LDPC == "0" then %> checked="checked"<% end %>/> 禁用
+                </td>
+                <td></td>
+            </tr>
+            <% end %>
+            <% if cfgs.BGProtection then %>
+            <tr>
+                <td>BG Protection Mode</td>
+                <td>
+                    <select name="BGProtection" style="width:auto">
+                        <option value="0" <% if cfgs.BGProtection == "0" then %>selected="selected"<% end %>>Auto</option>
+                        <option value="1" <% if cfgs.BGProtection == "1" then %>selected="selected"<% end %>>Always On</option>
+                        <option value="2" <% if cfgs.BGProtection == "2" then %>selected="selected"<% end %>>Always Off</option>
+                    </select>
                 </td>
                 <td></td>
             </tr>
             <% end %>
             <% if cfgs.VHT_BW then %>
             <tr>
-                <td class="tdFont" >HT Protection</td>
+                <td>HT Protection</td>
                 <td>
-                    <label><input type="radio" name="HT_PROTECT" value="1" <% if cfgs.HT_PROTECT == "1" then %> checked="checked"<% end %>/> 启用</label>
-                    <label><input type="radio" name="HT_PROTECT" value="0" <% if cfgs.HT_PROTECT == "0" then %> checked="checked"<% end %>/> 禁用</label>
+                    <input type="radio" name="HT_PROTECT" value="1" <% if cfgs.HT_PROTECT == "1" then %> checked="checked"<% end %>/> 启用
+                    <input type="radio" name="HT_PROTECT" value="0" <% if cfgs.HT_PROTECT == "0" then %> checked="checked"<% end %>/> 禁用
+                </td>
+                <td></td>
+            </tr>
+            <% end %>
+            <% if cfgs.BeaconPeriod then %>
+            <tr>
+                <td>Beacon Interval</td>
+                <td>
+                    <input name="BeaconPeriod" value="<%=cfgs.BeaconPeriod%>" />ms(范围 20-999, 默认值 100)
+                </td>
+                <td></td>
+            </tr>
+            <% end %>
+            <% if cfgs.DtimPeriod then %>
+            <tr>
+                <td>Data Beacon Rate (DTIM)</td>
+                <td>
+                    <input name="DtimPeriod" value="<%=cfgs.DtimPeriod%>" />ms(范围 1-255, 默认值 1)
+                </td>
+                <td></td>
+            </tr>
+            <% end %>
+            <% if cfgs.FragThreshold then %>
+            <tr>
+                <td>Fragment Threshold</td>
+                <td>
+                    <input name="FragThreshold" value="<%=cfgs.FragThreshold%>" />(范围 256-2346, 默认值 2346)
+                </td>
+                <td></td>
+            </tr>
+            <% end %>
+            <% if cfgs.RTSThreshold then %>
+            <tr>
+                <td>RTS Threshold</td>
+                <td>
+                    <input name="RTSThreshold" value="<%=cfgs.RTSThreshold%>" />(范围 256-2347, 默认值 2347)
+                </td>
+                <td></td>
+            </tr>
+            <% end %>
+            <% if cfgs.TxPower then %>
+            <tr>
+                <td>TX Power</td>
+                <td>
+                    <input name="TxPower" value="<%=cfgs.TxPower%>" />dbm(范围 1-100, 默认值 100)
                 </td>
                 <td></td>
             </tr>
             <% end %>
             <% if cfgs.TxPreamble then %>
             <tr>
-                <td class="tdFont" >Short Preamble</td>
+                <td>Short Preamble</td>
                 <td>
-                    <label><input type="radio" name="TxPreamble" value="1" <% if cfgs.TxPreamble == "1" then %> checked="checked"<% end %>/> 启用</label>
-                    <label><input type="radio" name="TxPreamble" value="0" <% if cfgs.TxPreamble == "0" then %> checked="checked"<% end %>/> 禁用</label>
+                    <input type="radio" name="TxPreamble" value="1" <% if cfgs.TxPreamble == "1" then %> checked="checked"<% end %>/> 启用
+                    <input type="radio" name="TxPreamble" value="0" <% if cfgs.TxPreamble == "0" then %> checked="checked"<% end %>/> 禁用
                 </td>
                 <td></td>
             </tr>
             <% end %>
             <% if cfgs.ShortSlot then %>
             <tr>
-                <td class="tdFont" >Short Slot</td>
+                <td>Short Slot</td>
                 <td>
-                    <label><input type="radio" name="ShortSlot" value="1" <% if cfgs.ShortSlot == "1" then %> checked="checked"<% end %>/> 启用</label>
-                    <label><input type="radio" name="ShortSlot" value="0" <% if cfgs.ShortSlot == "0" then %> checked="checked"<% end %>/> 禁用</label>
+                    <input type="radio" name="ShortSlot" value="1" <% if cfgs.ShortSlot == "1" then %> checked="checked"<% end %>/> 启用
+                    <input type="radio" name="ShortSlot" value="0" <% if cfgs.ShortSlot == "0" then %> checked="checked"<% end %>/> 禁用
                 </td>
                 <td></td>
             </tr>
             <% end %>
             <% if cfgs.TxBurst then %>
             <tr>
-                <td class="tdFont" >TX Burst</td>
+                <td>TX Burst</td>
                 <td>
-                    <label><input type="radio" name="TxBurst" value="1" <% if cfgs.TxBurst == "1" then %> checked="checked"<% end %>/> 启用</label>
-                    <label><input type="radio" name="TxBurst" value="0" <% if cfgs.TxBurst == "0" then %> checked="checked"<% end %>/> 禁用</label>
+                    <input type="radio" name="TxBurst" value="1" <% if cfgs.TxBurst == "1" then %> checked="checked"<% end %>/> 启用
+                    <input type="radio" name="TxBurst" value="0" <% if cfgs.TxBurst == "0" then %> checked="checked"<% end %>/> 禁用
                 </td>
                 <td></td>
             </tr>
             <% end %>
             <% if cfgs.PktAggregate then %>
             <tr>
-                <td class="tdFont" >Packet Aggregate</td>
+                <td>Packet Aggregate</td>
                 <td>
-                    <label><input type="radio" name="PktAggregate" value="1" <% if cfgs.PktAggregate == "1" then %> checked="checked"<% end %>/> 启用</label>
-                    <label><input type="radio" name="PktAggregate" value="0" <% if cfgs.PktAggregate == "0" then %> checked="checked"<% end %>/> 禁用</label>
+                    <input type="radio" name="PktAggregate" value="1" <% if cfgs.PktAggregate == "1" then %> checked="checked"<% end %>/> 启用
+                    <input type="radio" name="PktAggregate" value="0" <% if cfgs.PktAggregate == "0" then %> checked="checked"<% end %>/> 禁用
                 </td>
                 <td></td>
             </tr>
             <% end %>
             <% if cfgs.IEEE80211H then %>
             <tr>
-                <td class="tdFont" >802.11H</td>
+                <td>802.11H</td>
                 <td>
-                    <label><input type="radio" name="IEEE80211H" value="1" <% if cfgs.IEEE80211H == "1" then %> checked="checked"<% end %>/> 启用</label>
-                    <label><input type="radio" name="IEEE80211H" value="0" <% if cfgs.IEEE80211H == "0" then %> checked="checked"<% end %>/> 禁用</label>
+                    <input type="radio" name="IEEE80211H" value="1" <% if cfgs.IEEE80211H == "1" then %> checked="checked"<% end %>/> 启用
+                    <input type="radio" name="IEEE80211H" value="0" <% if cfgs.IEEE80211H == "0" then %> checked="checked"<% end %>/> 禁用
                 </td>
                 <td></td>
             </tr>
             <% end %>
         </table>
 
+
     </fieldset>
     <div class="cbi-page-actions">
-    	<a class="cbi-button cbi-button-edit" style="float:left;text-align:center;" href="<%=luci.dispatcher.build_url("admin", "network", "wifi")%>">返回</a>
-        <input class="cbi-button cbi-button-apply" value="保存" type="submit" />
-        <input class="cbi-button cbi-button-reset" value="复位" type="reset" />
+        <input class="cbi-button cbi-button-apply" value="重启无线" type="button" onclick='wifi_reload("<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", devname)%>");' />
+        <input class="cbi-button cbi-button-apply" value="保存设置" type="submit" />
+        <input class="cbi-button cbi-button-apply" name="__apply" value="保存&应用" type="submit" />
+        <input class="cbi-button cbi-button-reset" value="重置" type="reset" />
     </div>
 </form>
 
 
-<form method="post" name="cbi2" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_raw", devname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this)" onsubmit="return cbi_validate_form(this, 'Some fields are invalid, cannot save values!')" autocomplete="off" data-tab-active="false" data-tab="originalFile" data-tab-title="原始文件">
+<form method="post" name="cbi2" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_raw", devname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this)" onsubmit="return cbi_validate_form(this, 'Some fields are invalid, cannot save values!')" autocomplete="off">
     <fieldset class="cbi-section">
-        <legend class="legend" style="padding-top:0px;" > 原始设置 (直接编辑 WiFi 配置文件)</legend>
-        <p> <span style="color: red"><b>警告</b></span>：如果你不懂，请不要动此设置！</p>
-        <textarea name="raw" id="raw" style="width:98%; height: 500px;"><%
+        <legend> 无线参数（直接修改无线配置）</legend>
+        <p> <span style="color: red"><b>警告</b></span> : 如果你不了解请不要修改!</p>
+        <textarea name="raw" id="raw" style="width:98%; height: 200px;"><%
             local fd = io.open(dev.profile)
             for line in fd:lines() do
                 print(line)
@@ -397,32 +393,30 @@ local cfgs = mtkwifi.load_profile(dev.profile)
         %></textarea>
     </fieldset>
     <div class="cbi-page-actions">
-    	<a class="cbi-button cbi-button-edit" style="float:left;text-align:center;" href="<%=luci.dispatcher.build_url("admin", "network", "wifi")%>">返回</a>
-        <input class="cbi-button cbi-button-apply" id="save" value="保存" type="submit" onclick="if (confirm('您将直接覆盖配置文件，确定吗？')) return true; else return false;" />
-        <input class="cbi-button cbi-button-apply" id="reset" value="将配置文件还原为出厂设置" type="button" onclick="if (confirm('您确定要将 <%=devname%> 的配置文件重置为出厂默认设置吗？')) location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_reset", devname)%>'" />
-        <input class="cbi-button cbi-button-reset" value="复位" onclick="location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_view", devname)%>'" type="button" />
+        <input class="cbi-button cbi-button-reset" value="重置" onclick="location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_view", devname)%>'" type="button" />
+        <input class="cbi-button cbi-button-apply" id="save" value="保存" type="submit" onclick="if (confirm('你将修改无线参数，确认要修改？')) return true; else return false;" />
+        <input class="cbi-button cbi-button-apply" id="reset" value="恢复出厂设置" type="button" onclick="if (confirm(' 确认恢复<%=devname%> 至出厂设置?')) location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg_reset", devname)%>'" />
     </div>
 </form>
-</div>
+
 
 <script type="text/javascript">
-	var advancedSettings=document.getElementById("advancedSettings");
-	var originalFile=document.getElementById("originalFile");
-	advancedSettings.onclick=function(){
-		this.setAttribute("class","cbi-tab");
-		originalFile.setAttribute("class","cbi-tab-disabled");
-		document.getElementsByTagName("form")[1].setAttribute("data-tab-active","false");
-		document.getElementsByTagName("form")[0].setAttribute("data-tab-active","true");
-	}
-	originalFile.onclick=function(){
-		this.setAttribute("class","cbi-tab");
-		advancedSettings.setAttribute("class","cbi-tab-disabled");
-		document.getElementsByTagName("form")[0].setAttribute("data-tab-active","false");
-		document.getElementsByTagName("form")[1].setAttribute("data-tab-active","true");
-	}
+    function wifi_reload(url) {
+        window.scrollTo(0, 0);
+        document.getElementById('loading').style.display="";
+        XHR.get(url, null,
+            function(x)
+            {
+                console.log(x);
+                document.getElementById("loading").style.display="none";
+                window.location.reload();
+            }
+        );
+    }
 
     function WirelessMode_onchange (mode) {
         var cr = GetCountryRegion(mode);
+
         getCountryRegionList(mode, cr);
     }
 
@@ -477,8 +471,10 @@ local cfgs = mtkwifi.load_profile(dev.profile)
     }
 
     function getCountryRegionList(mode) {
-        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_country_region_list")%>', {'mode':mode},
-            function(x){
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_country_region_list")%>', { "mode" : mode },
+            function(x)
+            {
+                //console.log(x);
                 //console.log(x.response);
                 var json = eval(x.response);
                 initCountryRegionList(json, mode);
@@ -500,11 +496,11 @@ local cfgs = mtkwifi.load_profile(dev.profile)
     }
 
     function getChannelList(mode, country_region) {
-        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_channel_list")%>', {'mode':mode,'country_region':country_region},
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_channel_list")%>', { "mode" : mode, "country_region" : country_region },
             function(x)
             {
-                //console.log(x);
-                //console.log(x.response);
+                console.log(x);
+                console.log(x.response);
                 var json = eval(x.response);
                 initChannelList(json);
             }
@@ -619,7 +615,7 @@ local cfgs = mtkwifi.load_profile(dev.profile)
         mode = mode.value*1;
 
         var cr = GetCountryRegion(mode);
-        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_5G_2nd_80Mhz_channel_list")%>', {'ch_cur':ch,'country_region':cr},
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_5G_2nd_80Mhz_channel_list")%>', { "ch_cur" : ch, "country_region" : cr },
             function(x)
             {
                 //console.log(x);
@@ -661,11 +657,11 @@ local cfgs = mtkwifi.load_profile(dev.profile)
         mode = mode.value*1;
 
         var cr = GetCountryRegion(mode);
-        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_HT_ext_channel_list")%>', {'ch_cur':ch,'country_region':cr},
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_HT_ext_channel_list")%>', { "ch_cur" : ch, "country_region" : cr },
             function(x)
             {
-                //console.log(x);
-                //console.log(x.response);
+                console.log(x);
+                console.log(x.response);
                 var json = eval(x.response);
                 initHTExtChannelList(json);
             }
