@@ -30,10 +30,17 @@ o.default = "3"
 -- 暂时只支持TCP1
 local tcp_node_num = 1
 for i = 1, tcp_node_num, 1 do
+    o = s:option(ListValue, "tcp_main" .. i, "TCP " .. i .. " " .. translate("Main node"))
+    for k, v in pairs(nodes_table) do
+        o:value(v.id, v.remarks)
+    end
+    
     o = s:option(DynamicList, "tcp_node" .. i, "TCP " .. i .. " " .. translate("List of backup nodes"))
     for k, v in pairs(nodes_table) do
         o:value(v.id, v.remarks)
     end
+
+    o = s:option(Flag, "restore_switch" .. i, "TCP " .. i .. " " .. translate("Restore Switch"), translate("When detects main node is available, switch back to the main node."))
 end
 
 return m

@@ -411,15 +411,15 @@ local WEP_Enc_List = {
 }
 
 local dbdc_prefix = {
-    {"rax", "ra"},
-    {"ray", "rai"},
-    {"raz", "rae"},
+    {"ra",  "rax"},
+    {"rai", "ray"},
+    {"rae", "raz"},
 }
 
 local dbdc_apcli_prefix = {
-    {"apclix", "apcli"},
-    {"apcliy", "apclii"},
-    {"apcliz", "apclie"},
+    {"apcli",  "apclix"},
+    {"apclii", "apcliy"},
+    {"apclie", "apcliz"},
 }
 
 function mtkwifi.band(mode)

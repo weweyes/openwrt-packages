@@ -18,7 +18,8 @@ define Package/autocore-arm
   MAINTAINER:=CN_SZTL
   DEPENDS:=@(TARGET_bcm27xx||TARGET_bcm53xx||TARGET_mvebu||TARGET_ipq40xx||TARGET_ipq806x||TARGET_rockchip) \
     +TARGET_bcm53xx:nvram \
-    +TARGET_ipq40xx:lm-sensors
+    +TARGET_ipq40xx:lm-sensors \
+	+ethtool
   VARIANT:=arm
 endef
 
