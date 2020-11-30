@@ -44,11 +44,15 @@ endef
 define Package/autocore-arm/install
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/arm/cpuinfo $(1)/sbin/cpuinfo
+	$(INSTALL_DIR) $(1)/www/luci-static/resources/view/status/include
+	$(INSTALL_DATA) ./files/arm/* $(1)/www/luci-static/resources/view/status/include/
 endef
 
 define Package/autocore-x86/install
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/x86/cpuinfo $(1)/sbin/cpuinfo
+	$(INSTALL_DIR) $(1)/www/luci-static/resources/view/status/include
+	$(INSTALL_DATA) ./files/x86/* $(1)/www/luci-static/resources/view/status/include/
 endef
 
 $(eval $(call BuildPackage,autocore-arm))
