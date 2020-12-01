@@ -13,21 +13,6 @@
 +	}
 +}
 
---- /dev/null
-+++ b/luci-app-vssr/root/usr/share/rpcd/acl.d/luci-app-vssr.json
-@@ -0,0 +1,11 @@
-+{
-+	"luci-app-vssr": {
-+		"description": "Grant UCI access for luci-app-vssr",
-+		"read": {
-+			"uci": [ "vssr" ]
-+		},
-+		"write": {
-+			"uci": [ "vssr" ]
-+		}
-+	}
-+}
-
 --- a/luci-app-advanced/Makefile
 +++ b/luci-app-advanced/Makefile
 @@ -38,4 +38,6 @@ define Package/$(PKG_NAME)/install
