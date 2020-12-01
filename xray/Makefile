@@ -60,6 +60,7 @@ GO_PKG:=github.com/xtls/xray-core/v1
 GO_PKG_LDFLAGS:=-s -w
 GO_PKG_LDFLAGS_X:= \
 	$(GO_PKG)/core.version=$(PKG_VERSION) \
+	$(GO_PKG)/core.build=Lean \
 	$(GO_PKG)/core.codename=OpenWrt
 
 include $(INCLUDE_DIR)/package.mk

@@ -41,16 +41,19 @@ function act_ping()
 	local e={}
 	local domain=luci.http.formvalue("domain")
 	local port=luci.http.formvalue("port")
+	local ip=luci.sys.exec("echo "..domain.." | grep -E \"^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$\" || \\\
+	nslookup "..domain.." 127.0.0.1#5336 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E \"^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$\" | sed -n 1p")
+	ip=luci.sys.exec("echo -n "..ip)
 	e.index=luci.http.formvalue("index")
-	local iret=luci.sys.call("ipset add ss_spec_wan_ac "..domain.." 2>/dev/null")
+	local iret=luci.sys.call("ipset add ss_spec_wan_ac "..ip.." 2>/dev/null")
 	local socket=nixio.socket("inet","stream")
 	socket:setopt("socket","rcvtimeo",3)
 	socket:setopt("socket","sndtimeo",3)
-	e.socket=socket:connect(domain,port)
+	e.socket=socket:connect(ip,port)
 	socket:close()
-	e.ping=luci.sys.exec(string.format("tcping -q -c 1 -i 1 -t 2 -p %s %s 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print $2}'",port,domain))
+	e.ping=luci.sys.exec(string.format("tcping -q -c 1 -i 1 -t 2 -p %s %s 2>&1 | grep -o 'time=[0-9]*' | awk -F '=' '{print $2}'",port,ip))
 	if (iret==0) then
-		luci.sys.call("ipset del ss_spec_wan_ac "..domain)
+		luci.sys.call("ipset del ss_spec_wan_ac "..ip)
 	end
 	luci.http.prepare_content("application/json")
 	luci.http.write_json(e)
@@ -126,10 +129,9 @@ function refresh_data()
 end
 
 function check_port()
-	local set=""
 	local retstring="<br/><br/>"
 	local s
-	local server_name=""
+	local server_name
 	local iret=1
 	luci.model.uci.cursor():foreach("shadowsocksr","servers",function(s)
 		if s.alias then
@@ -137,11 +139,14 @@ function check_port()
 		elseif s.server and s.server_port then
 			server_name="%s:%s"%{s.server,s.server_port}
 		end
-		iret=luci.sys.call("ipset add ss_spec_wan_ac "..s.server.." 2>/dev/null")
+		local ip=luci.sys.exec("echo "..s.server.." | grep -E \"^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$\" || \\\
+		nslookup "..s.server.." 127.0.0.1#5336 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E \"^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$\" | sed -n 1p")
+		ip=luci.sys.exec("echo -n "..ip)
+		iret=luci.sys.call("ipset add ss_spec_wan_ac "..ip.." 2>/dev/null")
 		socket=nixio.socket("inet","stream")
 		socket:setopt("socket","rcvtimeo",3)
 		socket:setopt("socket","sndtimeo",3)
-		ret=socket:connect(s.server,s.server_port)
+		ret=socket:connect(ip,s.server_port)
 		socket:close()
 		if tostring(ret)=="true" then
 			retstring=retstring.."<font color='green'>["..server_name.."] OK.</font><br/>"
@@ -149,7 +154,7 @@ function check_port()
 			retstring=retstring.."<font color='red'>["..server_name.."] Error.</font><br/>"
 		end
 		if  iret==0 then
-			luci.sys.call("ipset del ss_spec_wan_ac "..s.server)
+			luci.sys.call("ipset del ss_spec_wan_ac "..ip)
 		end
 	end)
 	luci.http.prepare_content("application/json")
