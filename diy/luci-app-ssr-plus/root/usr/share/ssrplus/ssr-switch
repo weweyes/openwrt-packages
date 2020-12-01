@@ -2,7 +2,6 @@
 NAME=shadowsocksr
 D="date +'%Y-%m-%d %H:%M:%S'"
 L=/tmp/ssrplus.log
-IPT="OUTPUT -p udp --dport 53 -m comment --comment _SS_SPEC_RULE_ -j REDIRECT --to-ports 5336"
 
 uci_get_by_name(){
 	w=$(uci -q get $NAME.$1.$2)
@@ -16,15 +15,13 @@ uci_get_by_type(){
 
 get_ip(){
 	if ! echo $ip | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$">/dev/null;then
-		iptables -t nat -I $IPT
 		r=1
 		while ! nslookup $ip >/dev/null 2>&1;do
 			[ $r -ge 10 ] && return 1 || let r++
 			sleep 1
 		done
-		ip=$(nslookup $ip 127.0.0.1 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");i=$?
+		ip=$(nslookup $ip 127.0.0.1#5336 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$");i=$?
 		ip=$(echo "$ip" | sed -n 1p)
-		iptables -t nat -D $IPT
 	fi
 	return $i
 }
