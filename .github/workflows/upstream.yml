@@ -15,6 +15,7 @@ on:
     - cron: 0 */8 * * *
   watch:
     types: started
+  repository_dispatch:
 
 jobs:
   merge:
