@@ -42,39 +42,39 @@ jobs:
       run: |
         rm -rf `find -maxdepth 1 -type d -name "[!.]*" ! -path "./diy"`
         git rm -r --cache *
-        git clone https://github.com/garypang13/openwrt-adguardhome AdGuardHome
-        git clone https://github.com/garypang13/luci-app-eqos
-        git clone https://github.com/garypang13/luci-app-amule
-        git clone https://github.com/garypang13/luci-app-xlnetacc
-        git clone https://github.com/garypang13/openwrt-filerun && mv -f openwrt-filerun/* ./ ; rm -Rf openwrt-filerun
-        git clone https://github.com/garypang13/luci-app-baidupcs-web
-        git clone https://github.com/garypang13/luci-theme-edge
-        git clone https://github.com/garypang13/autosamba
-        git clone https://github.com/garypang13/autocore
-        git clone https://github.com/garypang13/luci-app-adblock-plus
-        git clone https://github.com/garypang13/openwrt-qbittorrent && mv -f openwrt-qbittorrent/* ./ ; rm -Rf openwrt-qbittorrent
-        git clone https://github.com/garypang13/luci-app-homebridge
-        git clone https://github.com/garypang13/openwrt-openvpn && mv -f openwrt-openvpn/* ./ ; rm -Rf openwrt-openvpn
-        git clone https://github.com/small-5/ddns-scripts-dnspod
+        git clone --depth 1 https://github.com/garypang13/openwrt-adguardhome AdGuardHome
+        git clone --depth 1 https://github.com/garypang13/luci-app-eqos
+        git clone --depth 1 https://github.com/garypang13/luci-app-amule
+        git clone --depth 1 https://github.com/garypang13/luci-app-xlnetacc
+        git clone --depth 1 https://github.com/garypang13/openwrt-filerun && mv -f openwrt-filerun/* ./ ; rm -Rf openwrt-filerun
+        git clone --depth 1 https://github.com/garypang13/luci-app-baidupcs-web
+        git clone --depth 1 https://github.com/garypang13/luci-theme-edge
+        git clone --depth 1 https://github.com/garypang13/autosamba
+        git clone --depth 1 https://github.com/garypang13/autocore
+        git clone --depth 1 https://github.com/garypang13/luci-app-adblock-plus
+        git clone --depth 1 https://github.com/garypang13/openwrt-qbittorrent && mv -f openwrt-qbittorrent/* ./ ; rm -Rf openwrt-qbittorrent
+        git clone --depth 1 https://github.com/garypang13/luci-app-homebridge
+        git clone --depth 1 https://github.com/garypang13/openwrt-openvpn && mv -f openwrt-openvpn/* ./ ; rm -Rf openwrt-openvpn
+        git clone --depth 1 https://github.com/small-5/ddns-scripts-dnspod
         svn co https://github.com/coolsnowwolf/lede/trunk/package/network/services/shellsync
         svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
         svn co https://github.com/coolsnowwolf/packages/trunk/net/mwan3
 
-        git clone https://github.com/jerrykuku/luci-theme-argon
-        git clone https://github.com/jerrykuku/luci-app-vssr
-        git clone https://github.com/jefferymvp/luci-app-koolproxyR
-        git clone https://github.com/peter-tank/luci-app-dnscrypt-proxy2
-        git clone https://github.com/brvphoenix/luci-app-wrtbwmon
-        git clone https://github.com/brvphoenix/wrtbwmon
-        git clone https://github.com/sirpdboy/luci-app-advanced
-        git clone https://github.com/jerrykuku/luci-app-jd-dailybonus
-        git clone https://github.com/vernesong/OpenClash && mv -f OpenClash/luci-app-openclash ./ ; rm -Rf OpenClash
-        git clone https://github.com/NateLol/luci-app-oled
-        git clone https://github.com/destan19/OpenAppFilter && mv -n OpenAppFilter/* ./ ; rm -Rf OpenAppFilter
-        git clone https://github.com/esirplayground/luci-app-poweroff
-        git clone https://github.com/lvqier/luci-app-dnsmasq-ipset
-        git clone https://github.com/sirpdboy/luci-app-netdata
-        git clone https://github.com/small-5/ddns-scripts-aliyun
+        git clone --depth 1 https://github.com/jerrykuku/luci-theme-argon
+        git clone --depth 1 https://github.com/jerrykuku/luci-app-vssr
+        git clone --depth 1 https://github.com/jefferymvp/luci-app-koolproxyR
+        git clone --depth 1 https://github.com/peter-tank/luci-app-dnscrypt-proxy2
+        git clone --depth 1 https://github.com/brvphoenix/luci-app-wrtbwmon
+        git clone --depth 1 https://github.com/brvphoenix/wrtbwmon
+        git clone --depth 1 https://github.com/sirpdboy/luci-app-advanced
+        git clone --depth 1 https://github.com/jerrykuku/luci-app-jd-dailybonus
+        git clone --depth 1 https://github.com/vernesong/OpenClash && mv -f OpenClash/luci-app-openclash ./ ; rm -Rf OpenClash
+        git clone --depth 1 https://github.com/NateLol/luci-app-oled
+        git clone --depth 1 https://github.com/destan19/OpenAppFilter && mv -n OpenAppFilter/* ./ ; rm -Rf OpenAppFilter
+        git clone --depth 1 https://github.com/esirplayground/luci-app-poweroff
+        git clone --depth 1 https://github.com/lvqier/luci-app-dnsmasq-ipset
+        git clone --depth 1 https://github.com/sirpdboy/luci-app-netdata
+        git clone --depth 1 https://github.com/small-5/ddns-scripts-aliyun
 
         svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
         svn co https://github.com/Lienol/openwrt/trunk/package/network/fullconenat && rm -f fullconenat/patches/000-printk.patch
@@ -92,7 +92,7 @@ jobs:
         rm -rf .svn
         echo -e "\q" | svn co https://github.com/coolsnowwolf/lede/trunk/package/lean ./
         rm -rf .svn
-        git clone https://github.com/xiaorouji/openwrt-passwall && mv -n openwrt-passwall/* ./ ; rm -Rf openwrt-passwall
+        git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall && mv -n openwrt-passwall/* ./ ; rm -Rf openwrt-passwall
         echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/ctcgfw ./
         rm -rf .svn
         svn export --force https://github.com/project-openwrt/openwrt/branches/master/package/ntlf9t && mv -n ntlf9t/* ./ ; rm -rf ntlf9t
