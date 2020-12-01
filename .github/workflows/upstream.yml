@@ -12,7 +12,7 @@ on:
     branches: 
       - master
   schedule:
-    - cron: 0 */8 * * *
+    - cron: 0 */12 * * *
   watch:
     types: started
   repository_dispatch:
@@ -43,6 +43,7 @@ jobs:
       run: |
         rm -rf `find -maxdepth 1 -type d -name "[!.]*" ! -path "./diy"`
         git rm -r --cache *
+        git clone --depth 1 https://github.com/garypang13/my-packages
         git clone --depth 1 https://github.com/garypang13/openwrt-adguardhome AdGuardHome
         git clone --depth 1 https://github.com/garypang13/luci-app-eqos
         git clone --depth 1 https://github.com/garypang13/luci-app-amule
@@ -114,7 +115,6 @@ jobs:
         rm -f subconverter/patches/010-missing-header.patch
         sed -i 's/..\/..\/luci.mk/$(TOPDIR)\/feeds\/luci\/luci.mk/g' */Makefile
         cp -rf luci-app-mentohust/luasrc/luci/* luci-app-mentohust/luasrc/ && rm -Rf luci-app-mentohust/luasrc/luci
-        cp -rf diy/* ./
         bash diy/create_acl_for_luci.sh -a
         bash diy/convert_translation.sh -a || true
         find "diy/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
