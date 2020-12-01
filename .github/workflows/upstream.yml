@@ -55,7 +55,6 @@ jobs:
         git clone https://github.com/garypang13/openwrt-qbittorrent && mv -f openwrt-qbittorrent/* ./ ; rm -Rf openwrt-qbittorrent
         git clone https://github.com/garypang13/luci-app-homebridge
         git clone https://github.com/garypang13/openwrt-openvpn && mv -f openwrt-openvpn/* ./ ; rm -Rf openwrt-openvpn
-        git clone https://github.com/garypang13/openwrt-ddns && mv -f openwrt-ddns/* ./ ; rm -Rf openwrt-ddns
 
         svn co https://github.com/coolsnowwolf/lede/trunk/package/network/services/shellsync
         svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
@@ -75,6 +74,8 @@ jobs:
         git clone https://github.com/esirplayground/luci-app-poweroff
         git clone https://github.com/lvqier/luci-app-dnsmasq-ipset
         git clone https://github.com/sirpdboy/luci-app-netdata
+        git clone https://github.com/small-5/ddns-scripts-aliyun
+        git clone https://github.com/small-5/ddns-scripts-dnspod
         svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
         svn co https://github.com/Lienol/openwrt/trunk/package/network/fullconenat && rm -f fullconenat/patches/000-printk.patch
         svn co https://github.com/srchack/custom-packages/trunk/open-vm-tools
