@@ -106,8 +106,8 @@ jobs:
         echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/lienol ./
         rm -rf .svn
         
-        rm -Rf */.git */.svn qt5 openwrt-chinadns-ng openwrt-simple-obfs openwrt-v2ray-plugin openwrt-fullconenat cups cups-bjnp mt-drivers \
-        luci-app-docker coremark openwrt-chinadns openwrt-chinadns luci-app-flowoffload luci-app-sfe luci-app-appfilter fcgiwrap luci-app-ssr-plus \
+        rm -Rf */.git */.svn qt5 openwrt-chinadns-ng openwrt-simple-obfs openwrt-v2ray-plugin openwrt-fullconenat cups cups-bjnp \
+        mt-drivers luci-app-docker coremark openwrt-chinadns luci-app-flowoffload luci-app-sfe luci-app-appfilter fcgiwrap \
         ddns-scripts_aliyun ddns-scripts_dnspod
         mv mt/drivers mt/mt-drivers
         cp -Rf mt/* ./ && rm -Rf mt
@@ -117,7 +117,18 @@ jobs:
         cp -rf luci-app-mentohust/luasrc/luci/* luci-app-mentohust/luasrc/ && rm -Rf luci-app-mentohust/luasrc/luci
         bash diy/create_acl_for_luci.sh -a
         bash diy/convert_translation.sh -a || true
-        
-    - name: SSH connection to Actions
-      uses: garypang13/debugger-action@master
-
+        find "diy/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 -E --forward --no-backup-if-mismatch"
+        bash diy/diy.sh
+        rm -f create_acl_for_luci.warn create_acl_for_luci.err
+        sed -i '/"nas".*"NAS"/d' */luasrc/controller/*.lua
+        sed -i 's/"admin",\( \|\)"nas"/"admin", "services"/g' */luasrc/controller/*.lua
+        for ipk in $(ls); do
+        [[ -d "$ipk/root/usr/share/rpcd/acl.d" && -d "$ipk/root/etc/uci-defaults" ]] && {
+        [ grep -q "killall -HUP rpcd" $ipk/root/etc/uci-defaults/* ] || {
+          sed -i '/exit 0/i killall -HUP rpcd 2>\/dev\/null' $ipk/root/etc/uci-defaults/*
+          }
+        }
+        done
+        git add .
+        git commit -m "update"
+        git push
