@@ -54,6 +54,8 @@ endef
 define Package/$(PKG_NAME)/extra_provides
     echo 'libc.so.6'; \
     echo 'libm.so.6'; \
+    echo 'libc.so.0'; \
+    echo 'libm.so.0'; \
     echo 'libpthread.so.0';
 endef
 
