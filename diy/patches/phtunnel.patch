@@ -1,6 +1,6 @@
 --- a/phtunnel/Makefile
 +++ b/phtunnel/Makefile
-@@ -48,6 +48,13 @@ endef
+@@ -48,6 +48,15 @@ endef
  
  define Package/$(PKG_NAME)/conffiles
  /etc/phtunnel.json
