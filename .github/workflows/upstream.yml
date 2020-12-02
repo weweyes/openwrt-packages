@@ -105,6 +105,7 @@ jobs:
         rm -rf .svn
         echo -e "\q" | svn co https://github.com/project-openwrt/openwrt/branches/master/package/lienol ./
         rm -rf .svn
+        git clone --depth 1 https://github.com/Lienol/openwrt-package && mv -n openwrt-package/* ./ ; rm -rf openwrt-package 
         
         rm -Rf */.git */.svn qt5 openwrt-chinadns-ng openwrt-simple-obfs openwrt-v2ray-plugin openwrt-fullconenat cups cups-bjnp \
         mt-drivers luci-app-docker coremark openwrt-chinadns luci-app-flowoffload luci-app-sfe luci-app-appfilter fcgiwrap \
