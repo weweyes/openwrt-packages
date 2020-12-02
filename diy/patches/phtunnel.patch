@@ -1,5 +1,5 @@
---- a/package/teasiu/phtunnel/Makefile
-+++ b/package/teasiu/phtunnel/Makefile
+--- a/phtunnel/Makefile
++++ b/phtunnel/Makefile
 @@ -48,6 +48,13 @@ endef
  
  define Package/$(PKG_NAME)/conffiles
