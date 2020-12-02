@@ -1,4 +1,7 @@
 #!/bin/sh
+([[ ! "$(pgrep nginx)" && ! "$(pgrep uhttpd)" ]] && {
+	/etc/init.d/nginx restart
+}
 
 if [ $(uci get network.wan.ipv6) == 0 ]; then
 	sysctl -w net.ipv6.conf.all.disable_ipv6=1
@@ -32,7 +35,9 @@ function opkgupgrade() {
 				if [ ! -f /etc/inited ]; then
 					[ -f "/etc/backup/installed_packages.txt" ] && {
 						for ipk in $(cat /etc/backup/installed_packages.txt | grep -oE '(.*overlay|luci-app.*|luci-theme.*)' | awk '{print $1}'); do
-						 [[ $ipk != "luci-app-opkg" ]] && {
+						 [[ ! $(expr match $ipk 'luci.*opkg.*') ]] && {
+						 echo "aa"
+						 echo $ipk
 							uplog=$(opkg upgrade --force-overwrite --force-checksum $ipk)
 							echo $uplog
 							[[ ! "$uplog" || "$(echo $uplog|grep 'Configuring')" || "$(echo $uplog|grep 'Not upgrading package')" ]] || {
@@ -56,10 +61,10 @@ function opkgupgrade() {
 					[ -f "/etc/backup/installed_packages.txt" ] && {
 						opkg list-upgradable >/tmp/list-upgradable
 						for ipk in $(cat /etc/backup/installed_packages.txt | grep -oE '(.*overlay|luci-app.*|luci-theme.*)' | awk '{print $1}'); do
-							[[ "$(grep $ipk /tmp/list-upgradable)" && $ipk != "luci-app-opkg" ]] && {
+							[[ "$(grep $ipk /tmp/list-upgradable)" && ! $(expr match $ipk 'luci.*opkg.*') ]] && {
 								uplog=$(opkg upgrade --force-overwrite --force-checksum $ipk)
 								echo $uplog
-								[[ ! "$uplog" || "$(echo $uplog|grep 'Configuring')" ]] || {
+								[[ ! $uplog || "$(echo $uplog|grep 'Configuring')" ]] || {
 									udok=false
 									rm -f /var/lock/opkg.lock >/dev/null 2>&1
 									break
