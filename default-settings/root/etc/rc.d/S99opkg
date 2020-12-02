@@ -35,7 +35,7 @@ function opkgupgrade() {
 						 [[ ! $(expr match $ipk 'luci.*opkg.*') ]] && {
 							uplog=$(opkg upgrade --force-overwrite --force-checksum $ipk)
 							echo $uplog
-							[[ ! "$uplog" || "$(echo $uplog|grep 'Configuring')" || "$(echo $uplog|grep 'Not upgrading package')" ]] || {
+							[[ ! "$uplog" || "$(expr match $uplog '.*Configuring.*')" || "$(expr match $uplog '.*Not upgrading package.*')" ]] || {
 								udok=false
 								rm -f /var/lock/opkg.lock >/dev/null 2>&1
 								break
@@ -59,7 +59,7 @@ function opkgupgrade() {
 							[[ "$(grep $ipk /tmp/list-upgradable)" && ! $(expr match $ipk 'luci.*opkg.*') ]] && {
 								uplog=$(opkg upgrade --force-overwrite --force-checksum $ipk)
 								echo $uplog
-								[[ ! "$uplog" || "$(echo $uplog|grep 'Configuring')" ]] || {
+								[[ ! "$uplog" || "$(expr match $uplog '.*Configuring.*')" ]] || {
 									udok=false
 									rm -f /var/lock/opkg.lock >/dev/null 2>&1
 									break
