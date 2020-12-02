@@ -58,6 +58,7 @@ jobs:
         git clone --depth 1 https://github.com/garypang13/luci-app-homebridge
         git clone --depth 1 https://github.com/garypang13/openwrt-openvpn && mv -f openwrt-openvpn/* ./ ; rm -Rf openwrt-openvpn
         git clone --depth 1 https://github.com/small-5/ddns-scripts-dnspod
+        git clone --depth 1 https://github.com/small-5/ddns-scripts-aliyun
         svn co https://github.com/coolsnowwolf/lede/trunk/package/network/services/shellsync
         svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
         svn co https://github.com/coolsnowwolf/packages/trunk/net/mwan3
