@@ -51,7 +51,7 @@ define Package/$(PKG_NAME)/conffiles
 /etc/config/phtunnel
 endef
 
-define Package/filerun/extra_provides
+define Package/$(PKG_NAME)/extra_provides
     echo 'libc.so.6'; \
     echo 'libm.so.6'; \
     echo 'libpthread.so.0';
@@ -81,6 +81,4 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) $(FILES_PATH)/lib/upgrade/keep.d/phtunnel $(1)/lib/upgrade/keep.d
 endef
 
-include $(TOPDIR)/feeds/luci/luci.mk
-
-# call BuildPackage - OpenWrt buildroot signature
+$(eval $(call BuildPackage,$(PKG_NAME)))
