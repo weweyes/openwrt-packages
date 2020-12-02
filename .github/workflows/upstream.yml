@@ -57,8 +57,6 @@ jobs:
         git clone --depth 1 https://github.com/garypang13/openwrt-qbittorrent && mv -f openwrt-qbittorrent/* ./ ; rm -Rf openwrt-qbittorrent
         git clone --depth 1 https://github.com/garypang13/luci-app-homebridge
         git clone --depth 1 https://github.com/garypang13/openwrt-openvpn && mv -f openwrt-openvpn/* ./ ; rm -Rf openwrt-openvpn
-        git clone --depth 1 https://github.com/small-5/ddns-scripts-dnspod
-        git clone --depth 1 https://github.com/small-5/ddns-scripts-aliyun
         svn co https://github.com/coolsnowwolf/lede/trunk/package/network/services/shellsync
         svn co https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd
         svn co https://github.com/coolsnowwolf/packages/trunk/net/mwan3
@@ -77,6 +75,7 @@ jobs:
         git clone --depth 1 https://github.com/esirplayground/luci-app-poweroff
         git clone --depth 1 https://github.com/lvqier/luci-app-dnsmasq-ipset
         git clone --depth 1 https://github.com/sirpdboy/luci-app-netdata
+        git clone --depth 1 https://github.com/small-5/ddns-scripts-dnspod
         git clone --depth 1 https://github.com/small-5/ddns-scripts-aliyun
         git clone --depth 1 https://github.com/walkingsky/luci-wifidog luci-app-wifidog
         git clone --depth 1 https://github.com/peter-tank/luci-app-autorepeater
