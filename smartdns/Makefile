@@ -40,7 +40,7 @@ Unlike dnsmasq's all-servers, smartdns returns the fastest IP.
 endef
 
 define Package/smartdns/install
-	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/smartdns $(1)/usr/sbin/smartdns
 endef
 
