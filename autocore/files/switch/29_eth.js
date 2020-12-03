@@ -1,7 +1,6 @@
 'use strict';
 'require view';
 'require dom';
-'require uci';
 'require rpc';
 'require network';
 
@@ -27,13 +26,6 @@ function render_port_status(node, portstate) {
 	return node;
 }
 
-var callSwconfigFeatures = rpc.declare({
-	object: 'luci',
-	method: 'getSwconfigFeatures',
-	params: [ 'switch' ],
-	expect: { '': {} }
-});
-
 var callSwconfigPortState = rpc.declare({
 	object: 'luci',
 	method: 'getSwconfigPortState',
@@ -47,27 +39,19 @@ return view.extend({
 		return network.getSwitchTopologies().then(function(topologies) {
 			var tasks = [];
 
-			for (var switch_name in topologies) {
-				tasks.push(callSwconfigFeatures(switch_name).then(L.bind(function(features) {
-					this.features = features;
-				}, topologies[switch_name])));
-				tasks.push(callSwconfigPortState(switch_name).then(L.bind(function(ports) {
+				tasks.push(callSwconfigPortState("switch0").then(L.bind(function(ports) {
 					this.portstate = ports;
-				}, topologies[switch_name])));
-			}
+				}, topologies["switch0"])));
 
 			return Promise.all(tasks).then(function() { return topologies });
 		});
 	},
 
 	render: function(topologies) {
-		var switchSections = uci.sections('network', 'switch');
-		if (!switchSections.length)
-		   return;
-		var switchSection   = switchSections[0],
-		    sid             = switchSection['.name'],
-			switch_name     = switchSection.name || sid,
+		var switch_name     = "switch0",
 			topology        = topologies[switch_name];
+			if (!topology)
+			    return
 				var tables="<table class='table cbi-section-table'>"
 				var labels="<tr class='tr cbi-section-table-titles'>"
 				var states="<tr class='tr cbi-section-table-titles'>"
@@ -79,7 +63,7 @@ return view.extend({
 					'data-port': portspec.num
 				}), portstate);
 				labels = labels + String.format('<th class="th cbi-section-table-cell">%s</th>',portspec.label);
-				states = states + String.format('<th class="th cbi-section-table-cell">%s</th>',state.innerHTML);
+				states = states + String.format('<th class="th cbi-section-table-cell">%s</th>',state.outerHTML);
 			
 			}
 			labels + "</tr>";
