@@ -914,6 +914,11 @@ EOF
 			for i in $dns_l;do echo "server-https https://$i/dns-query" >> $DNS_T;done
 		fi
 		$(which smartdns) -c $DNS_T
+		r=1
+		while ! ps -w | grep smartdns | grep -v grep >/dev/null;do
+			[ $r -ge 10 ] && return 1 || let r++
+			sleep 1
+		done
 		start
 		killall -q -9 smartdns
 		start_dns
