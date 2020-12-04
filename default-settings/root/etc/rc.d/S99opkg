@@ -89,8 +89,7 @@ function opkgupgrade() {
 					rm -f /var/lock/opkg.lock >/dev/null 2>&1
 					break
 				fi
-				[ $c3 -gt 3 ] && break || let c3++
-				sleep 1
+				[ $c3 -gt 20 ] && break || let c3++
 			done
 			rm -f /var/lock/opkg.lock >/dev/null 2>&1
 			break
