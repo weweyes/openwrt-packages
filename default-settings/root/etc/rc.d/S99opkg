@@ -38,16 +38,16 @@ function opkgupgrade() {
 								[[ ! "$(echo $ipk | grep 'luci.*opkg.*')" ]] && {
 									echo $ipk
 									while :; do
-										uplog=$(opkg upgrade --force-overwrite --force-checksum $ipk)
-										echo $uplog
-										[[ ! "$uplog" || "$(echo $uplog | grep 'Configuring')" || "$(echo $uplog | grep 'Not upgrading package')" ]] && {
-											rm -f /var/lock/opkg.lock >/dev/null 2>&1
+										opkg upgrade --force-overwrite --force-checksum $ipk || true
+										[[ "$(echo $(opkg list-installed) | grep $ipk)" ]] && {
 											break
 										}
-										[ $c2 -gt 5 ] && udok=false
-										rm -f /var/lock/opkg.lock >/dev/null 2>&1
-										break || let c2++
+										[ $c2 == 3 ] && {
+										udok=false
+										break
+										} || let c2++
 										sleep 1
+									rm -f /var/lock/opkg.lock >/dev/null 2>&1
 									done
 								}
 							done
@@ -68,16 +68,16 @@ function opkgupgrade() {
 								[[ "$(grep $ipk /tmp/list-upgradable)" && ! "$(echo $ipk | grep 'luci.*opkg.*')" ]] && {
 									echo $ipk
 									while :; do
-										uplog=$(opkg upgrade --force-overwrite --force-checksum $ipk)
-										echo $uplog
-										[[ ! "$uplog" || "$(echo $uplog | grep 'Configuring')" ]] && {
-											rm -f /var/lock/opkg.lock >/dev/null 2>&1
+										opkg upgrade --force-overwrite --force-checksum $ipk || true
+										[[ "$(echo $(opkg list-installed) | grep $ipk)" ]] && {
 											break
 										}
-										[ $c2 -gt 5 ] && udok=false
-										rm -f /var/lock/opkg.lock >/dev/null 2>&1
-										break || let c2++
+										[ $c2 == 3 ] && {
+										udok=false
+										break
+										} || let c2++
 										sleep 1
+									rm -f /var/lock/opkg.lock >/dev/null 2>&1
 									done
 								}
 							done
@@ -89,12 +89,12 @@ function opkgupgrade() {
 					rm -f /var/lock/opkg.lock >/dev/null 2>&1
 					break
 				fi
-				[ $c3 -gt 20 ] && break || let c3++
+				[ $c3 == 10 ] && break || let c3++
 			done
 			rm -f /var/lock/opkg.lock >/dev/null 2>&1
 			break
 		fi
-		[ $c1 -gt 120 ] && break || let c1++
+		[ $c1 == 120 ] && break || let c1++
 		sleep 5
 	done
 }
