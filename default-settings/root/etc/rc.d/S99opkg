@@ -28,7 +28,7 @@ function opkgupgrade() {
 		curl --connect-timeout 5 https://op.supes.top >/dev/null 2>&1
 		if [ "$?" == "0" ]; then
 			while :; do
-				opkg update
+			opkg update
 				if [ "$?" == "0" ]; then
 					udok=true
 					source /etc/profile.d/opkginstall.sh
@@ -36,9 +36,8 @@ function opkgupgrade() {
 						[ -f "/etc/backup/installed_packages.txt" ] && {
 							for ipk in $(cat /etc/backup/installed_packages.txt | grep -oE '(.*overlay|luci-app.*|luci-theme.*)' | awk '{print $1}'); do
 								[[ ! "$(echo $ipk | grep 'luci.*opkg.*')" ]] && {
-									echo $ipk
 									while :; do
-										opkg upgrade --force-overwrite --force-checksum $ipk || true
+										opkg upgrade --force-overwrite --force-checksum $ipk >>/tmp/opkgupdate.log || true
 										[[ "$(echo $(opkg list-installed) | grep $ipk)" ]] && {
 											break
 										}
@@ -47,13 +46,13 @@ function opkgupgrade() {
 										break
 										} || let c2++
 										sleep 1
-									rm -f /var/lock/opkg.lock >/dev/null 2>&1
+									rm -f /var/lock/opkg.lock
 									done
 								}
 							done
 						}
 						[ $udok == true ] && {
-							rm /etc/config/*-opkg >/dev/null 2>&1
+							rm -f /etc/config/*-opkg
 							touch /etc/inited
 						}
 					else
@@ -63,12 +62,11 @@ function opkgupgrade() {
 						\( -exec test -f /rom/{} \; -exec find {} -name "luci-app*" \; \) \
 						\) | sed -e 's?/usr/lib/opkg/info/\(.*\).control$?\1 overlay?g' >/etc/backup/installed_packages.txt
 						[ -f "/etc/backup/installed_packages.txt" ] && {
-							opkg list-upgradable >/tmp/list-upgradable
 							for ipk in $(cat /etc/backup/installed_packages.txt | grep -oE '(.*overlay|luci-app.*|luci-theme.*)' | awk '{print $1}'); do
-								[[ "$(grep $ipk /tmp/list-upgradable)" && ! "$(echo $ipk | grep 'luci.*opkg.*')" ]] && {
+								[[ "$(echo $(opkg list-upgradable) | grep $ipk)" && ! "$(echo $ipk | grep 'luci.*opkg.*')" ]] && {
 									echo $ipk
 									while :; do
-										opkg upgrade --force-overwrite --force-checksum $ipk || true
+										opkg upgrade --force-overwrite --force-checksum $ipk >>/tmp/opkgupdate.log || true
 										[[ "$(echo $(opkg list-installed) | grep $ipk)" ]] && {
 											break
 										}
@@ -77,21 +75,21 @@ function opkgupgrade() {
 										break
 										} || let c2++
 										sleep 1
-									rm -f /var/lock/opkg.lock >/dev/null 2>&1
+									rm -f /var/lock/opkg.lock
 									done
 								}
 							done
 						}
 						[ $udok == true ] && {
-							rm /etc/config/*-opkg >/dev/null 2>&1
+							rm -f /etc/config/*-opkg
 						}
 					fi
-					rm -f /var/lock/opkg.lock >/dev/null 2>&1
+					rm -f /var/lock/opkg.lock
 					break
 				fi
 				[ $c3 == 10 ] && break || let c3++
 			done
-			rm -f /var/lock/opkg.lock >/dev/null 2>&1
+			rm -f /var/lock/opkg.lock
 			break
 		fi
 		[ $c1 == 120 ] && break || let c1++
