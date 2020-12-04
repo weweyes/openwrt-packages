@@ -37,7 +37,7 @@ function opkgupgrade() {
 							for ipk in $(cat /etc/backup/installed_packages.txt | grep -oE '(.*overlay|luci-app.*|luci-theme.*)' | awk '{print $1}'); do
 								[[ ! "$(echo $ipk | grep 'luci.*opkg.*')" ]] && {
 									while :; do
-										opkg upgrade --force-overwrite --force-checksum $ipk >>/tmp/opkgupdate.log || true
+										opkg upgrade --force-overwrite --force-checksum $ipk >>/tmp/opkgupdate.log 2>&1
 										[[ "$(echo $(opkg list-installed) | grep $ipk)" ]] && {
 											break
 										}
@@ -66,7 +66,7 @@ function opkgupgrade() {
 								[[ "$(echo $(opkg list-upgradable) | grep $ipk)" && ! "$(echo $ipk | grep 'luci.*opkg.*')" ]] && {
 									echo $ipk
 									while :; do
-										opkg upgrade --force-overwrite --force-checksum $ipk >>/tmp/opkgupdate.log || true
+										opkg upgrade --force-overwrite --force-checksum $ipk >>/tmp/opkgupdate.log 2>&1
 										[[ "$(echo $(opkg list-installed) | grep $ipk)" ]] && {
 											break
 										}
