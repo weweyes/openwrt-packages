@@ -28,7 +28,7 @@ function opkgupgrade() {
 		curl --connect-timeout 5 https://op.supes.top >/dev/null 2>&1
 		if [ "$?" == "0" ]; then
 			while :; do
-			opkg update
+			opkg update >/dev/null 2>&1
 				if [ "$?" == "0" ]; then
 					udok=true
 					source /etc/profile.d/opkginstall.sh
