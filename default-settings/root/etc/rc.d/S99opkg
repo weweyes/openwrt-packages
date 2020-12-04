@@ -21,71 +21,91 @@ if [ ! -f /etc/inited ]; then
 fi
 
 function opkgupgrade() {
-	count=0
+	c1=0
+	c2=0
+	c3=0
 	while :; do
 		curl --connect-timeout 5 https://op.supes.top >/dev/null 2>&1
 		if [ "$?" == "0" ]; then
-			opkg update
-			if [ "$?" == "0" ]; then
-			udok=true
-			source /etc/profile.d/opkginstall.sh
-				if [ ! -f /etc/inited ]; then
-					[ -f "/etc/backup/installed_packages.txt" ] && {
-						for ipk in $(cat /etc/backup/installed_packages.txt | grep -oE '(.*overlay|luci-app.*|luci-theme.*)' | awk '{print $1}'); do
-						 [[ ! "$(echo $ipk|grep 'luci.*opkg.*')" ]] && {
-							uplog=$(opkg upgrade --force-overwrite --force-checksum $ipk)
-							echo $uplog
-							[[ ! "$uplog" || "$(echo $uplog|grep 'Configuring')" || "$(echo $uplog|grep 'Not upgrading package')" ]] || {
-								udok=false
-								rm -f /var/lock/opkg.lock >/dev/null 2>&1
-								break
-							}
-						 }
-						done
-					}
+			while :; do
+				opkg update
+				if [ "$?" == "0" ]; then
+					udok=true
+					source /etc/profile.d/opkginstall.sh
+					if [ ! -f /etc/inited ]; then
+						[ -f "/etc/backup/installed_packages.txt" ] && {
+							for ipk in $(cat /etc/backup/installed_packages.txt | grep -oE '(.*overlay|luci-app.*|luci-theme.*)' | awk '{print $1}'); do
+								[[ ! "$(echo $ipk | grep 'luci.*opkg.*')" ]] && {
+									echo $ipk
+									while :; do
+										uplog=$(opkg upgrade --force-overwrite --force-checksum $ipk)
+										echo $uplog
+										[[ ! "$uplog" || "$(echo $uplog | grep 'Configuring')" || "$(echo $uplog | grep 'Not upgrading package')" ]] && {
+											rm -f /var/lock/opkg.lock >/dev/null 2>&1
+											break
+										}
+										[ $c2 -gt 5 ] && udok=false
+										rm -f /var/lock/opkg.lock >/dev/null 2>&1
+										break || let c2++
+										sleep 1
+									done
+								}
+							done
+						}
 						[ $udok == true ] && {
 							rm /etc/config/*-opkg >/dev/null 2>&1
 							touch /etc/inited
 						}
-				else
+					else
 
-					find /usr/lib/opkg/info -name "*.control" \( \
-					\( -exec test -f /overlay/upper/{} \; -exec echo {} \; \) -o \
-					\( -exec test -f /rom/{} \; -exec find {} -name "luci-app*" \; \) \
-					\) | sed -e 's?/usr/lib/opkg/info/\(.*\).control$?\1 overlay?g' >/etc/backup/installed_packages.txt
-					[ -f "/etc/backup/installed_packages.txt" ] && {
-						opkg list-upgradable >/tmp/list-upgradable
-						for ipk in $(cat /etc/backup/installed_packages.txt | grep -oE '(.*overlay|luci-app.*|luci-theme.*)' | awk '{print $1}'); do
-							[[ "$(grep $ipk /tmp/list-upgradable)" && ! "$(echo $ipk|grep 'luci.*opkg.*')" ]] && {
-								uplog=$(opkg upgrade --force-overwrite --force-checksum $ipk)
-								echo $uplog
-								[[ ! "$uplog" || "$(echo $uplog|grep 'Configuring')" ]] || {
-									udok=false
-									rm -f /var/lock/opkg.lock >/dev/null 2>&1
-									break
+						find /usr/lib/opkg/info -name "*.control" \( \
+						\( -exec test -f /overlay/upper/{} \; -exec echo {} \; \) -o \
+						\( -exec test -f /rom/{} \; -exec find {} -name "luci-app*" \; \) \
+						\) | sed -e 's?/usr/lib/opkg/info/\(.*\).control$?\1 overlay?g' >/etc/backup/installed_packages.txt
+						[ -f "/etc/backup/installed_packages.txt" ] && {
+							opkg list-upgradable >/tmp/list-upgradable
+							for ipk in $(cat /etc/backup/installed_packages.txt | grep -oE '(.*overlay|luci-app.*|luci-theme.*)' | awk '{print $1}'); do
+								[[ "$(grep $ipk /tmp/list-upgradable)" && ! "$(echo $ipk | grep 'luci.*opkg.*')" ]] && {
+									echo $ipk
+									while :; do
+										uplog=$(opkg upgrade --force-overwrite --force-checksum $ipk)
+										echo $uplog
+										[[ ! "$uplog" || "$(echo $uplog | grep 'Configuring')" ]] && {
+											rm -f /var/lock/opkg.lock >/dev/null 2>&1
+											break
+										}
+										[ $c2 -gt 5 ] && udok=false
+										rm -f /var/lock/opkg.lock >/dev/null 2>&1
+										break || let c2++
+										sleep 1
+									done
 								}
-							}
-						done
-					}
-						[ $udok == true ] && {
-								rm /etc/config/*-opkg >/dev/null 2>&1
+							done
 						}
+						[ $udok == true ] && {
+							rm /etc/config/*-opkg >/dev/null 2>&1
+						}
+					fi
+					rm -f /var/lock/opkg.lock >/dev/null 2>&1
+					break
 				fi
-				rm -f /var/lock/opkg.lock >/dev/null 2>&1
-				break
-			fi
+				[ $c3 -gt 3 ] && break || let c3++
+				sleep 1
+			done
 			rm -f /var/lock/opkg.lock >/dev/null 2>&1
+			break
 		fi
-		[ $count -gt 120 ] && break || let count++
+		[ $c1 -gt 120 ] && break || let c1++
 		sleep 5
 	done
 }
 (
-opkgupgrade
-[[ -f "/bin/coremark" && ! -f "/etc/bench.log" ]] && {
-	sleep 5
-	/bin/coremark >/tmp/coremark.log
-	cat /tmp/coremark.log | grep "CoreMark 1.0" | cut -d "/" -f 1 >/etc/bench.log
-	sed -i 's/CoreMark 1.0/(CpuMark/g' /etc/bench.log
-	echo " Scores)" >>/etc/bench.log
-}) &
+	opkgupgrade
+	[[ -f "/bin/coremark" && ! -f "/etc/bench.log" ]] && {
+		sleep 5
+		/bin/coremark >/tmp/coremark.log
+		cat /tmp/coremark.log | grep "CoreMark 1.0" | cut -d "/" -f 1 >/etc/bench.log
+		sed -i 's/CoreMark 1.0/(CpuMark/g' /etc/bench.log
+		echo " Scores)" >>/etc/bench.log
+	}
+) &
