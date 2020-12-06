@@ -55,7 +55,8 @@ end
     
     local download_url,remote_version,needs_update,remoteformat,sysverformat,currentTimeStamp,dateyr
 	local version_file = "/tmp/version.txt"
-	sysverformat = luci.sys.exec("date -d $(echo " ..get_system_version().. " | awk -F. '{printf $3\"-\"$1\"-\"$2}') +%s")
+	system_version = get_system_version()
+	sysverformat = luci.sys.exec("date -d $(echo " ..system_version.. " | awk -F. '{printf $3\"-\"$1\"-\"$2}') +%s")
 	currentTimeStamp = luci.sys.exec("expr $(date -d \"$(date '+%Y-%m-%d %H:%M:%S')\" +%s) - 259200")
 	if model == "x86_64" then
 		api.exec(api.wget, {api._unpack(api.wget_args), "-O", version_file, "https://op.supes.top/firmware/x86_64/version.txt"}, nil, api.command_timeout)
@@ -121,7 +122,7 @@ end
     if needs_update and not download_url then
         return {
             code = 1,
-            now_version = get_system_version(),
+            now_version = system_version,
             version = remote_version,
             error = i18n.translate(
                 "New version found, but failed to get new version download url.")

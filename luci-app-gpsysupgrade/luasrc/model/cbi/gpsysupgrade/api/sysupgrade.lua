@@ -7,19 +7,20 @@ local ipkg = require("luci.model.ipkg")
 local api = require "luci.model.cbi.gpsysupgrade.api.api"
 
 function get_system_version()
-	local system_version = luci.sys.exec("[ -f '/etc/openwrt_version' ] && echo -n `cat /etc/openwrt_version`")
+	local system_version = luci.sys.exec("[ -f '/etc/openwrt_version' ] && cat /etc/openwrt_version")
     return system_version
 end
 
 function check_update()
 		needs_update, notice = false, false
 		remote_version = luci.sys.exec("[ -f '" ..version_file.. "' ] && echo -n `cat " ..version_file.. "`")
-		dateyr = luci.sys.exec("echo " ..remote_version.. " | awk -F. '{printf $1\".\"$2}'")
 		remoteformat = luci.sys.exec("date -d $(echo " ..remote_version.. " | awk -F. '{printf $3\"-\"$1\"-\"$2}') +%s")
+		fnotice = luci.sys.exec("echo -n " ..remote_version.. " | sed -n '/\\.$/p'")
+		dateyr = luci.sys.exec("echo -n " ..remote_version.. " | awk -F. '{printf $1\".\"$2}'")
 		if remoteformat > sysverformat then
 			needs_update = true
-			if currentTimeStamp > remoteformat then
-				notice = true
+			if currentTimeStamp > remoteformat or fnotice ~= "" then
+				notice = fnotice
 			end
 		end
 end
@@ -29,7 +30,8 @@ function to_check()
     
 	version_file = "/tmp/version.txt"
 	updatelogs = "/tmp/updatelogs.txt"
-	sysverformat = luci.sys.exec("date -d $(echo " ..get_system_version().. " | awk -F. '{printf $3\"-\"$1\"-\"$2}') +%s")
+	system_version = get_system_version()
+	sysverformat = luci.sys.exec("date -d $(echo " ..system_version.. " | awk -F. '{printf $3\"-\"$1\"-\"$2}') +%s")
 	currentTimeStamp = luci.sys.exec("expr $(date -d \"$(date '+%Y-%m-%d %H:%M:%S')\" +%s) - 172800")
 	if model == "x86_64" then
 		api.exec(api.curl, {api._unpack(api.curl_args), "-o", version_file, "https://op.supes.top/firmware/x86_64/version.txt"}, nil, api.command_timeout)
@@ -83,7 +85,7 @@ function to_check()
     if needs_update and not download_url then
         return {
             code = 1,
-            now_version = get_system_version(),
+            now_version = system_version,
             version = remote_version,
             error = i18n.translate(
                 "New version found, but failed to get new version download url.")
@@ -94,7 +96,7 @@ function to_check()
         code = 0,
         update = needs_update,
 		notice = notice,
-        now_version = get_system_version(),
+        now_version = system_version,
         version = remote_version,
 	logs = luci.sys.exec("[ -f '" ..updatelogs.. "' ] && echo `cat " ..updatelogs.. "`"),
         url = download_url
