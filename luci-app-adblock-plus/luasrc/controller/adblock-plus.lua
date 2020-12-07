@@ -3,7 +3,9 @@ function index()
 	if not nixio.fs.access("/etc/config/adblock-plus") then
 		return
 	end
-	entry({"admin","services","adblock-plus"},alias("admin","services","adblock-plus","base"),_("Adblock Plus+"),9).dependent=true
+	local e=entry({"admin","services","adblock-plus"},firstchild(),_("Adblock Plus+"),1)
+	e.dependent=false
+	e.acl_depends={ "luci-app-adblock-plus" }
 	entry({"admin","services","adblock-plus","base"},cbi("adblock-plus/base"),_("Base Setting"),1).leaf=true
 	entry({"admin","services","adblock-plus","white"},form("adblock-plus/white"),_("White Domain List"),2).leaf=true
 	entry({"admin","services","adblock-plus","black"},form("adblock-plus/black"),_("Block Domain List"),3).leaf=true
