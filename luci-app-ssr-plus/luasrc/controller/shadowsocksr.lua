@@ -41,8 +41,9 @@ function act_ping()
 	local e={}
 	local domain=luci.http.formvalue("domain")
 	local port=luci.http.formvalue("port")
+	local dp=luci.sys.exec("netstat -unl | grep 5336 >/dev/null && echo -n 5336 || echo -n 53")
 	local ip=luci.sys.exec("echo "..domain.." | grep -E \"^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$\" || \\\
-	nslookup "..domain.." 127.0.0.1#5336 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E \"^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$\" | sed -n 1p")
+	nslookup "..domain.." 127.0.0.1#"..dp.." 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E \"^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$\" | sed -n 1p")
 	ip=luci.sys.exec("echo -n "..ip)
 	e.index=luci.http.formvalue("index")
 	local iret=luci.sys.call("ipset add ss_spec_wan_ac "..ip.." 2>/dev/null")
@@ -139,8 +140,9 @@ function check_port()
 		elseif s.server and s.server_port then
 			server_name="%s:%s"%{s.server,s.server_port}
 		end
+		local dp=luci.sys.exec("netstat -unl | grep 5336 >/dev/null && echo -n 5336 || echo -n 53")
 		local ip=luci.sys.exec("echo "..s.server.." | grep -E \"^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$\" || \\\
-		nslookup "..s.server.." 127.0.0.1#5336 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E \"^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$\" | sed -n 1p")
+		nslookup "..s.server.." 127.0.0.1#"..dp.." 2>/dev/null | grep Address | awk -F' ' '{print$NF}' | grep -E \"^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$\" | sed -n 1p")
 		ip=luci.sys.exec("echo -n "..ip)
 		iret=luci.sys.call("ipset add ss_spec_wan_ac "..ip.." 2>/dev/null")
 		socket=nixio.socket("inet","stream")
