@@ -87,7 +87,6 @@ jobs:
         svn co https://github.com/NoTengoBattery/openwrt-mt7621/trunk/package/system/compressed-memory
         svn co https://github.com/Tencent-Cloud-Plugins/tencentcloud-openwrt-plugin-ddns/trunk/tencentcloud_ddns
         svn co https://github.com/teasiu/dragino2/trunk/package/teasiu/luci-app-phtunnel
-        svn co https://github.com/teasiu/dragino2/trunk/package/teasiu/luci-app-oray
         svn co https://github.com/teasiu/dragino2/trunk/package/teasiu/phtunnel
         
         rm -rf .svn
