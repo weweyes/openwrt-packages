@@ -106,9 +106,9 @@ jobs:
         rm -rf .svn
         git clone --depth 1 https://github.com/Lienol/openwrt-package && mv -n openwrt-package/* ./ ; rm -rf openwrt-package 
         
-        rm -Rf */.git */.svn qt5 openwrt-chinadns-ng openwrt-simple-obfs openwrt-v2ray-plugin openwrt-fullconenat cups cups-bjnp \
-        mt-drivers luci-app-docker coremark openwrt-chinadns luci-app-flowoffload luci-app-sfe luci-app-appfilter fcgiwrap \
-        ddns-scripts_aliyun ddns-scripts_dnspod
+        rm -Rf */.git */.svn qt5 openwrt-{chinadns*,simple-obfs,v2ray-plugin,fullconenat} cups* \
+        mt-drivers coremark luci-app-{flowoffload,sfe,appfilter,unblockneteasemusic*,docker} fcgiwrap \
+        ddns-scripts_{aliyun,dnspod} UnblockNeteaseMusicGo ipv6-helper luci-app-adbyby-plus luci-app-advancedsetting
         mv mt/drivers mt/mt-drivers
         cp -Rf mt/* ./ && rm -Rf mt
         sed -i "/minisign:minisign/d" luci-app-dnscrypt-proxy2/Makefile
